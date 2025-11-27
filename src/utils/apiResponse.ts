@@ -10,7 +10,7 @@ export const apiResponse = {
             errors: [],
         } as ApiResponse<T>),
 
-    error: (res: Response, message: string, errors: string[] = [], code = 500) =>
+    error: (res: Response, message: string, code = 500, errors: string[] = []) =>
         res.status(code).send({
             success: false,
             data: null,

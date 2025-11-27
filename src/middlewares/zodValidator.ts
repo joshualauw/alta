@@ -1,25 +1,18 @@
+import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { ZodObject } from "zod";
-import { Request, Response, NextFunction } from "express";
-import { ApiResponse } from "@/types/ApiResponse";
+import { apiResponse } from "@/utils/apiResponse";
 
 export const validate =
-  (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+    (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
+        const result = schema.safeParse(req.body);
 
-    if (!result.success) {
-      const errors = result.error.issues.map((e) => e.message);
+        if (!result.success) {
+            const errors = result.error.issues.map((e) => `${e.path} ${e.message}`);
+            return apiResponse.error(res, "validation failed", StatusCodes.BAD_REQUEST, errors);
+        }
 
-      const response: ApiResponse<null> = {
-        success: false,
-        data: null,
-        message: "Validation failed",
-        errors,
-      };
+        req.body = result.data;
 
-      return res.status(400).send(response);
-    }
-
-    req.body = result.data;
-
-    next();
-  };
+        next();
+    };
