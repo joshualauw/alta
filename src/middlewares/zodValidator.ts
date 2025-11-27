@@ -3,8 +3,8 @@ import { StatusCodes } from "http-status-codes";
 import { ZodObject } from "zod";
 import { apiResponse } from "@/utils/apiResponse";
 
-export const validate =
-    (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
+export function validate(schema: ZodObject) {
+    return (req: Request, res: Response, next: NextFunction) => {
         const result = schema.safeParse(req.body);
 
         if (!result.success) {
@@ -16,3 +16,4 @@ export const validate =
 
         next();
     };
+}

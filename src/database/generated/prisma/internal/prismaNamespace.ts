@@ -608,6 +608,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
+  name: 'name',
   key: 'key',
   scopes: 'scopes',
   isActive: 'isActive',

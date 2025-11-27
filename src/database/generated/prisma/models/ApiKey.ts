@@ -36,6 +36,7 @@ export type ApiKeySumAggregateOutputType = {
 
 export type ApiKeyMinAggregateOutputType = {
   id: number | null
+  name: string | null
   key: string | null
   isActive: boolean | null
   createdAt: Date | null
@@ -44,6 +45,7 @@ export type ApiKeyMinAggregateOutputType = {
 
 export type ApiKeyMaxAggregateOutputType = {
   id: number | null
+  name: string | null
   key: string | null
   isActive: boolean | null
   createdAt: Date | null
@@ -52,6 +54,7 @@ export type ApiKeyMaxAggregateOutputType = {
 
 export type ApiKeyCountAggregateOutputType = {
   id: number
+  name: number
   key: number
   scopes: number
   isActive: number
@@ -71,6 +74,7 @@ export type ApiKeySumAggregateInputType = {
 
 export type ApiKeyMinAggregateInputType = {
   id?: true
+  name?: true
   key?: true
   isActive?: true
   createdAt?: true
@@ -79,6 +83,7 @@ export type ApiKeyMinAggregateInputType = {
 
 export type ApiKeyMaxAggregateInputType = {
   id?: true
+  name?: true
   key?: true
   isActive?: true
   createdAt?: true
@@ -87,6 +92,7 @@ export type ApiKeyMaxAggregateInputType = {
 
 export type ApiKeyCountAggregateInputType = {
   id?: true
+  name?: true
   key?: true
   scopes?: true
   isActive?: true
@@ -183,6 +189,7 @@ export type ApiKeyGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 
 export type ApiKeyGroupByOutputType = {
   id: number
+  name: string
   key: string
   scopes: string[]
   isActive: boolean
@@ -215,6 +222,7 @@ export type ApiKeyWhereInput = {
   OR?: Prisma.ApiKeyWhereInput[]
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   id?: Prisma.IntFilter<"ApiKey"> | number
+  name?: Prisma.StringFilter<"ApiKey"> | string
   key?: Prisma.StringFilter<"ApiKey"> | string
   scopes?: Prisma.StringNullableListFilter<"ApiKey">
   isActive?: Prisma.BoolFilter<"ApiKey"> | boolean
@@ -224,6 +232,7 @@ export type ApiKeyWhereInput = {
 
 export type ApiKeyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   scopes?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -237,6 +246,7 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   OR?: Prisma.ApiKeyWhereInput[]
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
+  name?: Prisma.StringFilter<"ApiKey"> | string
   scopes?: Prisma.StringNullableListFilter<"ApiKey">
   isActive?: Prisma.BoolFilter<"ApiKey"> | boolean
   createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string
@@ -245,6 +255,7 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
 
 export type ApiKeyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   scopes?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -262,6 +273,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
   OR?: Prisma.ApiKeyScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ApiKeyScalarWhereWithAggregatesInput | Prisma.ApiKeyScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"ApiKey"> | number
+  name?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   key?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   scopes?: Prisma.StringNullableListFilter<"ApiKey">
   isActive?: Prisma.BoolWithAggregatesFilter<"ApiKey"> | boolean
@@ -270,6 +282,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
 }
 
 export type ApiKeyCreateInput = {
+  name: string
   key: string
   scopes?: Prisma.ApiKeyCreatescopesInput | string[]
   isActive?: boolean
@@ -279,6 +292,7 @@ export type ApiKeyCreateInput = {
 
 export type ApiKeyUncheckedCreateInput = {
   id?: number
+  name: string
   key: string
   scopes?: Prisma.ApiKeyCreatescopesInput | string[]
   isActive?: boolean
@@ -287,6 +301,7 @@ export type ApiKeyUncheckedCreateInput = {
 }
 
 export type ApiKeyUpdateInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   scopes?: Prisma.ApiKeyUpdatescopesInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -296,6 +311,7 @@ export type ApiKeyUpdateInput = {
 
 export type ApiKeyUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   scopes?: Prisma.ApiKeyUpdatescopesInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -305,6 +321,7 @@ export type ApiKeyUncheckedUpdateInput = {
 
 export type ApiKeyCreateManyInput = {
   id?: number
+  name: string
   key: string
   scopes?: Prisma.ApiKeyCreatescopesInput | string[]
   isActive?: boolean
@@ -313,6 +330,7 @@ export type ApiKeyCreateManyInput = {
 }
 
 export type ApiKeyUpdateManyMutationInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   scopes?: Prisma.ApiKeyUpdatescopesInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -322,6 +340,7 @@ export type ApiKeyUpdateManyMutationInput = {
 
 export type ApiKeyUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
   key?: Prisma.StringFieldUpdateOperationsInput | string
   scopes?: Prisma.ApiKeyUpdatescopesInput | string[]
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
@@ -339,6 +358,7 @@ export type StringNullableListFilter<$PrismaModel = never> = {
 
 export type ApiKeyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   scopes?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
@@ -352,6 +372,7 @@ export type ApiKeyAvgOrderByAggregateInput = {
 
 export type ApiKeyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -360,6 +381,7 @@ export type ApiKeyMaxOrderByAggregateInput = {
 
 export type ApiKeyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  name?: Prisma.SortOrder
   key?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -383,6 +405,7 @@ export type ApiKeyUpdatescopesInput = {
 
 export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
   key?: boolean
   scopes?: boolean
   isActive?: boolean
@@ -392,6 +415,7 @@ export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 
 export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
   key?: boolean
   scopes?: boolean
   isActive?: boolean
@@ -401,6 +425,7 @@ export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 
 export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  name?: boolean
   key?: boolean
   scopes?: boolean
   isActive?: boolean
@@ -410,6 +435,7 @@ export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 
 export type ApiKeySelectScalar = {
   id?: boolean
+  name?: boolean
   key?: boolean
   scopes?: boolean
   isActive?: boolean
@@ -417,13 +443,14 @@ export type ApiKeySelectScalar = {
   updatedAt?: boolean
 }
 
-export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "scopes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
+export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "key" | "scopes" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
 
 export type $ApiKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ApiKey"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    name: string
     key: string
     scopes: string[]
     isActive: boolean
@@ -853,6 +880,7 @@ export interface Prisma__ApiKeyClient<T, Null = never, ExtArgs extends runtime.T
  */
 export interface ApiKeyFieldRefs {
   readonly id: Prisma.FieldRef<"ApiKey", 'Int'>
+  readonly name: Prisma.FieldRef<"ApiKey", 'String'>
   readonly key: Prisma.FieldRef<"ApiKey", 'String'>
   readonly scopes: Prisma.FieldRef<"ApiKey", 'String[]'>
   readonly isActive: Prisma.FieldRef<"ApiKey", 'Boolean'>

@@ -5,7 +5,7 @@ import { commonConfig } from "@/config/commonConfig";
 import { UserJwtPayload } from "@/types/UserJwtPayload";
 import { apiResponse } from "@/utils/apiResponse";
 
-export function authorize(adminOnly: boolean = false) {
+export function authorize(adminOnly: boolean = true) {
     return (req: Request, res: Response, next: NextFunction) => {
         try {
             const authHeader = req.headers.authorization;

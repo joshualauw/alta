@@ -8,15 +8,10 @@ import * as userController from "@/modules/user/userController";
 
 const router = Router();
 
-router.get("/", userController.getAllUser);
+router.get("/getAll", userController.getAllUser);
+router.post("/create", authorize(), validate(createUserRequest), userController.createUser);
+router.put("/update", authorize(), validate(updateUserRequest), userController.updateUser);
 router.post("/login", validate(loginRequest), userController.login);
-router.post(
-    "/create-user",
-    authorize(true),
-    validate(createUserRequest),
-    userController.createUser
-);
-router.put("/update-user", authorize(true), validate(updateUserRequest), userController.updateUser);
-router.delete("/delete-user/:id", authorize(true), userController.deleteUser);
+router.delete("/delete/:id", authorize(), userController.deleteUser);
 
 export default router;
