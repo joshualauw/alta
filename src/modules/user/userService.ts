@@ -2,12 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { commonConfig } from "@/config/commonConfig";
 import { UserUpdateInput } from "@/database/generated/prisma/models";
-import {
-    BadRequestError,
-    ForbiddenError,
-    NotFoundError,
-    UnauthorizedError,
-} from "@/lib/internal/errors";
+import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
 import { CreateUserRequest, CreateUserResponse } from "@/modules/user/dtos/createUserDto";
 import { DeleteUserResponse } from "@/modules/user/dtos/deleteUserDto";
@@ -85,10 +80,7 @@ export async function updateUser(payload: UpdateUserRequest): Promise<UpdateUser
     };
 }
 
-export async function deleteUser(
-    id: number,
-    currentUser: UserJwtPayload
-): Promise<DeleteUserResponse> {
+export async function deleteUser(id: number, currentUser: UserJwtPayload): Promise<DeleteUserResponse> {
     const user = await prisma.user.findFirst({
         where: { id },
     });
@@ -96,9 +88,9 @@ export async function deleteUser(
     if (!user) throw new NotFoundError("user not found");
     if (user.id == currentUser.id) throw new ForbiddenError("cannot self delete");
 
-    const deletedUser = await prisma.user.delete({
-        where: { id: user.id },
+    await prisma.user.delete({
+        where: { id },
     });
 
-    return { id: deletedUser.id };
+    return { id };
 }

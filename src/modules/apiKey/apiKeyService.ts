@@ -1,7 +1,19 @@
+import { NotFoundError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
 import { CreateApiKeyRequest, CreateApiKeyResponse } from "@/modules/apiKey/dtos/createApiKeyDto";
+import { DeleteApiKeyResponse } from "@/modules/apiKey/dtos/deleteApiKeyDto";
+import { GetAllApiKeyResponse } from "@/modules/apiKey/dtos/getAllApiKeyDto";
+import { UpdateApiKeyRequest, UpdateApiKeyResponse } from "@/modules/apiKey/dtos/updateApiKeyDto";
 import { generateApiKey, hashApiKey } from "@/modules/apiKey/helpers/generateKey";
 import { pick } from "@/utils/mapper";
+
+export async function getAllApikey(): Promise<GetAllApiKeyResponse[]> {
+    const apiKeys = await prisma.apiKey.findMany();
+
+    return apiKeys.map((a) => ({
+        ...pick(a, "id", "name", "isActive", "scopes", "createdAt"),
+    }));
+}
 
 export async function createApiKey(payload: CreateApiKeyRequest): Promise<CreateApiKeyResponse> {
     const plainKey = generateApiKey();
@@ -16,4 +28,36 @@ export async function createApiKey(payload: CreateApiKeyRequest): Promise<Create
         key: plainKey,
         createdAt: apiKey.createdAt.toISOString(),
     };
+}
+
+export async function updateApiKey(id: number, payload: UpdateApiKeyRequest): Promise<UpdateApiKeyResponse> {
+    const apiKey = await prisma.apiKey.findFirst({
+        where: { id },
+    });
+
+    if (!apiKey) throw new NotFoundError("api key not found");
+
+    const updatedApiKey = await prisma.apiKey.update({
+        where: { id: apiKey.id },
+        data: payload,
+    });
+
+    return {
+        ...pick(updatedApiKey, "id", "name", "isActive", "scopes"),
+        updatedAt: updatedApiKey.updatedAt.toISOString(),
+    };
+}
+
+export async function deleteApiKey(id: number): Promise<DeleteApiKeyResponse> {
+    const apiKey = await prisma.apiKey.findFirst({
+        where: { id },
+    });
+
+    if (!apiKey) throw new NotFoundError("api key not found");
+
+    await prisma.apiKey.delete({
+        where: { id },
+    });
+
+    return { id };
 }

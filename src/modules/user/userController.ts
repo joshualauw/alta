@@ -9,10 +9,7 @@ import * as userService from "@/modules/user/userService";
 import { ApiResponse } from "@/types/ApiResponse";
 import { apiResponse } from "@/utils/apiResponse";
 
-export async function login(
-    req: Request<{}, {}, LoginRequest>,
-    res: Response<ApiResponse<LoginResponse>>
-) {
+export async function login(req: Request<{}, {}, LoginRequest>, res: Response<ApiResponse<LoginResponse>>) {
     const result = await userService.login(req.body);
     return apiResponse.success(res, result, "login successful");
 }
@@ -38,10 +35,7 @@ export async function updateUser(
     return apiResponse.success(res, result, "update user successful");
 }
 
-export async function deleteUser(
-    req: Request<{ id: string }, {}, {}>,
-    res: Response<ApiResponse<DeleteUserResponse>>
-) {
+export async function deleteUser(req: Request<{ id: string }, {}, {}>, res: Response<ApiResponse<DeleteUserResponse>>) {
     const result = await userService.deleteUser(Number(req.params.id), req.user!);
     return apiResponse.success(res, result, "delete user successful");
 }
