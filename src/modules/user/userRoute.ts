@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { authorize } from "@/middlewares/authHandler";
 import { validate } from "@/middlewares/zodValidator";
-import { createUserRequest } from "@/modules/user/dtos/create-user.dto";
-import { loginRequest } from "@/modules/user/dtos/login.dto";
-import { updateUserRequest } from "@/modules/user/dtos/update-user.dto";
-import * as userController from "@/modules/user/user.controller";
+import { createUserRequest } from "@/modules/user/dtos/createUserDto";
+import { loginRequest } from "@/modules/user/dtos/loginDto";
+import { updateUserRequest } from "@/modules/user/dtos/updateUserDto";
+import * as userController from "@/modules/user/userController";
 
 const router = Router();
 
+router.get("/", userController.getAllUser);
 router.post("/login", validate(loginRequest), userController.login);
 router.post(
     "/create-user",

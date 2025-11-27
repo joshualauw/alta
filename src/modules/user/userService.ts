@@ -9,10 +9,11 @@ import {
     UnauthorizedError,
 } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
-import { CreateUserRequest, CreateUserResponse } from "@/modules/user/dtos/create-user.dto";
-import { DeleteUserResponse } from "@/modules/user/dtos/delete-user.dto";
-import { LoginRequest, LoginResponse } from "@/modules/user/dtos/login.dto";
-import { UpdateUserRequest, UpdateUserResponse } from "@/modules/user/dtos/update-user.dto";
+import { CreateUserRequest, CreateUserResponse } from "@/modules/user/dtos/createUserDto";
+import { DeleteUserResponse } from "@/modules/user/dtos/deleteUserDto";
+import { GetAllUserResponse } from "@/modules/user/dtos/getAllUserDto";
+import { LoginRequest, LoginResponse } from "@/modules/user/dtos/loginDto";
+import { UpdateUserRequest, UpdateUserResponse } from "@/modules/user/dtos/updateUserDto";
 import { UserJwtPayload } from "@/types/UserJwtPayload";
 import { omit, pick } from "@/utils/mapper";
 
@@ -31,6 +32,14 @@ export async function login(payload: LoginRequest): Promise<LoginResponse> {
     });
 
     return { ...pick(user, "id", "email", "name", "role"), token };
+}
+
+export async function getAllUser(): Promise<GetAllUserResponse[]> {
+    const users = await prisma.user.findMany();
+
+    return users.map((u) => ({
+        ...pick(u, "id", "email", "name", "role", "isActive"),
+    }));
 }
 
 export async function createUser(payload: CreateUserRequest): Promise<CreateUserResponse> {

@@ -1,7 +1,7 @@
 import express from "express";
 import { commonConfig } from "@/config/commonConfig";
 import { errorHandler } from "@/middlewares/errorHandler";
-import userRoute from "@/modules/user/user.route";
+import userRoute from "@/modules/user/userRoute";
 
 const app = express();
 

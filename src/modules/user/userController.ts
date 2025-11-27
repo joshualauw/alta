@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { CreateUserRequest, CreateUserResponse } from "@/modules/user/dtos/create-user.dto";
-import { DeleteUserResponse } from "@/modules/user/dtos/delete-user.dto";
-import { LoginRequest, LoginResponse } from "@/modules/user/dtos/login.dto";
-import { UpdateUserRequest, UpdateUserResponse } from "@/modules/user/dtos/update-user.dto";
-import * as userService from "@/modules/user/user.service";
+import { CreateUserRequest, CreateUserResponse } from "@/modules/user/dtos/createUserDto";
+import { DeleteUserResponse } from "@/modules/user/dtos/deleteUserDto";
+import { GetAllUserResponse } from "@/modules/user/dtos/getAllUserDto";
+import { LoginRequest, LoginResponse } from "@/modules/user/dtos/loginDto";
+import { UpdateUserRequest, UpdateUserResponse } from "@/modules/user/dtos/updateUserDto";
+import * as userService from "@/modules/user/userService";
 import { ApiResponse } from "@/types/ApiResponse";
 import { apiResponse } from "@/utils/apiResponse";
 
@@ -14,6 +15,11 @@ export async function login(
 ) {
     const result = await userService.login(req.body);
     return apiResponse.success(res, result, "login successful");
+}
+
+export async function getAllUser(req: Request, res: Response<ApiResponse<GetAllUserResponse[]>>) {
+    const result = await userService.getAllUser();
+    return apiResponse.success(res, result, "get all user succeessful");
 }
 
 export async function createUser(
