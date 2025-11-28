@@ -31,14 +31,8 @@ export async function createApiKey(payload: CreateApiKeyRequest): Promise<Create
 }
 
 export async function updateApiKey(id: number, payload: UpdateApiKeyRequest): Promise<UpdateApiKeyResponse> {
-    const apiKey = await prisma.apiKey.findFirst({
-        where: { id },
-    });
-
-    if (!apiKey) throw new NotFoundError("api key not found");
-
     const updatedApiKey = await prisma.apiKey.update({
-        where: { id: apiKey.id },
+        where: { id },
         data: payload,
     });
 
@@ -49,12 +43,6 @@ export async function updateApiKey(id: number, payload: UpdateApiKeyRequest): Pr
 }
 
 export async function deleteApiKey(id: number): Promise<DeleteApiKeyResponse> {
-    const apiKey = await prisma.apiKey.findFirst({
-        where: { id },
-    });
-
-    if (!apiKey) throw new NotFoundError("api key not found");
-
     await prisma.apiKey.delete({
         where: { id },
     });

@@ -21,11 +21,9 @@ export async function getAllSource(): Promise<GetAllSourceResponse[]> {
 }
 
 export async function getSourceDetail(id: number): Promise<GetSourceDetailResponse> {
-    const source = await prisma.source.findFirst({
+    const source = await prisma.source.findFirstOrThrow({
         where: { id },
     });
-
-    if (!source) throw new NotFoundError("source not found");
 
     return { ...omit(source, "createdAt", "updatedAt"), createdAt: source.createdAt.toISOString() };
 }
@@ -58,12 +56,6 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
 }
 
 export async function updateSource(id: number, payload: UpdateSourceRequest): Promise<UpdateSourceResponse> {
-    const source = await prisma.source.findFirst({
-        where: { id },
-    });
-
-    if (!source) throw new NotFoundError("source not found");
-
     const updatedSource = await prisma.source.update({
         where: { id },
         data: payload,
@@ -73,12 +65,6 @@ export async function updateSource(id: number, payload: UpdateSourceRequest): Pr
 }
 
 export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
-    const source = await prisma.source.findFirst({
-        where: { id },
-    });
-
-    if (!source) throw new NotFoundError("source not found");
-
     await prisma.$transaction(async (tx) => {
         await tx.source.delete({
             where: { id },

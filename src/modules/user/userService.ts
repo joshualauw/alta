@@ -12,11 +12,9 @@ import { UserJwtPayload } from "@/types/UserJwtPayload";
 import { omit, pick } from "@/utils/mapper";
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findUniqueOrThrow({
         where: { email: payload.email },
     });
-
-    if (!user) throw new NotFoundError("user not found");
 
     const isPasswordValid = await bcrypt.compare(payload.password, user.password);
     if (!isPasswordValid) throw new UnauthorizedError("invalid credentials");
@@ -55,11 +53,9 @@ export async function createUser(payload: CreateUserRequest): Promise<CreateUser
 }
 
 export async function updateUser(payload: UpdateUserRequest): Promise<UpdateUserResponse> {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findUniqueOrThrow({
         where: { email: payload.email },
     });
-
-    if (!user) throw new NotFoundError("user not found");
 
     const updateArgs: UserUpdateInput = { ...payload };
 
@@ -79,12 +75,7 @@ export async function updateUser(payload: UpdateUserRequest): Promise<UpdateUser
 }
 
 export async function deleteUser(id: number, currentUser: UserJwtPayload): Promise<DeleteUserResponse> {
-    const user = await prisma.user.findFirst({
-        where: { id },
-    });
-
-    if (!user) throw new NotFoundError("user not found");
-    if (user.id == currentUser.id) throw new ForbiddenError("cannot self delete");
+    if (id == currentUser.id) throw new ForbiddenError("cannot self delete");
 
     await prisma.user.delete({
         where: { id },
