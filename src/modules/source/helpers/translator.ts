@@ -1,0 +1,40 @@
+import { openai } from "@/lib/openai";
+
+export async function getAnswerFromChunks(chunks: string[], question: string): Promise<string> {
+    if (chunks.length === 0) {
+        return "I apologize, but I could not find any relevant information in the documents to answer your question.";
+    }
+
+    const context = chunks.join("\n---\n");
+
+    const systemPrompt = `
+        You are an expert Q&A assistant for a Retrieval-Augmented Generation (RAG) system.
+        Your task is to synthesize a single, concise, and helpful answer to the user's question.
+
+        RULES:
+        1. Use ONLY the provided context snippets below to answer the question.
+        2. If the answer cannot be fully found in the provided context, you MUST state that you do not have enough information from the documents.
+        3. Do not introduce outside knowledge.
+        4. Maintain a professional and friendly tone.
+    `;
+
+    const userMessage = `
+        CONTEXT SNIPPETS:
+        ---
+        ${context}
+        ---
+        USER QUESTION: ${question}
+    `;
+    console.log(userMessage);
+
+    const completion = await openai.chat.completions.create({
+        model: "gpt-5-mini",
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userMessage },
+        ],
+        max_completion_tokens: 512,
+    });
+
+    return completion.choices[0].message.content?.trim() || "";
+}

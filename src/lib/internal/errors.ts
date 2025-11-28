@@ -12,6 +12,12 @@ export class ServiceError extends Error {
     }
 }
 
+export class InternalServerError extends ServiceError {
+    constructor(message: string) {
+        super(message, StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 export class UnauthorizedError extends ServiceError {
     constructor(message: string) {
         super(message, StatusCodes.UNAUTHORIZED);

@@ -5,9 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
+import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
+import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
-import { pick } from "@/utils/mapper";
+import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
+import { omit, pick } from "@/utils/mapper";
 
 export async function getAllSource(): Promise<GetAllSourceResponse[]> {
     const sources = await prisma.source.findMany();
@@ -17,9 +20,19 @@ export async function getAllSource(): Promise<GetAllSourceResponse[]> {
     }));
 }
 
+export async function getSourceDetail(id: number): Promise<GetSourceDetailResponse> {
+    const source = await prisma.source.findFirst({
+        where: { id },
+    });
+
+    if (!source) throw new NotFoundError("source not found");
+
+    return { ...omit(source, "createdAt", "updatedAt"), createdAt: source.createdAt.toISOString() };
+}
+
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
     const source = await prisma.$transaction(async (tx) => {
-        const source = await prisma.source.create({
+        const source = await tx.source.create({
             data: payload,
         });
 
@@ -66,9 +79,33 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
 
     if (!source) throw new NotFoundError("source not found");
 
-    await prisma.source.delete({
-        where: { id },
+    await prisma.$transaction(async (tx) => {
+        await tx.source.delete({
+            where: { id },
+        });
+
+        const index = pinecone.index(config.pinecone.indexName).namespace("alta");
+        await index.deleteMany({ source_id: { $eq: id } });
     });
 
     return { id };
+}
+
+export async function searchSource(payload: SearchSourceRequest): Promise<SearchSourceResponse> {
+    const index = pinecone.index(config.pinecone.indexName).namespace("alta");
+
+    const result = await index.searchRecords({
+        query: {
+            topK: 5,
+            inputs: { text: payload.question },
+            filter: { source_id: { $in: payload.sourceIds } },
+        },
+    });
+
+    const chunks = result.result.hits.filter((c) => c._score > 0.1);
+    const preparedChunks = chunks.sort((c) => (c.fields as any).chunk_number).map((c) => (c.fields as any).chunk_text);
+
+    const answer = await getAnswerFromChunks(preparedChunks, payload.question);
+
+    return { answer, references: chunks.map((c) => c._id) };
 }
