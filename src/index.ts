@@ -1,7 +1,8 @@
 import express from "express";
-import { commonConfig } from "@/config/commonConfig";
+import config from "@/config";
 import { errorHandler } from "@/middlewares/errorHandler";
 import apiKeyRoute from "@/modules/apiKey/apiKeyRoute";
+import sourceRoute from "@/modules/source/sourceRoute";
 import userRoute from "@/modules/user/userRoute";
 
 const app = express();
@@ -11,9 +12,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/user", userRoute);
 app.use("/api/apiKey", apiKeyRoute);
+app.use("/api/source", sourceRoute);
 
 app.use(errorHandler);
 
-app.listen(commonConfig.port, () => {
-    console.log(`Server running on http://localhost:${commonConfig.port}`);
+app.listen(config.port, () => {
+    console.log(`Server running on http://localhost:${config.port}`);
 });

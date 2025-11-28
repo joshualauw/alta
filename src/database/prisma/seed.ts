@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { commonConfig } from "@/config/commonConfig";
+import { commonConfig } from "@/config";
 import { prisma } from "@/lib/prisma";
 
 async function main() {

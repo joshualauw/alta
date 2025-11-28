@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { commonConfig } from "@/config/commonConfig";
+import config from "@/config";
 import { UserUpdateInput } from "@/database/generated/prisma/models";
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
@@ -22,8 +22,8 @@ export async function login(payload: LoginRequest): Promise<LoginResponse> {
     const isPasswordValid = await bcrypt.compare(payload.password, user.password);
     if (!isPasswordValid) throw new UnauthorizedError("invalid credentials");
 
-    const token = jwt.sign(omit(user, "password"), commonConfig.jwtSecret, {
-        expiresIn: commonConfig.jwtExpiresIn,
+    const token = jwt.sign(omit(user, "password"), config.jwtSecret, {
+        expiresIn: config.jwtExpiresIn,
     });
 
     return { ...pick(user, "id", "email", "name", "role"), token };

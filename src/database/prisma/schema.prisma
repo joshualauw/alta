@@ -40,3 +40,13 @@ model ApiKey {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
+
+model Source {
+  id      Int     @id @default(autoincrement())
+  name    String
+  content String
+  fileUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
