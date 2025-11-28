@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
-import { commonConfig } from "@/config";
+import config from "@/config";
 import { prisma } from "@/lib/prisma";
 
 async function main() {
-    const email = commonConfig.adminEmail;
-    const password = commonConfig.adminPassword;
+    const email = config.admin.email;
+    const password = config.admin.password;
 
     const hashed = await bcrypt.hash(password, 10);
 

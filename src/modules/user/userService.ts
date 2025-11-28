@@ -1,6 +1,4 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import config from "@/config";
 import { UserUpdateInput } from "@/database/generated/prisma/models";
 import { BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +7,7 @@ import { DeleteUserResponse } from "@/modules/user/dtos/deleteUserDto";
 import { GetAllUserResponse } from "@/modules/user/dtos/getAllUserDto";
 import { LoginRequest, LoginResponse } from "@/modules/user/dtos/loginDto";
 import { UpdateUserRequest, UpdateUserResponse } from "@/modules/user/dtos/updateUserDto";
+import { generateJwt } from "@/modules/user/helpers/generateJwt";
 import { UserJwtPayload } from "@/types/UserJwtPayload";
 import { omit, pick } from "@/utils/mapper";
 
@@ -22,11 +21,10 @@ export async function login(payload: LoginRequest): Promise<LoginResponse> {
     const isPasswordValid = await bcrypt.compare(payload.password, user.password);
     if (!isPasswordValid) throw new UnauthorizedError("invalid credentials");
 
-    const token = jwt.sign(omit(user, "password"), config.jwtSecret, {
-        expiresIn: config.jwtExpiresIn,
-    });
+    const userPayload: UserJwtPayload = pick(user, "id", "email", "name", "role", "isActive");
+    const token = await generateJwt(userPayload);
 
-    return { ...pick(user, "id", "email", "name", "role"), token };
+    return { ...omit(userPayload, "isActive"), token };
 }
 
 export async function getAllUser(): Promise<GetAllUserResponse[]> {

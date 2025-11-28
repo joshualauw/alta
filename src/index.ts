@@ -16,6 +16,6 @@ app.use("/api/source", sourceRoute);
 
 app.use(errorHandler);
 
-app.listen(config.port, () => {
+app.listen(config.port, async () => {
     console.log(`Server running on http://localhost:${config.port}`);
 });

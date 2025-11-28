@@ -1,9 +1,12 @@
+import config from "@/config";
 import { NotFoundError } from "@/lib/internal/errors";
+import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
+import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
 import { pick } from "@/utils/mapper";
 
 export async function getAllSource(): Promise<GetAllSourceResponse[]> {
@@ -15,8 +18,27 @@ export async function getAllSource(): Promise<GetAllSourceResponse[]> {
 }
 
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
-    const source = await prisma.source.create({
-        data: payload,
+    const source = await prisma.$transaction(async (tx) => {
+        const source = await prisma.source.create({
+            data: payload,
+        });
+
+        const cleanedText = cleanText(payload.content);
+        const chunks = await chunkText(cleanedText);
+
+        const index = pinecone.index(config.pinecone.indexName).namespace("alta");
+        const records = chunks.map((c, i) => ({
+            _id: `source${source.id}#chunk${i}`,
+            chunk_text: c,
+            chunk_number: i,
+            source_id: source.id,
+            source_name: source.name,
+            created_at: new Date().toISOString(),
+        }));
+
+        await index.upsertRecords(records);
+
+        return source;
     });
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };

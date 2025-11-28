@@ -16,7 +16,7 @@ export function authorize(adminOnly: boolean = true) {
 
             const token = authHeader.split(" ")[1];
 
-            const decoded = jwt.verify(token, config.jwtSecret);
+            const decoded = jwt.verify(token, config.jwt.secret);
             req.user = decoded as UserJwtPayload;
 
             if (adminOnly && req.user.role != "ADMIN") {
