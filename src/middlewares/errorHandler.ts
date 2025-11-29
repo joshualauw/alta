@@ -19,7 +19,7 @@ export function errorHandler(err: unknown, req: Request, res: Response, _: NextF
             case "P2025":
                 return apiResponse.error(res, "record not found", StatusCodes.NOT_FOUND);
             case "P2003":
-                return apiResponse.error(res, "invalid reference", StatusCodes.BAD_REQUEST);
+                return apiResponse.error(res, "invalid foreign key reference", StatusCodes.BAD_REQUEST);
             default:
                 return apiResponse.error(res, "database error", StatusCodes.INTERNAL_SERVER_ERROR);
         }

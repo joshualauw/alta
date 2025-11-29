@@ -1,4 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import {
+    ChangeSourceGroupRequest, ChangeSourceGroupResponse
+} from "@/modules/group/dtos/changeSourceGroupDto";
 import { CreateGroupRequest, CreateGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { DeleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { GetAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
@@ -36,4 +39,13 @@ export async function deleteGroup(id: number): Promise<DeleteGroupResponse> {
     });
 
     return { id };
+}
+
+export async function changeSourceGroup(payload: ChangeSourceGroupRequest): Promise<ChangeSourceGroupResponse> {
+    await prisma.source.update({
+        where: { id: payload.sourceId },
+        data: { groupId: payload.targetGroupId }
+    });
+
+    return { id: payload.targetGroupId };
 }
