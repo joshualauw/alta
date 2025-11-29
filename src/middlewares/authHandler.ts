@@ -4,13 +4,11 @@ import config from "@/config";
 import { apiResponse } from "@/utils/apiResponse";
 
 export function authorize(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
+    const apiKey = req.headers["x-api-key"];
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!apiKey) {
         return apiResponse.error(res, "unauthorized access", StatusCodes.UNAUTHORIZED);
     }
-
-    const apiKey = authHeader.split(" ")[1];
 
     if (apiKey != config.alta.apiKey) {
         return apiResponse.error(res, "unauthorized access", StatusCodes.UNAUTHORIZED);
