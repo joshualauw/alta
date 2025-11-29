@@ -25,6 +25,7 @@ export function authorize(adminOnly: boolean = true) {
 
             next();
         } catch (err) {
+            console.error(err);
             return apiResponse.error(res, "invalid or expired token", StatusCodes.UNAUTHORIZED);
         }
     };

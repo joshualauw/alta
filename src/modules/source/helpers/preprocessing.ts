@@ -3,7 +3,7 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 400,
     chunkOverlap: 40,
-    separators: [". ", "\n\n", "\n", " ", ""],
+    separators: [". ", "\n\n", "\n", " ", ""]
 });
 
 export function cleanText(rawText: string) {
@@ -12,7 +12,6 @@ export function cleanText(rawText: string) {
         .replace(/\r\n/g, "\n") // unify line breaks
         .replace(/\n{2,}/g, "\n\n") // max 1 newline (preserve paragraph)
         .replace(/\.{2,}/g, ".") // remove extra dots
-        .replace(/[^\x00-\x7F]+/g, "") // optional: remove non-ASCII
         .replace(/[*_]{1,2}([^*_]+)[*_]{1,2}/g, "$1") // remove **bold**, *italic*, etc
         .replace(/`{1,3}([^`]+)`{1,3}/g, "$1") // remove inline or fenced code
         .replace(/^#+\s?/gm, "") // strip markdown headers

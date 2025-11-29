@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClientValidationError } from "@/database/generated/prisma/internal/prismaNamespace";
 import { ServiceError } from "@/lib/internal/errors";
 import { apiResponse } from "@/utils/apiResponse";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 
-export function errorHandler(err: unknown, req: Request, res: Response, next: NextFunction) {
+export function errorHandler(err: unknown, req: Request, res: Response) {
     console.error(err);
 
     if (err instanceof ServiceError) {

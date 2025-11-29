@@ -1,5 +1,4 @@
 import config from "@/config";
-import { NotFoundError } from "@/lib/internal/errors";
 import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
@@ -10,19 +9,20 @@ import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
 import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
+import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { omit, pick } from "@/utils/mapper";
 
 export async function getAllSource(): Promise<GetAllSourceResponse[]> {
     const sources = await prisma.source.findMany();
 
     return sources.map((s) => ({
-        ...pick(s, "id", "name", "fileUrl", "createdAt"),
+        ...pick(s, "id", "name", "fileUrl", "createdAt")
     }));
 }
 
 export async function getSourceDetail(id: number): Promise<GetSourceDetailResponse> {
     const source = await prisma.source.findFirstOrThrow({
-        where: { id },
+        where: { id }
     });
 
     return { ...omit(source, "createdAt", "updatedAt"), createdAt: source.createdAt.toISOString() };
@@ -31,21 +31,24 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
     const source = await prisma.$transaction(async (tx) => {
         const source = await tx.source.create({
-            data: payload,
+            data: payload
         });
 
         const cleanedText = cleanText(payload.content);
         const chunks = await chunkText(cleanedText);
 
         const index = pinecone.index(config.pinecone.indexName).namespace("alta");
-        const records = chunks.map((c, i) => ({
-            _id: `source${source.id}#chunk${i}`,
-            chunk_text: c,
-            chunk_number: i,
-            source_id: source.id,
-            source_name: source.name,
-            created_at: new Date().toISOString(),
-        }));
+
+        const records = chunks.map((c, i) => {
+            const metadata: SourceMetadata = {
+                chunk_text: c,
+                chunk_number: i,
+                source_id: source.id,
+                source_name: source.name,
+                created_at: new Date().toISOString()
+            };
+            return { _id: `source${source.id}#chunk${i}`, ...metadata };
+        });
 
         await index.upsertRecords(records);
 
@@ -58,7 +61,7 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
 export async function updateSource(id: number, payload: UpdateSourceRequest): Promise<UpdateSourceResponse> {
     const updatedSource = await prisma.source.update({
         where: { id },
-        data: payload,
+        data: payload
     });
 
     return { ...pick(updatedSource, "id", "name"), updatedAt: updatedSource.updatedAt.toISOString() };
@@ -67,7 +70,7 @@ export async function updateSource(id: number, payload: UpdateSourceRequest): Pr
 export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
     await prisma.$transaction(async (tx) => {
         await tx.source.delete({
-            where: { id },
+            where: { id }
         });
 
         const index = pinecone.index(config.pinecone.indexName).namespace("alta");
@@ -84,12 +87,14 @@ export async function searchSource(payload: SearchSourceRequest): Promise<Search
         query: {
             topK: 5,
             inputs: { text: payload.question },
-            filter: { source_id: { $in: payload.sourceIds } },
-        },
+            filter: { source_id: { $in: payload.sourceIds } }
+        }
     });
 
     const chunks = result.result.hits.filter((c) => c._score > 0.1);
-    const preparedChunks = chunks.sort((c) => (c.fields as any).chunk_number).map((c) => (c.fields as any).chunk_text);
+    const preparedChunks = chunks
+        .sort((c) => (c.fields as SourceMetadata).chunk_number)
+        .map((c) => (c.fields as SourceMetadata).chunk_text);
 
     const answer = await getAnswerFromChunks(preparedChunks, payload.question);
 

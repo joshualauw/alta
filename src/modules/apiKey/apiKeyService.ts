@@ -1,4 +1,3 @@
-import { NotFoundError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
 import { CreateApiKeyRequest, CreateApiKeyResponse } from "@/modules/apiKey/dtos/createApiKeyDto";
 import { DeleteApiKeyResponse } from "@/modules/apiKey/dtos/deleteApiKeyDto";
