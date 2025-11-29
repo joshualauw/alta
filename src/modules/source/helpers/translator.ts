@@ -26,7 +26,6 @@ export async function getAnswerFromChunks(chunks: string[], question: string): P
         ---
         USER QUESTION: ${question}
     `;
-    console.log(userMessage);
 
     const completion = await openai.chat.completions.create({
         model: config.rag.translateModel,
@@ -34,7 +33,7 @@ export async function getAnswerFromChunks(chunks: string[], question: string): P
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
         ],
-        max_completion_tokens: 512
+        max_completion_tokens: config.rag.maxTokens
     });
 
     return completion.choices[0].message.content?.trim() || "";

@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { ResponsesModel } from "openai/resources/shared";
 
 dotenv.config();
 
@@ -24,7 +25,8 @@ export default {
         topK: 10,
         topN: 3,
         minSimilarity: 0.1,
+        maxTokens: 512,
         rerankModel: "bge-reranker-v2-m3",
-        translateModel: "gpt-5-mini"
+        translateModel: "gpt-5-mini" as ResponsesModel
     }
 };
