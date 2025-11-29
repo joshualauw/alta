@@ -13,7 +13,7 @@ const FilterOperatorSchema = z.union([Eq, Ne, In, Nin, Gt, Gte, Lt, Lte]);
 
 export const searchSourceRequest = z.object({
     question: z.string(),
-    topK: z.number().min(1, "minimum is 1").max(20, "maximum is 20").optional(),
+    rerank: z.boolean().optional().default(false),
     filters: z.record(z.string(), FilterOperatorSchema).optional()
 });
 

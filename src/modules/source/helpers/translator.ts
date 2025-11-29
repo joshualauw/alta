@@ -1,3 +1,4 @@
+import config from "@/config";
 import { openai } from "@/lib/openai";
 
 export async function getAnswerFromChunks(chunks: string[], question: string): Promise<string> {
@@ -28,12 +29,12 @@ export async function getAnswerFromChunks(chunks: string[], question: string): P
     console.log(userMessage);
 
     const completion = await openai.chat.completions.create({
-        model: "gpt-5-mini",
+        model: config.rag.translateModel,
         messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: userMessage },
+            { role: "user", content: userMessage }
         ],
-        max_completion_tokens: 512,
+        max_completion_tokens: 512
     });
 
     return completion.choices[0].message.content?.trim() || "";

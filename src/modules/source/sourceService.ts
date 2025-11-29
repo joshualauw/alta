@@ -12,6 +12,7 @@ import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
 import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { pick } from "@/utils/mapper";
+import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
@@ -108,15 +109,25 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
 export async function searchSource(payload: SearchSourceRequest): Promise<SearchSourceResponse> {
     const index = pinecone.index(config.pinecone.indexName).namespace("alta");
 
-    const result = await index.searchRecords({
+    const options: SearchRecordsOptions = {
         query: {
-            topK: payload.topK ? payload.topK : config.rag.search.topK,
+            topK: config.rag.topK,
             inputs: { text: payload.question },
             filter: payload.filters
         }
-    });
+    };
 
-    const chunks = result.result.hits.filter((c) => c._score > config.rag.search.minSimilarity);
+    if (payload.rerank) {
+        options.rerank = {
+            model: config.rag.rerankModel,
+            rankFields: ["chunk_text"],
+            topN: config.rag.topN
+        };
+    }
+
+    const result = await index.searchRecords(options);
+
+    const chunks = result.result.hits.filter((c) => c._score > config.rag.minSimilarity);
 
     const preparedChunks = chunks
         .sort((c) => (c.fields as SourceMetadata).chunk_number)

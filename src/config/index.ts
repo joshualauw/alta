@@ -19,13 +19,12 @@ export default {
         apiKey: process.env.OPENAI_API_KEY || ""
     },
     rag: {
-        create: {
-            chunkSize: 400,
-            chunkOverlap: 40
-        },
-        search: {
-            topK: 5,
-            minSimilarity: 0.1
-        }
+        chunkSplitSize: 400,
+        chunkSplitOverlap: 40,
+        topK: 10,
+        topN: 3,
+        minSimilarity: 0.1,
+        rerankModel: "bge-reranker-v2-m3",
+        translateModel: "gpt-5-mini"
     }
 };
