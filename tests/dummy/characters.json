@@ -1,0 +1,112 @@
+[
+    {
+        "name": "Diluc",
+        "content": "Diluc is the current owner of the Dawn Winery and a well-respected noble in Mondstadt. He is a man of few words and maintains a distant, serious demeanor, often working behind the scenes as the 'Darknight Hero.' Despite his aristocratic status, he is deeply committed to protecting the city, fighting off threats with his powerful Pyro abilities and greatsword. He holds a strong disdain for the Knights of Favonius due to a past incident, preferring to handle matters independently.",
+        "metadata": {
+            "type": "character",
+            "rarity": 5,
+            "element": "pyro",
+            "weapon": "claymore",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Venti",
+        "content": "Venti is a free-spirited bard who loves singing, drinking, and traveling across Teyvat. He is secretly Barbatos, the Anemo Archon and God of Freedom, though he rarely discloses this fact. He typically takes a cheerful and mischievous approach to life, using his divine powers sparingly to preserve the freedom of his people. Despite his playful nature, he is one of the oldest beings in Teyvat and carries the weight of history.",
+        "metadata": {
+            "type": "character",
+            "rarity": 5,
+            "element": "anemo",
+            "weapon": "bow",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Raiden Shogun",
+        "content": "The Raiden Shogun is the mighty ruler of Inazuma, representing the ideal of 'Eternity' as the Electro Archon. She is a powerful, emotionless puppet created by the original Electro Archon, Ei, to maintain the nation's isolation and unwavering pursuit of stability. Her presence is formidable, and she enforces her will with swift, overwhelming Electro power and her signature polearm and drawn sword. She embodies a cold, unwavering perfection that contrasts with the turbulent nature of the Electro element.",
+        "metadata": {
+            "type": "character",
+            "rarity": 5,
+            "element": "electro",
+            "weapon": "polearm",
+            "nation": "inazuma"
+        }
+    },
+    {
+        "name": "Nahida",
+        "content": "Nahida is the current Dendro Archon, also known as Lesser Lord Kusanali, and is revered by the people of Sumeru. She is the youngest of the Seven Archons, possessing a gentle and deeply insightful demeanor. Previously held captive within the Sanctuary of Surasthana, she has now begun to freely explore and heal her nation's connection to the Akasha system. Her wisdom is vast, and she uses her abilities to connect with minds and dreams to safeguard Sumeru.",
+        "metadata": {
+            "type": "character",
+            "rarity": 5,
+            "element": "dendro",
+            "weapon": "catalyst",
+            "nation": "sumeru"
+        }
+    },
+    {
+        "name": "Zhongli",
+        "content": "Zhongli is a consultant for the Wangsheng Funeral Parlor in Liyue, possessing an elegant and highly knowledgeable disposition. He is secretly the former Geo Archon, Morax, who chose to relinquish his divine duties and live among mortals. He has a deep appreciation for the history, culture, and traditions of Liyue, often speaking on obscure or ancient subjects with perfect recall. Though he is an all-powerful deity, he is comically bad at managing Mora and often requires others to pay his bills.",
+        "metadata": {
+            "type": "character",
+            "rarity": 5,
+            "element": "geo",
+            "weapon": "polearm",
+            "nation": "liyue"
+        }
+    },
+    {
+        "name": "Fischl",
+        "content": "Fischl von Luftschloss Narfidort is a strange, dramatic girl who works as an investigator for the Adventurers' Guild in Mondstadt. She constantly speaks in a convoluted, antiquated manner, claiming to be a princess from a realm called 'Immernachtreich.' Her Electro abilities are channeled through her loyal raven, Oz, who translates her theatrical speech into understandable terms. Despite her eccentricities, she is actually a highly capable investigator with a kind heart.",
+        "metadata": {
+            "type": "character",
+            "rarity": 4,
+            "element": "electro",
+            "weapon": "bow",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Xingqiu",
+        "content": "Xingqiu is the second son of the Guild Manager of the Feiyun Commerce Guild, a prominent Liyue business. He is a quiet, polite, and studious young man with a passion for ancient literature, martial arts, and reading chivalric novels. Though he presents himself as a refined gentleman, he secretly loves to play pranks on those around him. He is a master of the Guhua style of martial arts, utilizing powerful Hydro swordsmanship to protect Liyue.",
+        "metadata": {
+            "type": "character",
+            "rarity": 4,
+            "element": "hydro",
+            "weapon": "sword",
+            "nation": "liyue"
+        }
+    },
+    {
+        "name": "Bennett",
+        "content": "Bennett is a plucky, unlucky adventurer from Mondstadt who is the only active member of 'Benny's Adventure Team.' Despite his persistent streak of bad luck, which leads to everything from minor injuries to large-scale natural disasters, he maintains an incredibly optimistic and cheerful attitude. He dreams of having a grand adventure with a full team, but his bad luck usually drives new members away quickly. His Pyro vision allows him to brave dangerous situations, even if they often end poorly for him.",
+        "metadata": {
+            "type": "character",
+            "rarity": 4,
+            "element": "pyro",
+            "weapon": "sword",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Sucrose",
+        "content": "Sucrose is an alchemist specializing in bio-alchemy and an assistant to the Chief Alchemist, Albedo, within the Knights of Favonius. She is shy, soft-spoken, and often overwhelmed by social interactions, preferring to spend her time in her laboratory. Her primary goal is to increase the variety of flora in the world, and she conducts extensive, often eccentric, experiments to understand life. She wields her Anemo abilities to manipulate her compounds and perfect her alchemical work.",
+        "metadata": {
+            "type": "character",
+            "rarity": 4,
+            "element": "anemo",
+            "weapon": "catalyst",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Chongyun",
+        "content": "Chongyun is a young exorcist hailing from Liyue who inherited the unique talent of having too much Yang (positive) energy in his body. This excess energy naturally repels spirits and monsters, meaning he rarely ever encounters a ghost he can actually exorcise, which is a major point of frustration for him. To combat his innate heat, he must constantly consume cold foods and maintain a calm, reserved demeanor to keep the Yang energy from causing a manic outburst. He uses his Cryo vision and Claymore in hopes of one day successfully performing a true exorcism.",
+        "metadata": {
+            "type": "character",
+            "rarity": 4,
+            "element": "cryo",
+            "weapon": "claymore",
+            "nation": "liyue"
+        }
+    }
+]

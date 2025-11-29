@@ -1,0 +1,82 @@
+[
+    {
+        "name": "Liyue Harbor",
+        "content": "Liyue Harbor is the largest city in Teyvat and the main commercial hub of the nation. It is famed for its stunning architecture, built into the mountainside, and its bustling docks, which handle maritime trade across the continent. The city is overseen by the Liyue Qixing and hosts the annual Rite of Descension, a tradition centered around the Geo Archon, Rex Lapis. The harbor serves as the heart of Liyue's rich culture and economic prosperity.",
+        "metadata": {
+            "type": "location",
+            "nation": "Liyue"
+        }
+    },
+    {
+        "name": "Wangshu Inn",
+        "content": "Wangshu Inn is a massive wooden structure built atop a gargantuan stone pillar rising from the Dihua Marsh. It serves as a vital rest stop for travelers and merchants moving between Liyue Harbor and Mondstadt. This inn is most famous for its stunning panoramic views of the surrounding wetlands and its permanent resident, the Vigilant Yaksha, Xiao. The top floor features an open-air restaurant and balcony, often shrouded in mist.",
+        "metadata": {
+            "type": "location",
+            "nation": "liyue"
+        }
+    },
+    {
+        "name": "Mondstadt (City)",
+        "content": "The City of Mondstadt, known as the 'City of Freedom,' sits on an island in the middle of Cider Lake. It is ruled by the Knights of Favonius and is dedicated to the Anemo Archon, Barbatos, who values the liberty of its people. The city is famous for its wind-swept plains, its iconic towering statues, and the cheerful, relaxed nature of its inhabitants. Its architecture is characterized by stone walls and European-style buildings with red roofs.",
+        "metadata": {
+            "type": "location",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Dragonspine",
+        "content": "Dragonspine is a massive, perennially snow-covered mountain range located south of Mondstadt. It is a harsh, treacherous environment dominated by the 'Sheer Cold' mechanic that constantly drains a traveler's warmth. The mountain's center holds the remains of a fallen Skyfrost Nail and the powerful, corrupted energy of a dragon named Durin. Adventurers brave its challenges for ancient secrets, valuable resources, and the ruins of the ancient civilization of Sal Vindagnyr.",
+        "metadata": {
+            "type": "location",
+            "nation": "mondstadt"
+        }
+    },
+    {
+        "name": "Inazuma City (Tenshukaku)",
+        "content": "Inazuma City is the capital of the Electro Archon's nation, located on Narukami Island. Its most defining feature is the majestic Tenshukaku, the grand palace and official residence of the Raiden Shogun. The city reflects the nation's historical isolation, featuring traditional Japanese-style architecture and fortified structures. The surrounding areas include sacred sites like the Grand Narukami Shrine, which stands atop a tall mountain and is home to the mighty Sakura Tree.",
+        "metadata": {
+            "type": "location",
+            "nation": "inazuma"
+        }
+    },
+    {
+        "name": "Watatsumi Island",
+        "content": "Watatsumi Island is a unique, permanently dark island within Inazuma known for its stunning underwater-themed landscape and glowing corals. It is the center of worship for the serpent god Orobaxi and is home to a unique culture centered around the Sangonomiya Shrine. The island's core is the Sangonomiya, a giant, vibrant seashell structure where the island's sovereign, Sangonomiya Kokomi, resides. Unlike the main islands, Watatsumi retains a lush, vibrant environment despite the Electro Archon's rule.",
+        "metadata": {
+            "type": "location",
+            "nation": "inazuma"
+        }
+    },
+    {
+        "name": "Sumeru City",
+        "content": "Sumeru City is the intellectual heart of the Dendro Archon's nation, built partially within the hollowed-out base of a massive, ancient tree. It is the home of the Sumeru Akademiya, the world's foremost authority on all academic subjects and the nation's true governing body. The city's structure is distinct, featuring a lower level built into the canopy and a sprawling upper level supported by the tree itself. It is a hub for scholars, researchers, and students who value knowledge above all else.",
+        "metadata": {
+            "type": "location",
+            "nation": "sumeru"
+        }
+    },
+    {
+        "name": "Aaru Village",
+        "content": "Aaru Village is a secluded settlement in the vast, arid desert region of Sumeru. It serves as a refuge and a community for those who live in the desert, often housing exiles or those disconnected from the Akademiya's influence. The village is built into the base of a canyon, providing natural shelter from the harsh desert elements. Despite its isolation, it is a key cultural and social point, often featured in regional stories and quests.",
+        "metadata": {
+            "type": "location",
+            "nation": "sumeru"
+        }
+    },
+    {
+        "name": "Fontaine Research Institute of Kinetic Energy Engineering",
+        "content": "This institute is a primary research facility located high above the Court of Fontaine, dedicated to the study of kinetic energy and mechanical devices. It is managed by scientists and engineers who push the boundaries of technology, often leading to spectacular and sometimes unstable experiments. The floating nature of the main facility and its various annexed research stations represent Fontaine's cutting-edge status in hydro-powered technology. The area is currently a hub of complex environmental and engineering puzzles.",
+        "metadata": {
+            "type": "location",
+            "nation": "fontaine"
+        }
+    },
+    {
+        "name": "The Fortress of Meropide",
+        "content": "The Fortress of Meropide is the submerged, penal institution and manufacturing hub located beneath the main body of water in Fontaine. This massive, self-sustaining industrial complex houses Fontaine's criminals and debtors, who work tirelessly to contribute to the nation's economy. While officially a prison, it has developed its own internal society, currency, and strict social structure overseen by its administrator. Travel here requires specialized access, as it is completely isolated from the surface world.",
+        "metadata": {
+            "type": "location",
+            "nation": "fontaine"
+        }
+    }
+]
