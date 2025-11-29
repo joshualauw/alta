@@ -19,8 +19,8 @@ async function main() {
             email,
             name: "admin",
             password: hashed,
-            role: "ADMIN",
-        },
+            role: "ADMIN"
+        }
     });
 
     console.log("Admin created");
