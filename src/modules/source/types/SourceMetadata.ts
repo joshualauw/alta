@@ -4,4 +4,6 @@ export interface SourceMetadata {
     source_id: number;
     source_name: string;
     created_at: string;
+
+    [key: string]: unknown;
 }

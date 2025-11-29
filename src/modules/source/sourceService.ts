@@ -1,5 +1,5 @@
 import config from "@/config";
-import { SourceWhereInput } from "@/database/generated/prisma/models";
+import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
 import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
@@ -12,6 +12,7 @@ import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
 import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { pick } from "@/utils/mapper";
+import { JsonObject } from "@prisma/client/runtime/client";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
     const filters: SourceWhereInput = {};
@@ -48,9 +49,14 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
 
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
     const source = await prisma.$transaction(async (tx) => {
-        const source = await tx.source.create({
-            data: payload
-        });
+        const { metadata, ...rest } = payload;
+        const data: SourceCreateInput = { ...rest };
+
+        if (metadata) {
+            data.metadata = metadata as JsonObject;
+        }
+
+        const source = await tx.source.create({ data });
 
         const cleanedText = cleanText(payload.content);
         const chunks = await chunkText(cleanedText);
@@ -63,7 +69,8 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
                 chunk_number: i,
                 source_id: source.id,
                 source_name: source.name,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                ...payload.metadata
             };
             return { _id: `source${source.id}#chunk${i}`, ...metadata };
         });
@@ -103,13 +110,14 @@ export async function searchSource(payload: SearchSourceRequest): Promise<Search
 
     const result = await index.searchRecords({
         query: {
-            topK: 5,
+            topK: payload.topK ? payload.topK : config.rag.search.topK,
             inputs: { text: payload.question },
-            filter: { source_id: { $in: payload.sourceIds } }
+            filter: payload.filters
         }
     });
 
-    const chunks = result.result.hits.filter((c) => c._score > 0.1);
+    const chunks = result.result.hits.filter((c) => c._score > config.rag.search.minSimilarity);
+
     const preparedChunks = chunks
         .sort((c) => (c.fields as SourceMetadata).chunk_number)
         .map((c) => (c.fields as SourceMetadata).chunk_text);

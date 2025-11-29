@@ -17,5 +17,15 @@ export default {
     },
     openai: {
         apiKey: process.env.OPENAI_API_KEY || ""
+    },
+    rag: {
+        create: {
+            chunkSize: 400,
+            chunkOverlap: 40
+        },
+        search: {
+            topK: 5,
+            minSimilarity: 0.1
+        }
     }
 };

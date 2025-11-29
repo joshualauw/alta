@@ -1,8 +1,9 @@
+import config from "@/config";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 
 const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 400,
-    chunkOverlap: 40,
+    chunkSize: config.rag.create.chunkSize,
+    chunkOverlap: config.rag.create.chunkOverlap,
     separators: [". ", "\n\n", "\n", " ", ""]
 });
 
