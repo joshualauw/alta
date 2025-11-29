@@ -10,22 +10,33 @@ import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos
 import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
 import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
-import { omit, pick } from "@/utils/mapper";
+import { pick } from "@/utils/mapper";
 
 export async function getAllSource(): Promise<GetAllSourceResponse[]> {
-    const sources = await prisma.source.findMany();
+    const sources = await prisma.source.findMany({
+        include: { group: true }
+    });
 
     return sources.map((s) => ({
-        ...pick(s, "id", "name", "fileUrl", "createdAt")
+        ...pick(s, "id", "name", "fileUrl"),
+        groupId: s.groupId,
+        groupName: s.group?.name ?? null,
+        createdAt: s.createdAt.toISOString()
     }));
 }
 
 export async function getSourceDetail(id: number): Promise<GetSourceDetailResponse> {
     const source = await prisma.source.findFirstOrThrow({
-        where: { id }
+        where: { id },
+        include: { group: true }
     });
 
-    return { ...omit(source, "createdAt", "updatedAt"), createdAt: source.createdAt.toISOString() };
+    return {
+        ...pick(source, "id", "name", "content", "fileUrl"),
+        groupId: source.groupId,
+        groupName: source.group?.name ?? null,
+        createdAt: source.createdAt.toISOString()
+    };
 }
 
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
