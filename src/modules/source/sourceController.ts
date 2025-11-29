@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import { CreateSourceRequest } from "@/modules/source/dtos/createSourceDto";
+import { GetAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceService from "@/modules/source/sourceService";
 import { apiResponse } from "@/utils/apiResponse";
 
-export async function getAllSource(req: Request, res: Response) {
-    const result = await sourceService.getAllSource();
+export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
+    const result = await sourceService.getAllSource(req.query);
     return apiResponse.success(res, result, "get all source succesful");
 }
 

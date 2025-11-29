@@ -1,9 +1,10 @@
 import config from "@/config";
+import { SourceWhereInput } from "@/database/generated/prisma/models";
 import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
-import { GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
+import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
@@ -12,8 +13,14 @@ import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { pick } from "@/utils/mapper";
 
-export async function getAllSource(): Promise<GetAllSourceResponse[]> {
+export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
+    const filters: SourceWhereInput = {};
+    if (query.groupId) {
+        filters.groupId = Number(query.groupId);
+    }
+
     const sources = await prisma.source.findMany({
+        where: filters,
         include: { group: true }
     });
 
