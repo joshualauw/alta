@@ -8,9 +8,8 @@ export default {
     database: {
         url: process.env.DATABASE_URL || ""
     },
-    admin: {
-        email: process.env.ALTA_ADMIN_EMAIL || "admin@mail.com",
-        password: process.env.ALTA_ADMIN_PASSWORD || "123456"
+    alta: {
+        apiKey: process.env.ALTA_API_KEY || ""
     },
     pinecone: {
         apiKey: process.env.PINECONE_API_KEY || "",
@@ -18,9 +17,5 @@ export default {
     },
     openai: {
         apiKey: process.env.OPENAI_API_KEY || ""
-    },
-    jwt: {
-        secret: process.env.JWT_SECRET || "123456",
-        expiresIn: process.env.JWT_EXPIRES_IN ? Number(process.env.JWT_EXPIRES_IN) : 3600
     }
 };

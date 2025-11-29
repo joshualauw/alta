@@ -8,10 +8,10 @@ import * as groupController from "@/modules/group/groupController";
 
 const router = Router();
 
-router.get("/getAll", authorize(false), groupController.getAllGroup);
-router.post("/create", authorize(), validate(createGroupRequest), groupController.createGroup);
-router.put("/update/:id", authorize(), validate(updateGroupRequest), groupController.updateGroup);
-router.delete("/delete/:id", authorize(), groupController.deleteGroup);
-router.patch("/changeSourceGroup", authorize(), validate(changeSourceGroupRequest), groupController.changeSourceGroup);
+router.get("/getAll", authorize, groupController.getAllGroup);
+router.post("/create", authorize, validate(createGroupRequest), groupController.createGroup);
+router.put("/update/:id", authorize, validate(updateGroupRequest), groupController.updateGroup);
+router.delete("/delete/:id", authorize, groupController.deleteGroup);
+router.patch("/changeSourceGroup", authorize, validate(changeSourceGroupRequest), groupController.changeSourceGroup);
 
 export default router;
