@@ -2,7 +2,7 @@ import z from "zod";
 import { Source } from "@/database/generated/prisma/client";
 
 export const updateSourceRequest = z.object({
-    name: z.string({ error: "is required" }).min(1, "must not be empty").optional(),
+    name: z.string().min(1).optional()
 });
 
 export type UpdateSourceRequest = z.infer<typeof updateSourceRequest>;

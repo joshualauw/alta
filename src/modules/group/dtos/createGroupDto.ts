@@ -2,8 +2,8 @@ import z from "zod";
 import { Group } from "@/database/generated/prisma/client";
 
 export const createGroupRequest = z.object({
-    name: z.string({ error: "is required" }).min(1, "must not be empty"),
-    colorCode: z.string({ error: "is required" }).min(1, "must not be empty")
+    name: z.string().min(1),
+    colorCode: z.string().min(1)
 });
 
 export type CreateGroupRequest = z.infer<typeof createGroupRequest>;
