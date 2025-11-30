@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { validate } from "@/middlewares/zodValidator";
-import { createBulkSourceRequest } from "@/modules/source/dtos/createBulkSourceDto";
-import { createSourceRequest } from "@/modules/source/dtos/createSourceDto";
+import { createBulkSourceQuery, createBulkSourceRequest } from "@/modules/source/dtos/createBulkSourceDto";
+import { createSourceQuery, createSourceRequest } from "@/modules/source/dtos/createSourceDto";
 import { getAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
-import { searchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
+import { searchSourceQuery, searchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceController from "@/modules/source/sourceController";
 
@@ -11,10 +11,25 @@ const router = Router();
 
 router.get("/getAll", validate(getAllSourceQuery, "query"), sourceController.getAllSource);
 router.get("/getDetail/:id", sourceController.getSourceDetail);
-router.post("/create", validate(createSourceRequest), sourceController.createSource);
-router.post("/create/bulk", validate(createBulkSourceRequest), sourceController.createBulkSource);
+router.post(
+    "/create",
+    validate(createSourceQuery, "query"),
+    validate(createSourceRequest),
+    sourceController.createSource
+);
+router.post(
+    "/create/bulk",
+    validate(createBulkSourceQuery, "query"),
+    validate(createBulkSourceRequest),
+    sourceController.createBulkSource
+);
 router.put("/update/:id", validate(updateSourceRequest), sourceController.updateSource);
 router.delete("/delete/:id", sourceController.deleteSource);
-router.post("/search", validate(searchSourceRequest), sourceController.searchSource);
+router.post(
+    "/search",
+    validate(searchSourceQuery, "query"),
+    validate(searchSourceRequest),
+    sourceController.searchSource
+);
 
 export default router;

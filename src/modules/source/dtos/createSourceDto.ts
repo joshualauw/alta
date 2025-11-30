@@ -13,3 +13,9 @@ export type CreateSourceRequest = z.infer<typeof createSourceRequest>;
 export type CreateSourceResponse = Pick<Source, "id" | "name"> & {
     createdAt: string;
 };
+
+export const createSourceQuery = z.object({
+    preset: z.string().optional()
+});
+
+export type CreateSourceQuery = z.infer<typeof createSourceQuery>;

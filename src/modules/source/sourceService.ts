@@ -2,14 +2,19 @@ import { v4 as uuidv4 } from "uuid";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
 import { sourceQueue } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
-import { CreateBulkSourceRequest, CreateBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
-import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
+import {
+    CreateBulkSourceQuery,
+    CreateBulkSourceRequest,
+    CreateBulkSourceResponse
+} from "@/modules/source/dtos/createBulkSourceDto";
+import { CreateSourceQuery, CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
-import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
+import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import * as ragService from "@/modules/source/services/ragService";
+import { IngestJob } from "@/modules/source/types/IngestJob";
 import { pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 
@@ -57,12 +62,19 @@ function getCreateSourcePayload(payload: CreateSourceRequest) {
     return data;
 }
 
-export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
+export async function createSource(
+    payload: CreateSourceRequest,
+    query: CreateSourceQuery
+): Promise<CreateSourceResponse> {
     const data = getCreateSourcePayload(payload);
+
+    const preset = await prisma.preset.findFirstOrThrow({
+        where: { code: query.preset ? query.preset : "default" }
+    });
 
     const source = await prisma.$transaction(async (tx) => {
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-        await ragService.ingest(source);
+        await ragService.ingest(source, preset);
 
         return source;
     });
@@ -70,8 +82,11 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
 
-export async function createBulkSource(payload: CreateBulkSourceRequest): Promise<CreateBulkSourceResponse> {
-    const sources = payload.sources.map((p) => {
+export async function createBulkSource(
+    payload: CreateBulkSourceRequest,
+    query: CreateBulkSourceQuery
+): Promise<CreateBulkSourceResponse> {
+    const sources = payload.map((p) => {
         const data = getCreateSourcePayload(p);
         data.jobId = uuidv4();
 
@@ -84,7 +99,10 @@ export async function createBulkSource(payload: CreateBulkSourceRequest): Promis
         await sourceQueue.addBulk(
             sources.map((s) => ({
                 name: `job_${s.jobId}`,
-                data: s.jobId
+                data: {
+                    jobId: s.jobId,
+                    preset: query.preset
+                } as IngestJob
             }))
         );
     });
@@ -112,6 +130,13 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
     return { id };
 }
 
-export async function searchSource(payload: SearchSourceRequest): Promise<SearchSourceResponse> {
-    return await ragService.search(payload);
+export async function searchSource(
+    payload: SearchSourceRequest,
+    query: SearchSourceQuery
+): Promise<SearchSourceResponse> {
+    const preset = await prisma.preset.findFirstOrThrow({
+        where: { code: query.preset ? query.preset : "default" }
+    });
+
+    return await ragService.search(payload, query.rerank, preset);
 }

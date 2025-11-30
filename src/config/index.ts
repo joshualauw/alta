@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-import { ResponsesModel } from "openai/resources/shared";
 
 dotenv.config();
 
@@ -26,14 +25,6 @@ export default {
     },
     //TODO: get config values from database
     rag: {
-        namespace: "alta",
-        chunkSplitSize: 400,
-        chunkSplitOverlap: 40,
-        topK: 10,
-        topN: 3,
-        minSimilarity: 0.1,
-        maxTokens: 512,
-        rerankModel: "bge-reranker-v2-m3",
-        responsesModel: "gpt-5-mini" as ResponsesModel
+        namespace: "alta"
     }
 };

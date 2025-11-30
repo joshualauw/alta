@@ -19,6 +19,23 @@ enum SourceStatus {
   DONE
 }
 
+model Preset {
+  id                 Int    @id @default(autoincrement())
+  name               String
+  code               String @unique
+  chunkSplitSize     Int
+  chunkSplitOverlap  Int
+  topK               Int
+  topN               Int
+  minSimilarityScore Float
+  maxResponseTokens  Int
+  rerankModel        String
+  responsesModel     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 model Source {
   id           Int          @id @default(autoincrement())
   groupId      Int?

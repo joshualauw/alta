@@ -12,8 +12,7 @@ const Lte = z.object({ $lte: z.number() }).strict();
 const FilterOperatorSchema = z.union([Eq, Ne, In, Nin, Gt, Gte, Lt, Lte]);
 
 export const searchSourceRequest = z.object({
-    question: z.string(),
-    rerank: z.boolean().optional().default(false),
+    question: z.string().min(1),
     filters: z.record(z.string(), FilterOperatorSchema).optional()
 });
 
@@ -23,3 +22,10 @@ export interface SearchSourceResponse {
     answer: string;
     references: string[];
 }
+
+export const searchSourceQuery = z.object({
+    rerank: z.boolean().optional().default(false),
+    preset: z.string().optional()
+});
+
+export type SearchSourceQuery = z.infer<typeof searchSourceQuery>;
