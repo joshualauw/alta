@@ -8,6 +8,4 @@ export const connection = new IORedis({
     maxRetriesPerRequest: null
 });
 
-export const QUEUE_NAME = "sources";
-
-export const sourceQueue = new Queue(QUEUE_NAME, { connection });
+export const sourceQueue = new Queue(config.redis.queueName, { connection });

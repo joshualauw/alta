@@ -1,14 +1,11 @@
 import { Job, Worker } from "bullmq";
 import config from "@/config";
-import { connection, QUEUE_NAME } from "@/lib/bullmq";
-import { pinecone } from "@/lib/pinecone";
+import { connection } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
-import * as ragService from "@/modules/source/ragService";
-import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
-import { JsonObject } from "@prisma/client/runtime/client";
+import * as ragService from "@/modules/source/services/ragService";
 
 const worker = new Worker(
-    QUEUE_NAME,
+    config.redis.queueName,
     async (job: Job<string>) => {
         console.log("processing source started", job.id);
 
@@ -16,26 +13,7 @@ const worker = new Worker(
             where: { jobId: job.data }
         });
 
-        const cleanedText = ragService.cleanText(source.content);
-        const chunks = await ragService.chunkText(cleanedText);
-
-        const index = pinecone.index(config.pinecone.indexName).namespace("alta");
-
-        const records = chunks.map((c, i) => {
-            const idx = i + 1;
-            const metadata: SourceMetadata = {
-                chunk_text: c,
-                chunk_number: idx,
-                source_id: source.id,
-                source_name: source.name,
-                created_at: new Date().toISOString(),
-                ...(source.metadata as JsonObject)
-            };
-
-            return { _id: `source${source.id}#chunk${idx}`, ...metadata };
-        });
-
-        await index.upsertRecords(records);
+        await ragService.ingest(source);
     },
     { connection }
 );

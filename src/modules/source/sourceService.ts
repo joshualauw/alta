@@ -1,8 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import config from "@/config";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
 import { sourceQueue } from "@/lib/bullmq";
-import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
 import { CreateBulkSourceRequest, CreateBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
 import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
@@ -11,10 +9,8 @@ import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/g
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
-import * as ragService from "@/modules/source/ragService";
-import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
+import * as ragService from "@/modules/source/services/ragService";
 import { pick } from "@/utils/mapper";
-import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
@@ -50,7 +46,7 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
     };
 }
 
-export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
+function getCreateSourcePayload(payload: CreateSourceRequest) {
     const { metadata, ...rest } = payload;
     const data: SourceCreateInput = { ...rest };
 
@@ -58,29 +54,15 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
         data.metadata = metadata as JsonObject;
     }
 
+    return data;
+}
+
+export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
+    const data = getCreateSourcePayload(payload);
+
     const source = await prisma.$transaction(async (tx) => {
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-
-        const cleanedText = ragService.cleanText(payload.content);
-        const chunks = await ragService.chunkText(cleanedText);
-
-        const index = pinecone.index(config.pinecone.indexName).namespace("alta");
-
-        const records = chunks.map((c, i) => {
-            const idx = i + 1;
-            const metadata: SourceMetadata = {
-                chunk_text: c,
-                chunk_number: idx,
-                source_id: source.id,
-                source_name: source.name,
-                created_at: new Date().toISOString(),
-                ...payload.metadata
-            };
-
-            return { _id: `source${source.id}#chunk${idx}`, ...metadata };
-        });
-
-        await index.upsertRecords(records);
+        await ragService.ingest(source);
 
         return source;
     });
@@ -90,12 +72,7 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
 
 export async function createBulkSource(payload: CreateBulkSourceRequest): Promise<CreateBulkSourceResponse> {
     const sources = payload.sources.map((p) => {
-        const { metadata, ...rest } = p;
-        const data: SourceCreateInput = { ...rest };
-
-        if (metadata) {
-            data.metadata = metadata as JsonObject;
-        }
+        const data = getCreateSourcePayload(p);
         data.jobId = uuidv4();
 
         return data;
@@ -129,42 +106,12 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
         await tx.source.delete({
             where: { id }
         });
-
-        const index = pinecone.index(config.pinecone.indexName).namespace("alta");
-        await index.deleteMany({ source_id: { $eq: id } });
+        await ragService.remove(id);
     });
 
     return { id };
 }
 
 export async function searchSource(payload: SearchSourceRequest): Promise<SearchSourceResponse> {
-    const index = pinecone.index(config.pinecone.indexName).namespace("alta");
-
-    const options: SearchRecordsOptions = {
-        query: {
-            topK: config.rag.topK,
-            inputs: { text: payload.question },
-            filter: payload.filters
-        }
-    };
-
-    if (payload.rerank) {
-        options.rerank = {
-            model: config.rag.rerankModel,
-            rankFields: ["chunk_text"],
-            topN: config.rag.topN
-        };
-    }
-
-    const result = await index.searchRecords(options);
-
-    const chunks = result.result.hits.filter((c) => c._score > config.rag.minSimilarity);
-
-    const preparedChunks = chunks
-        .sort((c) => (c.fields as SourceMetadata).chunk_number)
-        .map((c) => (c.fields as SourceMetadata).chunk_text);
-
-    const answer = await ragService.getAnswerFromChunks(preparedChunks, payload.question);
-
-    return { answer, references: chunks.map((c) => c._id) };
+    return await ragService.search(payload);
 }

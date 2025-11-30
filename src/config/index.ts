@@ -11,7 +11,8 @@ export default {
     },
     redis: {
         host: process.env.REDIS_HOST || "localhost",
-        port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379
+        port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
+        queueName: "sources"
     },
     alta: {
         apiKey: process.env.ALTA_API_KEY || "alta_"
@@ -25,6 +26,7 @@ export default {
     },
     //TODO: get config values from database
     rag: {
+        namespace: "alta",
         chunkSplitSize: 400,
         chunkSplitOverlap: 40,
         topK: 10,
