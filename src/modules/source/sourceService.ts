@@ -65,15 +65,16 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
         const index = pinecone.index(config.pinecone.indexName).namespace("alta");
 
         const records = chunks.map((c, i) => {
+            const idx = i + 1;
             const metadata: SourceMetadata = {
                 chunk_text: c,
-                chunk_number: i,
+                chunk_number: idx,
                 source_id: source.id,
                 source_name: source.name,
                 created_at: new Date().toISOString(),
                 ...payload.metadata
             };
-            return { _id: `source${source.id}#chunk${i}`, ...metadata };
+            return { _id: `source${source.id}#chunk${idx}`, ...metadata };
         });
 
         await index.upsertRecords(records);
