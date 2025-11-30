@@ -13,13 +13,3 @@ export type CreateSourceRequest = z.infer<typeof createSourceRequest>;
 export type CreateSourceResponse = Pick<Source, "id" | "name"> & {
     createdAt: string;
 };
-
-export const createBulkSourceRequest = z.object({
-    sources: z.array(createSourceRequest).min(1)
-});
-
-export type CreateBulkSourceRequest = z.infer<typeof createBulkSourceRequest>;
-
-export interface CreateBulkSourceResponse {
-    createdAt: string;
-}

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { CreateBulkSourceRequest, CreateSourceRequest } from "@/modules/source/dtos/createSourceDto";
+import { CreateBulkSourceRequest } from "@/modules/source/dtos/createBulkSourceDto";
+import { CreateSourceRequest } from "@/modules/source/dtos/createSourceDto";
 import { GetAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";

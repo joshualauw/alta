@@ -4,19 +4,14 @@ import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma
 import { sourceQueue } from "@/lib/bullmq";
 import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
-import {
-    CreateBulkSourceRequest,
-    CreateBulkSourceResponse,
-    CreateSourceRequest,
-    CreateSourceResponse
-} from "@/modules/source/dtos/createSourceDto";
+import { CreateBulkSourceRequest, CreateBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
+import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
-import { chunkText, cleanText } from "@/modules/source/helpers/preprocessing";
-import { getAnswerFromChunks } from "@/modules/source/helpers/translator";
+import * as ragService from "@/modules/source/ragService";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { pick } from "@/utils/mapper";
 import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
@@ -66,8 +61,8 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
 
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
 
-        const cleanedText = cleanText(payload.content);
-        const chunks = await chunkText(cleanedText);
+        const cleanedText = ragService.cleanText(payload.content);
+        const chunks = await ragService.chunkText(cleanedText);
 
         const index = pinecone.index(config.pinecone.indexName).namespace("alta");
 
@@ -81,6 +76,7 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
                 created_at: new Date().toISOString(),
                 ...payload.metadata
             };
+
             return { _id: `source${source.id}#chunk${idx}`, ...metadata };
         });
 
@@ -167,7 +163,7 @@ export async function searchSource(payload: SearchSourceRequest): Promise<Search
         .sort((c) => (c.fields as SourceMetadata).chunk_number)
         .map((c) => (c.fields as SourceMetadata).chunk_text);
 
-    const answer = await getAnswerFromChunks(preparedChunks, payload.question);
+    const answer = await ragService.getAnswerFromChunks(preparedChunks, payload.question);
 
     return { answer, references: chunks.map((c) => c._id) };
 }

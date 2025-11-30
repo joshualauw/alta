@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { validate } from "@/middlewares/zodValidator";
-import { createBulkSourceRequest, createSourceRequest } from "@/modules/source/dtos/createSourceDto";
+import { createBulkSourceRequest } from "@/modules/source/dtos/createBulkSourceDto";
+import { createSourceRequest } from "@/modules/source/dtos/createSourceDto";
 import { getAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { searchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
