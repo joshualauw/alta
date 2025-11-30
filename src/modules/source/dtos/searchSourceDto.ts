@@ -24,7 +24,7 @@ export interface SearchSourceResponse {
 }
 
 export const searchSourceQuery = z.object({
-    rerank: z.boolean().optional().default(false),
+    rerank: z.enum(["0", "1"]).optional(),
     preset: z.string().optional()
 });
 

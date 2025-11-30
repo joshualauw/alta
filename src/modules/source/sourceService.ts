@@ -14,7 +14,6 @@ import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDt
 import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import * as ragService from "@/modules/source/services/ragService";
-import { IngestJob } from "@/modules/source/types/IngestJob";
 import { pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 
@@ -86,6 +85,10 @@ export async function createBulkSource(
     payload: CreateBulkSourceRequest,
     query: CreateBulkSourceQuery
 ): Promise<CreateBulkSourceResponse> {
+    await prisma.preset.findFirstOrThrow({
+        where: { code: query.preset ? query.preset : "default" }
+    });
+
     const sources = payload.map((p) => {
         const data = getCreateSourcePayload(p);
         data.jobId = uuidv4();
@@ -100,9 +103,9 @@ export async function createBulkSource(
             sources.map((s) => ({
                 name: `job_${s.jobId}`,
                 data: {
-                    jobId: s.jobId,
+                    jobId: s.jobId!,
                     preset: query.preset
-                } as IngestJob
+                }
             }))
         );
     });
@@ -138,5 +141,10 @@ export async function searchSource(
         where: { code: query.preset ? query.preset : "default" }
     });
 
-    return await ragService.search(payload, query.rerank, preset);
+    let rerank = false;
+    if (query.rerank) {
+        rerank = Number(query.rerank) == 1;
+    }
+
+    return await ragService.search(payload, rerank, preset);
 }

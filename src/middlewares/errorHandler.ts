@@ -14,14 +14,20 @@ export function errorHandler(err: unknown, req: Request, res: Response, _: NextF
 
     if (err instanceof PrismaClientKnownRequestError) {
         switch (err.code) {
-            case "P2002":
-                return apiResponse.error(res, "duplicated value", StatusCodes.CONFLICT);
-            case "P2025":
-                return apiResponse.error(res, "record not found", StatusCodes.NOT_FOUND);
-            case "P2003":
-                return apiResponse.error(res, "invalid foreign key reference", StatusCodes.BAD_REQUEST);
+            case "P2002": {
+                const target = (err.meta?.target as string[] | undefined)?.join(", ") || "record";
+                return apiResponse.error(res, `duplicated value at ${target.toLowerCase()}`, StatusCodes.CONFLICT);
+            }
+            case "P2025": {
+                const modelName = err.meta?.modelName as string | undefined;
+                return apiResponse.error(res, `${modelName?.toLowerCase()} not found`, StatusCodes.NOT_FOUND);
+            }
+            case "P2003": {
+                const field = (err.meta?.field_name as string | undefined) || "foreign key";
+                return apiResponse.error(res, `invalid reference on field ${field}`, StatusCodes.BAD_REQUEST);
+            }
             default:
-                return apiResponse.error(res, "database error", StatusCodes.INTERNAL_SERVER_ERROR);
+                return apiResponse.error(res, "unhandler prisma error", StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
 
