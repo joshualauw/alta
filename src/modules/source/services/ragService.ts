@@ -67,7 +67,7 @@ async function getAnswerFromChunks(chunks: string[], question: string): Promise<
     `;
 
     const completion = await openai.chat.completions.create({
-        model: config.rag.translateModel,
+        model: config.rag.responsesModel,
         messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: userMessage }
@@ -122,13 +122,14 @@ export async function search(payload: SearchSourceRequest): Promise<SearchSource
 
     const result = await index.searchRecords(options);
 
-    const chunks = result.result.hits.filter((c) => c._score > config.rag.minSimilarity);
+    const chunks = payload.rerank
+        ? result.result.hits
+        : result.result.hits.filter((c) => c._score > config.rag.minSimilarity);
 
-    const preparedChunks = chunks
-        .sort((c) => (c.fields as SourceMetadata).chunk_number)
-        .map((c) => (c.fields as SourceMetadata).chunk_text);
-
-    const answer = await getAnswerFromChunks(preparedChunks, payload.question);
+    const answer = await getAnswerFromChunks(
+        chunks.map((c) => (c.fields as SourceMetadata).chunk_text),
+        payload.question
+    );
 
     return { answer, references: chunks.map((c) => c._id) };
 }

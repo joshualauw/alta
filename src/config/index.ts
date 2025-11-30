@@ -34,6 +34,6 @@ export default {
         minSimilarity: 0.1,
         maxTokens: 512,
         rerankModel: "bge-reranker-v2-m3",
-        translateModel: "gpt-5-mini" as ResponsesModel
+        responsesModel: "gpt-5-mini" as ResponsesModel
     }
 };
