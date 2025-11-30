@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateSourceRequest } from "@/modules/source/dtos/createSourceDto";
+import { CreateBulkSourceRequest, CreateSourceRequest } from "@/modules/source/dtos/createSourceDto";
 import { GetAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
@@ -19,6 +19,11 @@ export async function getSourceDetail(req: Request<{ id: string }>, res: Respons
 export async function createSource(req: Request<{}, {}, CreateSourceRequest>, res: Response) {
     const result = await sourceService.createSource(req.body);
     return apiResponse.success(res, result, "create source successful");
+}
+
+export async function createBulkSource(req: Request<{}, {}, CreateBulkSourceRequest>, res: Response) {
+    const result = await sourceService.createBulkSource(req.body);
+    return apiResponse.success(res, result, "create bulk source successful");
 }
 
 export async function updateSource(req: Request<{ id: string }, {}, UpdateSourceRequest>, res: Response) {

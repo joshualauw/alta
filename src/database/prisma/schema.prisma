@@ -13,13 +13,22 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SourceStatus {
+  PENDING
+  FAILED
+  DONE
+}
+
 model Source {
-  id       Int     @id @default(autoincrement())
-  groupId  Int?
-  name     String
-  content  String
-  fileUrl  String?
-  metadata Json?
+  id           Int          @id @default(autoincrement())
+  groupId      Int?
+  name         String
+  content      String
+  status       SourceStatus @default(PENDING)
+  statusReason String?
+  jobId        String?      @unique
+  fileUrl      String?
+  metadata     Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

@@ -4,21 +4,26 @@ import { ResponsesModel } from "openai/resources/shared";
 dotenv.config();
 
 export default {
-    port: process.env.PORT ? Number(process.env.PORT) : 3000,
+    port: process.env.PORT ? Number(process.env.PORT) : 3001,
     nodeEnv: process.env.NODE_ENV || "development",
     database: {
-        url: process.env.DATABASE_URL || ""
+        url: process.env.DATABASE_URL || "postgresql://postgres:123456@localhost:5433/alta"
+    },
+    redis: {
+        host: process.env.REDIS_HOST || "localhost",
+        port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379
     },
     alta: {
-        apiKey: process.env.ALTA_API_KEY || ""
+        apiKey: process.env.ALTA_API_KEY || "alta_"
     },
     pinecone: {
-        apiKey: process.env.PINECONE_API_KEY || "",
-        indexName: process.env.PINECONE_INDEX_NAME || ""
+        apiKey: process.env.PINECONE_API_KEY || "pcsk_",
+        indexName: process.env.PINECONE_INDEX_NAME || "alta"
     },
     openai: {
-        apiKey: process.env.OPENAI_API_KEY || ""
+        apiKey: process.env.OPENAI_API_KEY || "sk_"
     },
+    //TODO: get config values from database
     rag: {
         chunkSplitSize: 400,
         chunkSplitOverlap: 40,

@@ -1,8 +1,15 @@
+import { v4 as uuidv4 } from "uuid";
 import config from "@/config";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
+import { sourceQueue } from "@/lib/bullmq";
 import { pinecone } from "@/lib/pinecone";
 import { prisma } from "@/lib/prisma";
-import { CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
+import {
+    CreateBulkSourceRequest,
+    CreateBulkSourceResponse,
+    CreateSourceRequest,
+    CreateSourceResponse
+} from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
@@ -57,7 +64,7 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
             data.metadata = metadata as JsonObject;
         }
 
-        const source = await tx.source.create({ data });
+        const source = await tx.source.create({ data: { ...data, status: "DONE" } });
 
         const cleanedText = cleanText(payload.content);
         const chunks = await chunkText(cleanedText);
@@ -83,6 +90,32 @@ export async function createSource(payload: CreateSourceRequest): Promise<Create
     });
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
+}
+
+export async function createBulkSource(payload: CreateBulkSourceRequest): Promise<CreateBulkSourceResponse> {
+    const sources = payload.sources.map((p) => {
+        const { metadata, ...rest } = p;
+        const data: SourceCreateInput = { ...rest };
+
+        if (metadata) {
+            data.metadata = metadata as JsonObject;
+        }
+        data.jobId = uuidv4();
+
+        return data;
+    });
+
+    await prisma.$transaction(async (tx) => {
+        await tx.source.createMany({ data: sources });
+        await sourceQueue.addBulk(
+            sources.map((s) => ({
+                name: `job_${s.jobId}`,
+                data: s.jobId
+            }))
+        );
+    });
+
+    return { createdAt: new Date().toISOString() };
 }
 
 export async function updateSource(id: number, payload: UpdateSourceRequest): Promise<UpdateSourceResponse> {
