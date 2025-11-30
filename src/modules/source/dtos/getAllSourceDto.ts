@@ -7,7 +7,7 @@ export const getAllSourceQuery = z.object({
 
 export type GetAllSourceQuery = z.infer<typeof getAllSourceQuery>;
 
-export type GetAllSourceResponse = Pick<Source, "id" | "name" | "fileUrl" | "groupId"> & {
+export type GetAllSourceResponse = Pick<Source, "id" | "name" | "fileUrl" | "groupId" | "status"> & {
     createdAt: string;
     groupName: string | null;
 };

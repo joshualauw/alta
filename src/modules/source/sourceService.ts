@@ -29,7 +29,7 @@ export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSour
     });
 
     return sources.map((s) => ({
-        ...pick(s, "id", "name", "fileUrl"),
+        ...pick(s, "id", "name", "fileUrl", "status"),
         groupId: s.groupId,
         groupName: s.group?.name ?? null,
         createdAt: s.createdAt.toISOString()
@@ -43,7 +43,7 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
     });
 
     return {
-        ...pick(source, "id", "name", "content", "fileUrl"),
+        ...pick(source, "id", "name", "content", "fileUrl", "status", "statusReason"),
         groupId: source.groupId,
         groupName: source.group?.name ?? null,
         createdAt: source.createdAt.toISOString()
@@ -51,14 +51,14 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
 }
 
 export async function createSource(payload: CreateSourceRequest): Promise<CreateSourceResponse> {
+    const { metadata, ...rest } = payload;
+    const data: SourceCreateInput = { ...rest };
+
+    if (metadata) {
+        data.metadata = metadata as JsonObject;
+    }
+
     const source = await prisma.$transaction(async (tx) => {
-        const { metadata, ...rest } = payload;
-        const data: SourceCreateInput = { ...rest };
-
-        if (metadata) {
-            data.metadata = metadata as JsonObject;
-        }
-
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
 
         const cleanedText = ragService.cleanText(payload.content);
@@ -103,6 +103,7 @@ export async function createBulkSource(payload: CreateBulkSourceRequest): Promis
 
     await prisma.$transaction(async (tx) => {
         await tx.source.createMany({ data: sources });
+
         await sourceQueue.addBulk(
             sources.map((s) => ({
                 name: `job_${s.jobId}`,
