@@ -5,12 +5,12 @@
     "main": "index.js",
     "scripts": {
         "app:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
-        "source-worker:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/modules/source/sourceWorker.ts",
-        "search-log-worker:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/modules/analytics/searchLogWorker.ts",
+        "source-worker:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/modules/source/workers/sourceWorker.ts",
+        "search-log-worker:dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/modules/analytics/workers/searchLogWorker.ts",
         "build": "tsc && tsc-alias",
         "app:start": "node dist/index.js",
-        "source-worker:start": "node dist/modules/source/sourceWorker.js",
-        "search-log-worker:start": "node dist/modules/source/searchLogWorker.js",
+        "source-worker:start": "node dist/modules/source/workers/sourceWorker.js",
+        "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
         "lint": "eslint",
         "lint:fix": "eslint --fix"
     },

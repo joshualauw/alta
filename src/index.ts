@@ -5,6 +5,7 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import groupRoute from "@/modules/group/groupRoute";
 import presetRoute from "@/modules/preset/presetRoute";
 import sourceRoute from "@/modules/source/sourceRoute";
+import analyticsRoute from "@/modules/analytics/analyticsRoute";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(authorize);
 app.use("/api/source", sourceRoute);
 app.use("/api/group", groupRoute);
 app.use("/api/preset", presetRoute);
+app.use("/api/analytics", analyticsRoute);
 
 app.use(errorHandler);
 
