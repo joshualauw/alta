@@ -1,12 +1,11 @@
 import { Job, Worker } from "bullmq";
-import config from "@/config";
-import { connection } from "@/lib/bullmq";
+import { connection, SOURCE_QUEUE } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
 import * as ragService from "@/modules/source/services/ragService";
 import { IngestJob } from "@/modules/source/types/IngestJob";
 
 const worker = new Worker(
-    config.redis.queueName,
+    SOURCE_QUEUE,
     async (job: Job<IngestJob>) => {
         console.log("processing source started", job.id);
 

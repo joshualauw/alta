@@ -63,3 +63,21 @@ model Group {
 
   sources Source[]
 }
+
+model SearchLog {
+  id                 Int     @id @default(autoincrement())
+  question           String
+  answer             String
+  responseTimeMs     Float
+  searchOptions      Json
+  isRerank           Boolean
+  tone               String
+  metadataFilters    Json?
+  readUnitCost       Int
+  rerankUnitCost     Int?
+  embeddingTokenCost Int?
+  chunksRetrieved    Json[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}

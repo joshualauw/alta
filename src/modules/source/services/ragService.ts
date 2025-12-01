@@ -2,12 +2,13 @@ import config from "@/config";
 import { Preset, Source } from "@/database/generated/prisma/client";
 import { openai } from "@/lib/openai";
 import { pinecone } from "@/lib/pinecone";
-import { SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
+import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
+import { RagSearchResult } from "@/modules/source/types/RagSearchResult";
 
 function cleanText(rawText: string) {
     return rawText
@@ -114,7 +115,8 @@ export async function search(
     rerank: boolean,
     preset: Preset,
     tone: AnswerTone
-): Promise<SearchSourceResponse> {
+): Promise<RagSearchResult> {
+    const startTime = Date.now();
     const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
 
     const options: SearchRecordsOptions = {
@@ -135,7 +137,10 @@ export async function search(
 
     const result = await index.searchRecords(options);
 
-    const chunks = rerank ? result.result.hits : result.result.hits.filter((c) => c._score > preset.minSimilarityScore);
+    const { readUnits, rerankUnits, embedTotalTokens } = result.usage;
+    const { hits } = result.result;
+
+    const chunks = rerank ? hits : hits.filter((c) => c._score > preset.minSimilarityScore);
 
     const answer = await createAnswer(
         chunks.map((c) => (c.fields as SourceMetadata).chunk_text),
@@ -144,7 +149,17 @@ export async function search(
         tone
     );
 
-    return { answer, references: chunks.map((c) => c._id) };
+    const endTime = Date.now();
+    const responseTimeMs = endTime - startTime;
+
+    return {
+        answer,
+        readUnitCost: readUnits,
+        rerankUnitCost: rerankUnits,
+        embeddingTokenCost: embedTotalTokens,
+        responseTimeMs,
+        chunks: hits
+    };
 }
 
 export async function remove(sourceId: number) {

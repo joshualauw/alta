@@ -2,6 +2,7 @@ import { Queue } from "bullmq";
 import IORedis from "ioredis";
 import config from "@/config";
 import { IngestJob } from "@/modules/source/types/IngestJob";
+import { SearchLogJob } from "@/modules/analytics/types/SearchLogJob";
 
 export const connection = new IORedis({
     host: config.redis.host,
@@ -9,4 +10,8 @@ export const connection = new IORedis({
     maxRetriesPerRequest: null
 });
 
-export const sourceQueue = new Queue<IngestJob>(config.redis.queueName, { connection });
+export const SOURCE_QUEUE = "source";
+export const SEARCH_LOG_QUEUE = "search_log";
+
+export const sourceQueue = new Queue<IngestJob>(SOURCE_QUEUE, { connection });
+export const searchLogQueue = new Queue<SearchLogJob>(SEARCH_LOG_QUEUE, { connection });

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
-import { sourceQueue } from "@/lib/bullmq";
+import { searchLogQueue, sourceQueue } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
 import {
     CreateBulkSourceQuery,
@@ -14,7 +14,7 @@ import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDt
 import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import * as ragService from "@/modules/source/services/ragService";
-import { pick } from "@/utils/mapper";
+import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
 
@@ -142,15 +142,22 @@ export async function searchSource(
         where: { code: query.preset ? query.preset : "default" }
     });
 
-    let rerank = false;
-    if (query.rerank) {
-        rerank = Number(query.rerank) == 1;
-    }
+    const rerank = query.rerank ? Number(query.rerank) == 1 : false;
+    const tone: AnswerTone = query.tone ? query.tone : "normal";
 
-    let tone: AnswerTone = "normal";
-    if (query.tone) {
-        tone = query.tone;
-    }
+    const result = await ragService.search(payload, rerank, preset, tone);
 
-    return await ragService.search(payload, rerank, preset, tone);
+    const jobId = uuidv4();
+
+    await searchLogQueue.add(`job_${jobId}`, {
+        ...pick(result, "answer", "responseTimeMs", "readUnitCost", "rerankUnitCost", "embeddingTokenCost"),
+        question: payload.question,
+        isRerank: rerank,
+        tone: tone,
+        searchOptions: omit(preset, "id", "name", "code", "createdAt", "updatedAt"),
+        metadataFilters: payload.filters,
+        chunksRetrieved: result.chunks.map((c) => ({ _id: c._id, _score: c._score }))
+    });
+
+    return { answer: result.answer, references: result.chunks.map((c) => c._id) };
 }

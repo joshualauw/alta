@@ -10,8 +10,7 @@ export default {
     },
     redis: {
         host: process.env.REDIS_HOST || "localhost",
-        port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
-        queueName: "sources"
+        port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379
     },
     alta: {
         apiKey: process.env.ALTA_API_KEY || "alta_"

@@ -17,6 +17,8 @@ const Or = z.object({ $or: z.array(FieldComparisonSchema).min(1) }).strict();
 
 const FilterSchema = z.union([FieldComparisonSchema, And, Or]);
 
+export type FilterSchema = z.infer<typeof FilterSchema>;
+
 export const searchSourceRequest = z.object({
     question: z.string().min(1),
     filters: FilterSchema.optional()
@@ -32,7 +34,7 @@ export interface SearchSourceResponse {
 export const searchSourceQuery = z.object({
     rerank: z.enum(["0", "1"]).optional(),
     preset: z.string().optional(),
-    tone: z.enum(["normal", "concise", "explanatory", "formal"]).optional(),
+    tone: z.enum(["normal", "concise", "explanatory", "formal"]).optional()
 });
 
 export type SearchSourceQuery = z.infer<typeof searchSourceQuery>;
