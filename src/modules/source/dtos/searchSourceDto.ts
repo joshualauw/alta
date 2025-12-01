@@ -9,11 +9,17 @@ const Gte = z.object({ $gte: z.number() }).strict();
 const Lt = z.object({ $lt: z.number() }).strict();
 const Lte = z.object({ $lte: z.number() }).strict();
 
-const FilterOperatorSchema = z.union([Eq, Ne, In, Nin, Gt, Gte, Lt, Lte]);
+const ComparisonOperatorSchema = z.union([Eq, Ne, In, Nin, Gt, Gte, Lt, Lte]);
+const FieldComparisonSchema = z.record(z.string(), ComparisonOperatorSchema);
+
+const And = z.object({ $and: z.array(FieldComparisonSchema).min(1) }).strict();
+const Or = z.object({ $or: z.array(FieldComparisonSchema).min(1) }).strict();
+
+const FilterSchema = z.union([FieldComparisonSchema, And, Or]);
 
 export const searchSourceRequest = z.object({
     question: z.string().min(1),
-    filters: z.record(z.string(), FilterOperatorSchema).optional()
+    filters: FilterSchema.optional()
 });
 
 export type SearchSourceRequest = z.infer<typeof searchSourceRequest>;
