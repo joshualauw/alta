@@ -2,6 +2,7 @@ import { Job, Worker } from "bullmq";
 import { connection, SEARCH_LOG_QUEUE } from "@/lib/bullmq";
 import { SearchLogJob } from "@/modules/analytics/types/SearchLogJob";
 import { prisma } from "@/lib/prisma";
+import { InputJsonValue } from "@prisma/client/runtime/client";
 
 const worker = new Worker(
     SEARCH_LOG_QUEUE,
@@ -9,7 +10,11 @@ const worker = new Worker(
         console.log("processing search log started", job.id);
 
         await prisma.searchLog.create({
-            data: job.data
+            data: {
+                ...job.data,
+                chunksRetrieved: job.data.chunksRetrieved as unknown as InputJsonValue[],
+                chunksReranked: job.data.chunksReranked as unknown as InputJsonValue[]
+            }
         });
     },
     { connection }

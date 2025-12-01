@@ -1,4 +1,5 @@
 export interface SourceMetadata {
+    id: string;
     chunk_text: string;
     chunk_number: number;
     source_id: number;

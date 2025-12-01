@@ -1,6 +1,6 @@
 import { Preset } from "@/database/generated/prisma/client";
 import { FilterSchema } from "@/modules/source/dtos/searchSourceDto";
-import { Hit } from "@pinecone-database/pinecone/dist/pinecone-generated-ts-fetch/db_data";
+import { ChunksReranked, ChunksRetrieved } from "@/modules/source/types/RagSearchResult";
 
 export interface SearchLogJob {
     question: string;
@@ -11,7 +11,8 @@ export interface SearchLogJob {
     rerankUnitCost?: number;
     readUnitCost: number;
     embeddingTokenCost?: number;
-    chunksRetrieved: Pick<Hit, "_id" | "_score">[];
+    chunksRetrieved: ChunksRetrieved[];
+    chunksReranked: ChunksReranked[];
     searchOptions: Omit<Preset, "id" | "name" | "code" | "createdAt" | "updatedAt">;
     metadataFilters?: FilterSchema;
 }

@@ -150,14 +150,14 @@ export async function searchSource(
     const jobId = uuidv4();
 
     await searchLogQueue.add(`job_${jobId}`, {
-        ...pick(result, "answer", "responseTimeMs", "readUnitCost", "rerankUnitCost", "embeddingTokenCost"),
         question: payload.question,
         isRerank: rerank,
         tone: tone,
         searchOptions: omit(preset, "id", "name", "code", "createdAt", "updatedAt"),
         metadataFilters: payload.filters,
-        chunksRetrieved: result.chunks.map((c) => ({ _id: c._id, _score: c._score }))
+        ...pick(result, "answer", "responseTimeMs", "readUnitCost", "rerankUnitCost", "embeddingTokenCost"),
+        ...pick(result, "chunksRetrieved", "chunksReranked")
     });
 
-    return { answer: result.answer, references: result.chunks.map((c) => c._id) };
+    return { answer: result.answer, references: result.chunksReferences };
 }

@@ -5,10 +5,9 @@ import { pinecone } from "@/lib/pinecone";
 import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
-import { RagSearchResult } from "@/modules/source/types/RagSearchResult";
+import { ChunksReranked, ChunksRetrieved, RagSearchResult } from "@/modules/source/types/RagSearchResult";
 
 function cleanText(rawText: string) {
     return rawText
@@ -95,7 +94,7 @@ export async function ingest(source: Source, preset: Preset) {
 
     const records = chunks.map((c, i) => {
         const idx = i + 1;
-        const metadata: SourceMetadata = {
+        const metadata: Partial<SourceMetadata> = {
             chunk_text: c,
             chunk_number: idx,
             source_id: source.id,
@@ -119,46 +118,67 @@ export async function search(
     const startTime = Date.now();
     const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
 
-    const options: SearchRecordsOptions = {
+    const result = await index.searchRecords({
         query: {
             topK: preset.topK,
             inputs: { text: payload.question },
             filter: payload.filters
         }
-    };
+    });
+
+    const filteredChunks = result.result.hits.filter((c) => c._score > preset.minSimilarityScore);
+    const chunksRetrieved = filteredChunks.map((c) => ({ id: c._id, similarityScore: c._score }));
+
+    let chunksContext: string[] = [];
+    let chunksReferences: string[] = [];
+    let chunksReranked: ChunksReranked[] = [];
+    let rerankUnits: number | undefined = undefined;
 
     if (rerank) {
-        options.rerank = {
-            model: preset.rerankModel,
-            rankFields: ["chunk_text"],
-            topN: preset.topN
-        };
+        const rerankResult = await pinecone.inference.rerank(
+            preset.rerankModel,
+            payload.question,
+            filteredChunks.map((c) => ({
+                id: c._id,
+                chunk_text: (c.fields as SourceMetadata).chunk_text
+            })),
+            {
+                rankFields: ["chunk_text"],
+                topN: preset.topN,
+                returnDocuments: true,
+                parameters: {
+                    truncate: "END"
+                }
+            }
+        );
+
+        rerankUnits = rerankResult.usage.rerankUnits;
+
+        chunksReranked = rerankResult.data.map((r) => ({
+            id: (r.document as SourceMetadata).id,
+            relevanceScore: r.score
+        }));
+        chunksContext = rerankResult.data.map((r) => (r.document as SourceMetadata).chunk_text);
+        chunksReferences = rerankResult.data.map((r) => (r.document as SourceMetadata).id);
+    } else {
+        chunksContext = filteredChunks.map((c) => (c.fields as SourceMetadata).chunk_text);
+        chunksReferences = filteredChunks.map((c) => c._id);
     }
 
-    const result = await index.searchRecords(options);
-
-    const { readUnits, rerankUnits, embedTotalTokens } = result.usage;
-    const { hits } = result.result;
-
-    const chunks = rerank ? hits : hits.filter((c) => c._score > preset.minSimilarityScore);
-
-    const answer = await createAnswer(
-        chunks.map((c) => (c.fields as SourceMetadata).chunk_text),
-        payload.question,
-        preset,
-        tone
-    );
+    const answer = await createAnswer(chunksContext, payload.question, preset, tone);
 
     const endTime = Date.now();
     const responseTimeMs = endTime - startTime;
 
     return {
         answer,
-        readUnitCost: readUnits,
+        readUnitCost: result.usage.readUnits,
+        embeddingTokenCost: result.usage.embedTotalTokens,
         rerankUnitCost: rerankUnits,
-        embeddingTokenCost: embedTotalTokens,
         responseTimeMs,
-        chunks: hits
+        chunksReranked,
+        chunksRetrieved,
+        chunksReferences
     };
 }
 
