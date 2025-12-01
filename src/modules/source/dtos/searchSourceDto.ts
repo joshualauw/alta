@@ -31,7 +31,8 @@ export interface SearchSourceResponse {
 
 export const searchSourceQuery = z.object({
     rerank: z.enum(["0", "1"]).optional(),
-    preset: z.string().optional()
+    preset: z.string().optional(),
+    tone: z.enum(["normal", "concise", "explanatory", "formal"]).optional(),
 });
 
 export type SearchSourceQuery = z.infer<typeof searchSourceQuery>;

@@ -7,6 +7,7 @@ import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { SearchRecordsOptions } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
+import { AnswerTone } from "@/modules/source/types/AnswerTone";
 
 function cleanText(rawText: string) {
     return rawText
@@ -40,7 +41,7 @@ async function chunkText(text: string, preset: Preset) {
     );
 }
 
-async function createAnswer(chunks: string[], question: string, preset: Preset): Promise<string> {
+async function createAnswer(chunks: string[], question: string, preset: Preset, tone: AnswerTone): Promise<string> {
     if (chunks.length === 0) {
         return "I apologize, but I could not find any relevant information in the documents to answer your question.";
     }
@@ -49,13 +50,20 @@ async function createAnswer(chunks: string[], question: string, preset: Preset):
 
     const systemPrompt = `
         You are an expert Q&A assistant for a Retrieval-Augmented Generation (RAG) system.
-        Your task is to synthesize a single, concise, and helpful answer to the user's question.
+        Your task is to synthesize helpful answer to the user's question.
 
         RULES:
         1. Use ONLY the provided context snippets below to answer the question.
         2. If the answer cannot be fully found in the provided context, you MUST state that you do not have enough information from the documents.
         3. Do not introduce outside knowledge.
-        4. Maintain a professional and friendly tone.
+        
+        TONE: ${tone}
+        The style of your answer must be dictated by the provided TONE above
+        1. normal: Maintain a professional, conversational, and friendly tone. Focus on clarity and directness. Use contractions and aim for a single, easy-to-read paragraph unless complexity requires more.
+        2. concise: Be extremely brief. Focus only on core facts and keywords. Use bullet points or numbered lists where possible to maximize density. Minimize transitional sentences and unnecessary words.
+        3. explanatory: Provide detailed, in-depth information. Explain the WHY and HOW. Use analogies or examples (if present in the context) to elaborate on concepts.
+        4. formal: Maintain a highly professional, academic, and objective tone. Avoid contractions and use precise, standardized terminology. Structure the response using clear, logical sections.
+        
     `;
 
     const userMessage = `
@@ -104,7 +112,8 @@ export async function ingest(source: Source, preset: Preset) {
 export async function search(
     payload: SearchSourceRequest,
     rerank: boolean,
-    preset: Preset
+    preset: Preset,
+    tone: AnswerTone
 ): Promise<SearchSourceResponse> {
     const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
 
@@ -131,7 +140,8 @@ export async function search(
     const answer = await createAnswer(
         chunks.map((c) => (c.fields as SourceMetadata).chunk_text),
         payload.question,
-        preset
+        preset,
+        tone
     );
 
     return { answer, references: chunks.map((c) => c._id) };

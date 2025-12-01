@@ -16,6 +16,7 @@ import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos
 import * as ragService from "@/modules/source/services/ragService";
 import { pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
+import { AnswerTone } from "@/modules/source/types/AnswerTone";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
     const filters: SourceWhereInput = {};
@@ -146,5 +147,10 @@ export async function searchSource(
         rerank = Number(query.rerank) == 1;
     }
 
-    return await ragService.search(payload, rerank, preset);
+    let tone: AnswerTone = "normal";
+    if (query.tone) {
+        tone = query.tone;
+    }
+
+    return await ragService.search(payload, rerank, preset, tone);
 }
