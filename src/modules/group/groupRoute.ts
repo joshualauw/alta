@@ -8,6 +8,7 @@ import * as groupController from "@/modules/group/groupController";
 const router = Router();
 
 router.get("/getAll", groupController.getAllGroup);
+router.get("/getDetail/:id", groupController.getGroupDetail);
 router.post("/create", validate(createGroupRequest), groupController.createGroup);
 router.put("/update/:id", validate(updateGroupRequest), groupController.updateGroup);
 router.delete("/delete/:id", groupController.deleteGroup);

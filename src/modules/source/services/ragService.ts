@@ -3,11 +3,11 @@ import { Preset, Source } from "@/database/generated/prisma/client";
 import { openai } from "@/lib/openai";
 import { pinecone } from "@/lib/pinecone";
 import { SearchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
+import { AnswerTone } from "@/modules/source/types/AnswerTone";
+import { ChunksReranked, RagSearchResult } from "@/modules/source/types/RagSearchResult";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { JsonObject } from "@prisma/client/runtime/client";
-import { AnswerTone } from "@/modules/source/types/AnswerTone";
-import { ChunksReranked, ChunksRetrieved, RagSearchResult } from "@/modules/source/types/RagSearchResult";
 
 function cleanText(rawText: string) {
     return rawText
