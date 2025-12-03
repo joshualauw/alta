@@ -2,10 +2,10 @@ import express from "express";
 import config from "@/config";
 import { authorize } from "@/middlewares/authHandler";
 import { errorHandler } from "@/middlewares/errorHandler";
+import analyticsRoute from "@/modules/analytics/analyticsRoute";
 import groupRoute from "@/modules/group/groupRoute";
 import presetRoute from "@/modules/preset/presetRoute";
 import sourceRoute from "@/modules/source/sourceRoute";
-import analyticsRoute from "@/modules/analytics/analyticsRoute";
 
 const app = express();
 
@@ -24,3 +24,5 @@ app.use(errorHandler);
 app.listen(config.port, () => {
     console.log(`Server running on http://localhost:${config.port}`);
 });
+
+export default app;
