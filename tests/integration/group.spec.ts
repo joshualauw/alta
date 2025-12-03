@@ -1,12 +1,15 @@
-import * as setup from "./setup";
+import "./setup";
 import request from "supertest";
 import app from "../../src/index";
+import { describe, it, expect } from "vitest";
+
+const API_KEY = process.env.ALTA_API_KEY || "";
 
 describe("Group API Integration Test", () => {
-    describe("POST /api/group/create", async () => {
+    describe("POST /api/group/create", () => {
         it("should create a new group", async () => {
-            const res = await request(app).set("x-api-key", setup.API_KEY).post("/api/group/create").send({
-                name: "Group #1",
+            const res = await request(app).post("/api/group/create").set("x-api-key", API_KEY).send({
+                name: "Group 1",
                 colorCode: "#ffffff"
             });
 
@@ -16,14 +19,14 @@ describe("Group API Integration Test", () => {
             expect(res.body.message).toBe("create group successful");
 
             expect(res.body.data).toHaveProperty("id");
-            expect(res.body.data.name).toBe("Genshin Impact");
+            expect(res.body.data.name).toBe("Group 1");
             expect(res.body.data.colorCode).toBe("#ffffff");
             expect(res.body.data).toHaveProperty("createdAt");
             expect(new Date(res.body.data.createdAt).toISOString()).toBe(res.body.data.createdAt);
         });
 
         it("should block empty body", async () => {
-            const res = await request(app).set("x-api-key", setup.API_KEY).post("/api/group/create").send({
+            const res = await request(app).post("/api/group/create").set("x-api-key", API_KEY).send({
                 name: "",
                 colorCode: ""
             });

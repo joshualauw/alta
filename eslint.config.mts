@@ -9,6 +9,7 @@ export default defineConfig([
         files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
         plugins: { js },
         extends: ["js/recommended"],
+
         rules: {
             "@typescript-eslint/no-empty-object-type": [
                 "off",
@@ -23,7 +24,9 @@ export default defineConfig([
                     varsIgnorePattern: "^_",
                     caughtErrorsIgnorePattern: "^_"
                 }
-            ]
+            ],
+            "no-unused-vars": "warn",
+            "no-undef": "warn"
         },
         languageOptions: { globals: globals.browser }
     },

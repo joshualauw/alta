@@ -13,7 +13,7 @@
         "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
         "lint": "eslint",
         "lint:fix": "eslint --fix",
-        "test": "ts-jest"
+        "test": "vitest"
     },
     "keywords": [],
     "author": "",
@@ -23,24 +23,23 @@
         "@testcontainers/postgresql": "^11.9.0",
         "@testcontainers/redis": "^11.9.0",
         "@types/express": "^5.0.5",
-        "@types/jest": "^30.0.0",
         "@types/node": "^24.10.1",
         "@types/pg": "^8.15.6",
         "@types/supertest": "^6.0.3",
         "eslint": "^9.39.1",
         "globals": "^16.5.0",
-        "jest": "^30.2.0",
         "prettier": "^3.7.2",
         "prisma": "^7.0.1",
         "supertest": "^7.1.4",
         "testcontainers": "^11.9.0",
-        "ts-jest": "^29.4.6",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
         "tsc-alias": "^1.8.16",
         "tsconfig-paths": "^4.2.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.48.0"
+        "typescript-eslint": "^8.48.0",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^4.0.15"
     },
     "dependencies": {
         "@langchain/textsplitters": "^1.0.1",

@@ -1,12 +1,13 @@
 {
     "compilerOptions": {
         "target": "es2023",
-        "module": "commonjs",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "isolatedModules": true,
         "rootDir": "src",
         "outDir": "dist",
         "strict": true,
         "esModuleInterop": true,
-        "resolveJsonModule": true,
         "baseUrl": "src",
         "paths": {
             "@/*": ["*"]

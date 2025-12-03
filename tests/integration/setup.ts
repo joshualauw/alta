@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import { afterAll, beforeAll } from "vitest";
 
 export interface PostgresConfig {
     uri: string;
@@ -18,7 +19,6 @@ export interface RedisConfig {
 
 export let postgresConfig: PostgresConfig;
 export let redisConfig: RedisConfig;
-export const API_KEY = process.env.ALTA_API_KEY;
 
 let pgContainer: StartedPostgreSqlContainer;
 let redisContainer: StartedRedisContainer;
@@ -56,11 +56,11 @@ beforeAll(async () => {
         host: redisContainer.getHost(),
         port: redisContainer.getPort()
     };
-});
+}, 30000);
 
 afterAll(async () => {
     await pgContainer.stop();
     await redisContainer.stop();
-});
+}, 30000);
 
 module.exports = {};
