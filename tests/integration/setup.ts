@@ -1,66 +1,35 @@
 import { execSync } from "child_process";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
-import { afterAll, beforeAll } from "vitest";
 
-export interface PostgresConfig {
-    uri: string;
-    host: string;
-    port: number;
-    user: string;
-    password: string;
-    database: string;
+declare global {
+    var pgContainer: StartedPostgreSqlContainer;
+    var redisContainer: StartedRedisContainer;
 }
 
-export interface RedisConfig {
-    host: string;
-    port: number;
-}
-
-export let postgresConfig: PostgresConfig;
-export let redisConfig: RedisConfig;
-
-let pgContainer: StartedPostgreSqlContainer;
-let redisContainer: StartedRedisContainer;
-
-beforeAll(async () => {
-    pgContainer = await new PostgreSqlContainer("postgres:15")
+export async function setup() {
+    globalThis.pgContainer = await new PostgreSqlContainer("postgres:15")
         .withDatabase("testdb")
-        .withUsername("postgres")
-        .withPassword("password")
+        .withUsername("test")
+        .withPassword("test")
         .start();
 
-    postgresConfig = {
-        uri: pgContainer.getConnectionUri(),
-        host: pgContainer.getHost(),
-        port: pgContainer.getPort(),
-        user: pgContainer.getUsername(),
-        password: pgContainer.getPassword(),
-        database: pgContainer.getDatabase()
-    };
+    process.env.DATABASE_URL = pgContainer.getConnectionUri();
 
-    const databaseUrl = pgContainer.getConnectionUri();
-    process.env.DATABASE_URL = databaseUrl;
+    execSync("npx prisma migrate deploy");
+    execSync("npx prisma db seed");
 
-    execSync("npx prisma migrate deploy", {
-        env: { ...process.env, DATABASE_URL: databaseUrl }
-    });
+    globalThis.redisContainer = await new RedisContainer("redis:7-alpine").start();
 
-    execSync("npx prisma db seed", {
-        env: { ...process.env }
-    });
+    process.env.REDIS_PORT = globalThis.redisContainer.getPort().toString();
+    process.env.REDIS_HOST = globalThis.redisContainer.getHost();
 
-    redisContainer = await new RedisContainer("redis:7-alpine").start();
+    console.log("testcontainer started");
+}
 
-    redisConfig = {
-        host: redisContainer.getHost(),
-        port: redisContainer.getPort()
-    };
-}, 30000);
+export async function teardown() {
+    await globalThis.pgContainer.stop();
+    await globalThis.redisContainer.stop();
 
-afterAll(async () => {
-    await pgContainer.stop();
-    await redisContainer.stop();
-}, 30000);
-
-module.exports = {};
+    console.log("testcontainer stopped");
+}

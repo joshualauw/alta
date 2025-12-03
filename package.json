@@ -13,7 +13,7 @@
         "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
         "lint": "eslint",
         "lint:fix": "eslint --fix",
-        "test": "vitest"
+        "test": "vitest run"
     },
     "keywords": [],
     "author": "",

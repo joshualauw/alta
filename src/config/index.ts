@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
 
 export default {
     port: process.env.PORT ? Number(process.env.PORT) : 3001,
@@ -22,7 +20,6 @@ export default {
     openai: {
         apiKey: process.env.OPENAI_API_KEY || "sk_"
     },
-    //TODO: get config values from database
     rag: {
         namespace: "alta"
     }
