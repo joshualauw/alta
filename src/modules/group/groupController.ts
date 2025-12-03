@@ -8,30 +8,30 @@ import { apiResponse } from "@/utils/apiResponse";
 
 export async function getAllGroup(req: Request, res: Response) {
     const result = await groupService.getAllGroup();
-    return apiResponse.success(res, result, "get all group succesful");
+    return apiResponse.success(res, result, "get all group successful");
 }
 
 export async function getGroupDetail(req: Request<{ id: string }>, res: Response) {
     const result = await groupService.getGroupDetail(Number(req.params.id));
-    return apiResponse.success(res, result, "get group detail succesful");
+    return apiResponse.success(res, result, "get group detail successful");
 }
 
 export async function createGroup(req: Request<{}, {}, CreateGroupRequest>, res: Response) {
     const result = await groupService.createGroup(req.body);
-    return apiResponse.success(res, result, "create group succesful", StatusCodes.CREATED);
+    return apiResponse.success(res, result, "create group successful", StatusCodes.CREATED);
 }
 
 export async function updateGroup(req: Request<{ id: string }, {}, UpdateGroupRequest>, res: Response) {
     const result = await groupService.updateGroup(Number(req.params.id), req.body);
-    return apiResponse.success(res, result, "update group succesful");
+    return apiResponse.success(res, result, "update group successful");
 }
 
 export async function deleteGroup(req: Request<{ id: string }>, res: Response) {
     const result = await groupService.deleteGroup(Number(req.params.id));
-    return apiResponse.success(res, result, "delete group succesful");
+    return apiResponse.success(res, result, "delete group successful");
 }
 
 export async function changeSourceGroup(req: Request<{}, {}, ChangeSourceGroupRequest>, res: Response) {
     const result = await groupService.changeSourceGroup(req.body);
-    return apiResponse.success(res, result, "change source group succesful");
+    return apiResponse.success(res, result, "change source group successful");
 }

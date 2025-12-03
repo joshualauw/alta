@@ -9,12 +9,12 @@ import { apiResponse } from "@/utils/apiResponse";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
-    return apiResponse.success(res, result, "get all source succesful");
+    return apiResponse.success(res, result, "get all source successful");
 }
 
 export async function getSourceDetail(req: Request<{ id: string }>, res: Response) {
     const result = await sourceService.getSourceDetail(Number(req.params.id));
-    return apiResponse.success(res, result, "get source detail succesful");
+    return apiResponse.success(res, result, "get source detail successful");
 }
 
 export async function createSource(req: Request<{}, {}, CreateSourceRequest, CreateSourceQuery>, res: Response) {
