@@ -6,6 +6,7 @@ import { SearchSourceQuery, SearchSourceRequest } from "@/modules/source/dtos/se
 import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceService from "@/modules/source/sourceService";
 import { apiResponse } from "@/utils/apiResponse";
+import { StatusCodes } from "http-status-codes";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
@@ -19,7 +20,7 @@ export async function getSourceDetail(req: Request<{ id: string }>, res: Respons
 
 export async function createSource(req: Request<{}, {}, CreateSourceRequest, CreateSourceQuery>, res: Response) {
     const result = await sourceService.createSource(req.body, req.query);
-    return apiResponse.success(res, result, "create source successful");
+    return apiResponse.success(res, result, "create source successful", StatusCodes.CREATED);
 }
 
 export async function createBulkSource(

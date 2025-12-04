@@ -3,6 +3,7 @@ import { CreatePresetRequest } from "@/modules/preset/dtos/createPresetDto";
 import { UpdatePresetRequest } from "@/modules/preset/dtos/updatePresetDto";
 import * as presetService from "@/modules/preset/presetService";
 import { apiResponse } from "@/utils/apiResponse";
+import { StatusCodes } from "http-status-codes";
 
 export async function getAllPreset(req: Request, res: Response) {
     const result = await presetService.getAllPreset();
@@ -16,7 +17,7 @@ export async function getPresetDetail(req: Request<{ id: string }>, res: Respons
 
 export async function createPreset(req: Request<{}, {}, CreatePresetRequest>, res: Response) {
     const result = await presetService.createPreset(req.body);
-    return apiResponse.success(res, result, "create preset successful");
+    return apiResponse.success(res, result, "create preset successful", StatusCodes.CREATED);
 }
 
 export async function updatePreset(req: Request<{ id: string }, {}, UpdatePresetRequest>, res: Response) {
