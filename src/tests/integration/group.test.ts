@@ -1,13 +1,14 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 import { MOCK_API_KEY } from "./mock";
-import app from "../../src";
 import { beforeEach } from "vitest";
-import { createGroupFactory, prisma } from "./prisma";
+import { createGroupFactory, createSourceFactory, prisma } from "@/tests/prisma";
+import app from "@/index";
 
-describe("Group API Integration Test", async () => {
+describe("Group API Integration Test", () => {
     beforeEach(async () => {
         await prisma.group.deleteMany();
+        await prisma.source.deleteMany();
     });
 
     it("should fail without API KEY", async () => {
@@ -61,7 +62,7 @@ describe("Group API Integration Test", async () => {
         });
     });
 
-    describe("GET /api/group/getDetail/:id", async () => {
+    describe("GET /api/group/getDetail/:id", () => {
         it("should get group detail", async () => {
             const group = await createGroupFactory();
             const res = await request(app).get(`/api/group/getDetail/${group.id}`).set("x-api-key", MOCK_API_KEY);
@@ -94,7 +95,7 @@ describe("Group API Integration Test", async () => {
         });
     });
 
-    describe("PUT /api/group/update/:id", async () => {
+    describe("PUT /api/group/update/:id", () => {
         it("should update group", async () => {
             const group = await createGroupFactory();
 
@@ -154,7 +155,7 @@ describe("Group API Integration Test", async () => {
         });
     });
 
-    describe("DELETE /api/group/delete/:id", async () => {
+    describe("DELETE /api/group/delete/:id", () => {
         it("should delete group", async () => {
             const group = await createGroupFactory();
             const res = await request(app).delete(`/api/group/delete/${group.id}`).set("x-api-key", MOCK_API_KEY);
@@ -183,7 +184,7 @@ describe("Group API Integration Test", async () => {
         });
     });
 
-    describe("GET /api/group/getAll", async () => {
+    describe("GET /api/group/getAll", () => {
         it("should get all group", async () => {
             const res = await request(app).get("/api/group/getAll").set("x-api-key", MOCK_API_KEY);
 
@@ -193,6 +194,45 @@ describe("Group API Integration Test", async () => {
                 errors: [],
                 data: expect.any(Array),
                 message: "get all group successful"
+            });
+        });
+    });
+
+    describe("PATCH /api/group/changeSourceGroup", async () => {
+        it("should change source group id", async () => {
+            const group = await createGroupFactory();
+            const source = await createSourceFactory();
+
+            const res = await request(app).patch("/api/group/changeSourceGroup").set("x-api-key", MOCK_API_KEY).send({
+                sourceId: source.id,
+                targetGroupId: group.id
+            });
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toEqual({
+                success: true,
+                data: {
+                    id: group.id
+                },
+                message: "change source group successful",
+                errors: []
+            });
+        });
+
+        it("should not change to not existent group", async () => {
+            const source = await createSourceFactory();
+
+            const res = await request(app).patch("/api/group/changeSourceGroup").set("x-api-key", MOCK_API_KEY).send({
+                sourceId: source.id,
+                targetGroupId: -1
+            });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body).toEqual({
+                success: false,
+                data: null,
+                message: "invalid reference on Source",
+                errors: []
             });
         });
     });

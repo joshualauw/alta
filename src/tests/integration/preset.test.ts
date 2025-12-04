@@ -1,9 +1,9 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 import { MOCK_API_KEY } from "./mock";
-import app from "../../src";
 import { beforeEach } from "vitest";
-import { createPresetFactory, prisma } from "./prisma";
+import { createPresetFactory, prisma } from "@/tests/prisma";
+import app from "@/index";
 
 describe("Preset API Integration Test", async () => {
     beforeEach(async () => {

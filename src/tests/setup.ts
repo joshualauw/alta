@@ -8,6 +8,8 @@ declare global {
 }
 
 export async function setup() {
+    process.env.NODE_ENV = "test";
+
     globalThis.pgContainer = await new PostgreSqlContainer("postgres:15")
         .withDatabase("testdb")
         .withUsername("test")

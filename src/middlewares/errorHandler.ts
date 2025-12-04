@@ -4,9 +4,12 @@ import { PrismaClientValidationError } from "@/database/generated/prisma/interna
 import { ServiceError } from "@/lib/internal/errors";
 import { apiResponse } from "@/utils/apiResponse";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import config from "@/config";
 
 export function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
-    console.error(err);
+    if (config.nodeEnv != "test") {
+        console.error(err);
+    }
 
     if (err instanceof ServiceError) {
         return apiResponse.error(res, err.message, err.statusCode);
