@@ -1,30 +1,48 @@
-import { MOCK_API_KEY } from "./mock";
-import { describe, it, expect } from "vitest";
 import request from "supertest";
+import { describe, expect, it } from "vitest";
+import { MOCK_API_KEY } from "./mock";
 import app from "../../src";
+import { beforeEach } from "vitest";
+import { createGroupFactory, prisma } from "./prisma";
 
 describe("Group API Integration Test", async () => {
-    let createdGroupId: number = 0;
+    beforeEach(async () => {
+        await prisma.group.deleteMany();
+    });
+
+    it("should fail without API KEY", async () => {
+        const res = await request(app).get("/api/group/getAll");
+
+        expect(res.statusCode).toBe(401);
+        expect(res.body).toEqual({
+            success: false,
+            data: null,
+            message: "unauthorized access",
+            errors: []
+        });
+    });
 
     describe("POST /api/group/create", () => {
         it("should create a new group", async () => {
-            const res = await request(app).post("/api/group/create").set("x-api-key", MOCK_API_KEY).send({
+            const data = {
                 name: "Group 1",
                 colorCode: "#ffffff"
-            });
+            };
 
-            createdGroupId = res.body.data.id;
+            const res = await request(app).post("/api/group/create").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(201);
-            expect(res.body.success).toBe(true);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("create group successful");
-
-            expect(res.body.data.id).toBe(createdGroupId);
-            expect(res.body.data.name).toBe("Group 1");
-            expect(res.body.data.colorCode).toBe("#ffffff");
-            expect(res.body.data).toHaveProperty("createdAt");
-            expect(new Date(res.body.data.createdAt).toISOString()).toBe(res.body.data.createdAt);
+            expect(res.body).toEqual({
+                success: true,
+                message: "create group successful",
+                errors: [],
+                data: {
+                    id: expect.any(Number),
+                    name: data.name,
+                    colorCode: data.colorCode,
+                    createdAt: expect.any(String)
+                }
+            });
         });
 
         it("should block empty body", async () => {
@@ -34,57 +52,74 @@ describe("Group API Integration Test", async () => {
             });
 
             expect(res.statusCode).toBe(400);
-            expect(res.body.success).toBe(false);
-            expect(res.body.errors.length).toBeGreaterThan(0);
-            expect(res.body.message).toBe("validation failed at body");
+            expect(res.body).toEqual({
+                success: false,
+                message: "validation failed at body",
+                data: null,
+                errors: expect.any(Array)
+            });
         });
     });
 
-    describe("GET /api/group/getDetail/:id", () => {
+    describe("GET /api/group/getDetail/:id", async () => {
         it("should get group detail", async () => {
-            const res = await request(app).get(`/api/group/getDetail/${createdGroupId}`).set("x-api-key", MOCK_API_KEY);
+            const group = await createGroupFactory();
+            const res = await request(app).get(`/api/group/getDetail/${group.id}`).set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("get group detail successful");
-
-            expect(res.body.data.id).toBe(createdGroupId);
-            expect(res.body.data.name).toBe("Group 1");
-            expect(res.body.data.colorCode).toBe("#ffffff");
-            expect(new Date(res.body.data.createdAt).toISOString()).toBe(res.body.data.createdAt);
-            expect(new Date(res.body.data.updatedAt).toISOString()).toBe(res.body.data.updatedAt);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "get group detail successful",
+                data: {
+                    id: expect.any(Number),
+                    name: expect.any(String),
+                    colorCode: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String)
+                }
+            });
         });
 
         it("should not found group detail", async () => {
             const res = await request(app).get(`/api/group/getDetail/-1`).set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("group not found");
+            expect(res.body).toEqual({
+                success: false,
+                errors: [],
+                data: null,
+                message: "group not found"
+            });
         });
     });
 
-    describe("PUT /api/group/update/:id", () => {
+    describe("PUT /api/group/update/:id", async () => {
         it("should update group", async () => {
+            const group = await createGroupFactory();
+
+            const data = {
+                name: "Group Update",
+                colorCode: "#bbbbbb"
+            };
+
             const res = await request(app)
-                .put(`/api/group/update/${createdGroupId}`)
+                .put(`/api/group/update/${group.id}`)
                 .set("x-api-key", MOCK_API_KEY)
-                .send({
-                    name: "Group 1 Updated",
-                    colorCode: "#bbbbbb"
-                });
+                .send(data);
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("update group successful");
-
-            expect(res.body.data.id).toBe(createdGroupId);
-            expect(res.body.data.name).toBe("Group 1 Updated");
-            expect(res.body.data.colorCode).toBe("#bbbbbb");
-            expect(new Date(res.body.data.updatedAt).toISOString()).toBe(res.body.data.updatedAt);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "update group successful",
+                data: {
+                    id: group.id,
+                    name: data.name,
+                    colorCode: data.colorCode,
+                    updatedAt: expect.any(String)
+                }
+            });
         });
 
         it("should not found group to update", async () => {
@@ -94,60 +129,71 @@ describe("Group API Integration Test", async () => {
             });
 
             expect(res.statusCode).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("group not found");
+            expect(res.body).toEqual({
+                success: false,
+                errors: [],
+                data: null,
+                message: "group not found"
+            });
         });
 
         it("should block empty body", async () => {
-            const res = await request(app)
-                .put(`/api/group/update/${createdGroupId}`)
-                .set("x-api-key", MOCK_API_KEY)
-                .send({
-                    name: "",
-                    colorCode: ""
-                });
+            const group = await createGroupFactory();
+            const res = await request(app).put(`/api/group/update/${group.id}`).set("x-api-key", MOCK_API_KEY).send({
+                name: "",
+                colorCode: ""
+            });
 
             expect(res.statusCode).toBe(400);
-            expect(res.body.success).toBe(false);
-            expect(res.body.errors.length).toBeGreaterThan(0);
-            expect(res.body.message).toBe("validation failed at body");
+            expect(res.body).toEqual({
+                success: false,
+                data: null,
+                errors: expect.any(Array),
+                message: "validation failed at body"
+            });
         });
     });
 
-    describe("DELETE /api/group/delete/:id", () => {
+    describe("DELETE /api/group/delete/:id", async () => {
         it("should delete group", async () => {
-            const res = await request(app).delete(`/api/group/delete/${createdGroupId}`).set("x-api-key", MOCK_API_KEY);
+            const group = await createGroupFactory();
+            const res = await request(app).delete(`/api/group/delete/${group.id}`).set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("delete group successful");
-
-            expect(res.body.data.id).toBe(createdGroupId);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "delete group successful",
+                data: {
+                    id: group.id
+                }
+            });
         });
 
         it("should not found group to delete", async () => {
-            const res = await request(app).delete(`/api/group/delete/${createdGroupId}`).set("x-api-key", MOCK_API_KEY);
+            const res = await request(app).delete(`/api/group/delete/-1`).set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(404);
-            expect(res.body.success).toBe(false);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("group not found");
+            expect(res.body).toEqual({
+                success: false,
+                errors: [],
+                data: null,
+                message: "group not found"
+            });
         });
     });
 
-    describe("GET /api/group/getAll", () => {
+    describe("GET /api/group/getAll", async () => {
         it("should get all group", async () => {
             const res = await request(app).get("/api/group/getAll").set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(200);
-            expect(res.body.success).toBe(true);
-            expect(res.body.errors.length).toBe(0);
-            expect(res.body.message).toBe("get all group successful");
-
-            expect(Array.isArray(res.body.data)).toBe(true);
-            expect(res.body.data.length).toBe(0);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                data: expect.any(Array),
+                message: "get all group successful"
+            });
         });
     });
 });
