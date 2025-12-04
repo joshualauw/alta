@@ -5,5 +5,6 @@ export type GetSourceDetailResponse = Pick<
     "id" | "name" | "content" | "fileUrl" | "groupId" | "status" | "statusReason"
 > & {
     createdAt: string;
+    updatedAt: string;
     groupName: string | null;
 };

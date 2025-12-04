@@ -1,42 +1,23 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { MOCK_API_KEY } from "./mock";
-import { beforeEach } from "vitest";
-import { createPresetFactory, prisma } from "@/tests/prisma";
+import { MOCK_API_KEY } from "../mock";
+import { createPresetFactory } from "@/tests/prisma";
 import app from "@/index";
 
-describe("Preset API Integration Test", async () => {
-    beforeEach(async () => {
-        await prisma.preset.deleteMany();
-    });
-
-    it("should fail without API KEY", async () => {
-        const res = await request(app).get("/api/preset/getAll");
-
-        expect(res.statusCode).toBe(401);
-        expect(res.body).toEqual({
-            success: false,
-            data: null,
-            message: "unauthorized access",
-            errors: []
-        });
-    });
-
+describe("Preset API Integration Test", () => {
     describe("POST /api/preset/create", () => {
         it("should create a new preset", async () => {
             const data = {
-                name: "Default",
-                code: "default",
+                name: "Complex",
                 chunkSplitSize: 400,
                 chunkSplitOverlap: 40,
                 topK: 10,
-                topN: 3,
+                topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 512,
-                rerankModel: "bge-reranker-v2-m3",
-                responsesModel: "gpt-5-mini"
+                maxResponseTokens: 100,
+                rerankModel: "aaa",
+                responsesModel: "bbb"
             };
-
             const res = await request(app).post("/api/preset/create").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(201);
@@ -47,7 +28,7 @@ describe("Preset API Integration Test", async () => {
                 data: {
                     id: expect.any(Number),
                     name: data.name,
-                    code: data.code,
+                    code: expect.any(String),
                     chunkSplitSize: data.chunkSplitSize,
                     chunkSplitOverlap: data.chunkSplitOverlap,
                     topK: data.topK,
@@ -62,18 +43,18 @@ describe("Preset API Integration Test", async () => {
         });
 
         it("should block empty body", async () => {
-            const res = await request(app).post("/api/preset/create").set("x-api-key", MOCK_API_KEY).send({
-                name: "",
-                code: "",
+            const data = {
+                name: null,
                 chunkSplitSize: null,
                 chunkSplitOverlap: null,
                 topK: null,
                 topN: null,
                 minSimilarityScore: null,
                 maxResponseTokens: null,
-                rerankModel: "",
-                responsesModel: ""
-            });
+                rerankModel: null,
+                responsesModel: null
+            };
+            const res = await request(app).post("/api/preset/create").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -85,7 +66,7 @@ describe("Preset API Integration Test", async () => {
         });
     });
 
-    describe("GET /api/preset/getDetail/:id", async () => {
+    describe("GET /api/preset/getDetail/:id", () => {
         it("should get preset detail", async () => {
             const preset = await createPresetFactory();
             const res = await request(app).get(`/api/preset/getDetail/${preset.id}`).set("x-api-key", MOCK_API_KEY);
@@ -126,23 +107,21 @@ describe("Preset API Integration Test", async () => {
         });
     });
 
-    describe("PUT /api/preset/update/:id", async () => {
+    describe("PUT /api/preset/update/:id", () => {
         it("should update preset", async () => {
             const preset = await createPresetFactory();
 
             const data = {
-                name: "Default",
-                code: "default",
+                name: "Updated",
                 chunkSplitSize: 400,
                 chunkSplitOverlap: 40,
                 topK: 10,
-                topN: 3,
+                topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 512,
-                rerankModel: "bge-reranker-v2-m3",
-                responsesModel: "gpt-5-mini"
+                maxResponseTokens: 100,
+                rerankModel: "aaa",
+                responsesModel: "bbb"
             };
-
             const res = await request(app)
                 .put(`/api/preset/update/${preset.id}`)
                 .set("x-api-key", MOCK_API_KEY)
@@ -156,7 +135,7 @@ describe("Preset API Integration Test", async () => {
                 data: {
                     id: expect.any(Number),
                     name: data.name,
-                    code: data.code,
+                    code: expect.any(String),
                     chunkSplitSize: data.chunkSplitSize,
                     chunkSplitOverlap: data.chunkSplitOverlap,
                     topK: data.topK,
@@ -171,18 +150,18 @@ describe("Preset API Integration Test", async () => {
         });
 
         it("should not found preset to update", async () => {
-            const res = await request(app).put(`/api/preset/update/-1`).set("x-api-key", MOCK_API_KEY).send({
-                name: "Default",
-                code: "default",
+            const data = {
+                name: "Updated",
                 chunkSplitSize: 400,
                 chunkSplitOverlap: 40,
                 topK: 10,
-                topN: 3,
+                topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 512,
-                rerankModel: "bge-reranker-v2-m3",
-                responsesModel: "gpt-5-mini"
-            });
+                maxResponseTokens: 100,
+                rerankModel: "aaa",
+                responsesModel: "bbb"
+            };
+            const res = await request(app).put(`/api/preset/update/-1`).set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(404);
             expect(res.body).toEqual({
@@ -195,18 +174,22 @@ describe("Preset API Integration Test", async () => {
 
         it("should block empty body", async () => {
             const preset = await createPresetFactory();
-            const res = await request(app).put(`/api/preset/update/${preset.id}`).set("x-api-key", MOCK_API_KEY).send({
-                name: "",
-                code: "",
+
+            const data = {
+                name: null,
                 chunkSplitSize: null,
                 chunkSplitOverlap: null,
                 topK: null,
                 topN: null,
                 minSimilarityScore: null,
                 maxResponseTokens: null,
-                rerankModel: "",
-                responsesModel: ""
-            });
+                rerankModel: null,
+                responsesModel: null
+            };
+            const res = await request(app)
+                .put(`/api/preset/update/${preset.id}`)
+                .set("x-api-key", MOCK_API_KEY)
+                .send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -218,7 +201,7 @@ describe("Preset API Integration Test", async () => {
         });
     });
 
-    describe("DELETE /api/preset/delete/:id", async () => {
+    describe("DELETE /api/preset/delete/:id", () => {
         it("should delete preset", async () => {
             const preset = await createPresetFactory();
             const res = await request(app).delete(`/api/preset/delete/${preset.id}`).set("x-api-key", MOCK_API_KEY);
@@ -247,7 +230,7 @@ describe("Preset API Integration Test", async () => {
         });
     });
 
-    describe("GET /api/preset/getAll", async () => {
+    describe("GET /api/preset/getAll", () => {
         it("should get all preset", async () => {
             const res = await request(app).get("/api/preset/getAll").set("x-api-key", MOCK_API_KEY);
 

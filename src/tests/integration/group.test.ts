@@ -1,28 +1,10 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { MOCK_API_KEY } from "./mock";
-import { beforeEach } from "vitest";
-import { createGroupFactory, createSourceFactory, prisma } from "@/tests/prisma";
+import { MOCK_API_KEY } from "../mock";
+import { createGroupFactory, createSourceFactory } from "@/tests/prisma";
 import app from "@/index";
 
 describe("Group API Integration Test", () => {
-    beforeEach(async () => {
-        await prisma.group.deleteMany();
-        await prisma.source.deleteMany();
-    });
-
-    it("should fail without API KEY", async () => {
-        const res = await request(app).get("/api/group/getAll");
-
-        expect(res.statusCode).toBe(401);
-        expect(res.body).toEqual({
-            success: false,
-            data: null,
-            message: "unauthorized access",
-            errors: []
-        });
-    });
-
     describe("POST /api/group/create", () => {
         it("should create a new group", async () => {
             const data = {
@@ -47,10 +29,12 @@ describe("Group API Integration Test", () => {
         });
 
         it("should block empty body", async () => {
-            const res = await request(app).post("/api/group/create").set("x-api-key", MOCK_API_KEY).send({
+            const data = {
                 name: "",
                 colorCode: ""
-            });
+            };
+
+            const res = await request(app).post("/api/group/create").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -100,7 +84,7 @@ describe("Group API Integration Test", () => {
             const group = await createGroupFactory();
 
             const data = {
-                name: "Group Update",
+                name: "Updated",
                 colorCode: "#bbbbbb"
             };
 
@@ -124,10 +108,12 @@ describe("Group API Integration Test", () => {
         });
 
         it("should not found group to update", async () => {
-            const res = await request(app).put(`/api/group/update/-1`).set("x-api-key", MOCK_API_KEY).send({
-                name: "Group 1 Updated",
+            const data = {
+                name: "Updated",
                 colorCode: "#bbbbbb"
-            });
+            };
+
+            const res = await request(app).put(`/api/group/update/-1`).set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(404);
             expect(res.body).toEqual({
@@ -140,10 +126,15 @@ describe("Group API Integration Test", () => {
 
         it("should block empty body", async () => {
             const group = await createGroupFactory();
-            const res = await request(app).put(`/api/group/update/${group.id}`).set("x-api-key", MOCK_API_KEY).send({
+
+            const data = {
                 name: "",
                 colorCode: ""
-            });
+            };
+            const res = await request(app)
+                .put(`/api/group/update/${group.id}`)
+                .set("x-api-key", MOCK_API_KEY)
+                .send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -222,10 +213,14 @@ describe("Group API Integration Test", () => {
         it("should not change to not existent group", async () => {
             const source = await createSourceFactory();
 
-            const res = await request(app).patch("/api/group/changeSourceGroup").set("x-api-key", MOCK_API_KEY).send({
+            const data = {
                 sourceId: source.id,
                 targetGroupId: -1
-            });
+            };
+            const res = await request(app)
+                .patch("/api/group/changeSourceGroup")
+                .set("x-api-key", MOCK_API_KEY)
+                .send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({

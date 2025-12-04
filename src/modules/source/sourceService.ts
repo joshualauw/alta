@@ -47,7 +47,8 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
         ...pick(source, "id", "name", "content", "fileUrl", "status", "statusReason"),
         groupId: source.groupId,
         groupName: source.group?.name ?? null,
-        createdAt: source.createdAt.toISOString()
+        createdAt: source.createdAt.toISOString(),
+        updatedAt: source.updatedAt.toISOString()
     };
 }
 

@@ -28,7 +28,7 @@ export async function createBulkSource(
     res: Response
 ) {
     const result = await sourceService.createBulkSource(req.body, req.query);
-    return apiResponse.success(res, result, "create bulk source successful");
+    return apiResponse.success(res, result, "create bulk source successful", StatusCodes.CREATED);
 }
 
 export async function updateSource(req: Request<{ id: string }, {}, UpdateSourceRequest>, res: Response) {

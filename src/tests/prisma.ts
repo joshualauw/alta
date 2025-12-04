@@ -35,9 +35,6 @@ export async function createSourceFactory() {
 }
 
 export async function createPresetFactory() {
-    const rerankModels = ["bge-reranker-v2-m3", "cross-encoder-v2"];
-    const responseModels = ["gpt-5-mini", "llama-3-8b", "claude-3-opus"];
-
     return await prisma.preset.create({
         data: {
             name: faker.commerce.productName(),
@@ -48,8 +45,8 @@ export async function createPresetFactory() {
             topN: faker.number.int({ min: 1, max: 5 }),
             minSimilarityScore: faker.number.float({ min: 0.1, max: 0.9 }),
             maxResponseTokens: faker.number.int({ min: 256, max: 1024 }),
-            rerankModel: faker.helpers.arrayElement(rerankModels),
-            responsesModel: faker.helpers.arrayElement(responseModels)
+            rerankModel: faker.commerce.productName(),
+            responsesModel: faker.commerce.productName()
         }
     });
 }

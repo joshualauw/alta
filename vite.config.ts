@@ -6,7 +6,9 @@ export default defineConfig({
     plugins: [tsconfigPaths()],
     test: {
         globalSetup: ["src/tests/setup.ts", "src/tests/prisma.ts"],
-        pool: "forks"
+        setupFiles: ["src/tests/mock.ts"],
+        pool: "forks",
+        exclude: ["**/node_modules/**", "**/dist/**"]
     },
     resolve: {
         alias: {
