@@ -2,8 +2,10 @@ import { vi } from "vitest";
 
 export const MOCK_API_KEY = "alta_hr20kKzRhcsvpiGkeglVq6qoCWp8Oq50";
 
-vi.mock("@/modules/source/services/ragService", () => {
+vi.mock("@/modules/source/services/ragService", async (importOriginal) => {
+    const actual: object = await importOriginal();
     return {
+        ...actual,
         ingest: vi.fn(),
         remove: vi.fn(),
         search: vi.fn().mockResolvedValue({

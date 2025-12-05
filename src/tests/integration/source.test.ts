@@ -27,8 +27,8 @@ describe("Source API Integration Test", () => {
                 .set("x-api-key", MOCK_API_KEY)
                 .send(data);
 
-            expect(ingest).toBeCalled();
             expect(res.statusCode).toBe(201);
+            expect(ingest).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 message: "create source successful",
@@ -75,8 +75,8 @@ describe("Source API Integration Test", () => {
                 .set("x-api-key", MOCK_API_KEY)
                 .send(data);
 
-            expect(sourceQueue.addBulk).toBeCalled();
             expect(res.statusCode).toBe(201);
+            expect(sourceQueue.addBulk).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 message: "create bulk source successful",
@@ -192,8 +192,8 @@ describe("Source API Integration Test", () => {
             const source = await createSourceFactory();
             const res = await request(app).delete(`/api/source/delete/${source.id}`).set("x-api-key", MOCK_API_KEY);
 
-            expect(remove).toBeCalled();
             expect(res.statusCode).toBe(200);
+            expect(remove).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
@@ -235,7 +235,7 @@ describe("Source API Integration Test", () => {
         it("should search source", async () => {
             const data = {
                 question: "who is obama?",
-                metadata: {
+                filters: {
                     type: { $eq: "test" }
                 }
             };
@@ -245,9 +245,9 @@ describe("Source API Integration Test", () => {
                 .set("x-api-key", MOCK_API_KEY)
                 .send(data);
 
+            expect(res.statusCode).toBe(200);
             expect(search).toBeCalled();
             expect(searchLogQueue.add).toBeCalled();
-            expect(res.statusCode).toBe(200);
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
