@@ -1,5 +1,4 @@
 import z from "zod";
-import { Group } from "@/database/generated/prisma/client";
 
 export const updateGroupRequest = z.object({
     name: z.string().min(1).optional(),
@@ -8,6 +7,11 @@ export const updateGroupRequest = z.object({
 
 export type UpdateGroupRequest = z.infer<typeof updateGroupRequest>;
 
-export type UpdateGroupResponse = Pick<Group, "id" | "name" | "colorCode"> & {
-    updatedAt: string;
-};
+export const updateGroupResponse = z.object({
+    id: z.number(),
+    name: z.string(),
+    colorCode: z.string(),
+    updatedAt: z.string()
+});
+
+export type UpdateGroupResponse = z.infer<typeof updateGroupResponse>;

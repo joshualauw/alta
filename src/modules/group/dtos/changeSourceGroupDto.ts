@@ -1,5 +1,4 @@
 import z from "zod";
-import { Group } from "@/database/generated/prisma/client";
 
 export const changeSourceGroupRequest = z.object({
     sourceId: z.number(),
@@ -8,4 +7,8 @@ export const changeSourceGroupRequest = z.object({
 
 export type ChangeSourceGroupRequest = z.infer<typeof changeSourceGroupRequest>;
 
-export type ChangeSourceGroupResponse = Pick<Group, "id">;
+export const changeSourceGroupResponse = z.object({
+    id: z.number()
+});
+
+export type ChangeSourceGroupResponse = z.infer<typeof changeSourceGroupResponse>;

@@ -3,7 +3,7 @@ import { ChangeSourceGroupRequest, ChangeSourceGroupResponse } from "@/modules/g
 import { CreateGroupRequest, CreateGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { DeleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { GetAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
-import { GetGroupDetailDto } from "@/modules/group/dtos/getGroupDetailDto";
+import { GetGroupDetailResponse } from "@/modules/group/dtos/getGroupDetailDto";
 import { UpdateGroupRequest, UpdateGroupResponse } from "@/modules/group/dtos/updateGroupDto";
 import { pick } from "@/utils/mapper";
 
@@ -11,16 +11,17 @@ export async function getAllGroup(): Promise<GetAllGroupResponse[]> {
     const groups = await prisma.group.findMany();
 
     return groups.map((g) => ({
-        ...pick(g, "id", "name", "colorCode", "createdAt")
+        ...pick(g, "id", "name", "colorCode"),
+        createdAt: g.createdAt.toISOString()
     }));
 }
 
-export async function getGroupDetail(id: number): Promise<GetGroupDetailDto> {
+export async function getGroupDetail(id: number): Promise<GetGroupDetailResponse> {
     const group = await prisma.group.findFirstOrThrow({
         where: { id }
     });
 
-    return group;
+    return { ...group, createdAt: group.createdAt.toISOString(), updatedAt: group.updatedAt.toISOString() };
 }
 
 export async function createGroup(payload: CreateGroupRequest): Promise<CreateGroupResponse> {

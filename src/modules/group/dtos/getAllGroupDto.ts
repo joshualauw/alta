@@ -1,3 +1,11 @@
-import { Group } from "@/database/generated/prisma/client";
+import z from "zod";
+import "zod-openapi";
 
-export type GetAllGroupResponse = Pick<Group, "id" | "colorCode" | "name" | "createdAt">;
+export const getAllGroupResponse = z.object({
+    id: z.number(),
+    colorCode: z.string(),
+    name: z.string(),
+    createdAt: z.string()
+});
+
+export type GetAllGroupResponse = z.infer<typeof getAllGroupResponse>;

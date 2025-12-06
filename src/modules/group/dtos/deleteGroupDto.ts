@@ -1,3 +1,7 @@
-import { Group } from "@/database/generated/prisma/client";
+import z from "zod";
 
-export type DeleteGroupResponse = Pick<Group, "id">;
+export const deleteGroupResponse = z.object({
+    id: z.number()
+});
+
+export type DeleteGroupResponse = z.infer<typeof deleteGroupResponse>;

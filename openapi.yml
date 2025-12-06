@@ -1,0 +1,633 @@
+openapi: 3.0.0
+info:
+  title: Alta API
+  version: 1.0.0
+paths:
+  /api/group/getAll:
+    $ref: "#/components/pathItems/get-all-group"
+  /api/group/getDetail/:id:
+    $ref: "#/components/pathItems/get-group-detail"
+  /api/group/create:
+    $ref: "#/components/pathItems/create-group"
+  /api/group/update/:id:
+    $ref: "#/components/pathItems/update-group"
+  /api/group/delete/:id:
+    $ref: "#/components/pathItems/delete-group"
+  /api/group/changeSourceGroup:
+    $ref: "#/components/pathItems/change-source-group"
+components:
+  pathItems:
+    get-all-group:
+      summary: get all group
+      get:
+        tags:
+          - group
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          colorCode:
+                            type: string
+                          name:
+                            type: string
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - colorCode
+                          - name
+                          - createdAt
+                        additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-group-detail:
+      summary: get group detail
+      get:
+        tags:
+          - group
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        colorCode:
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - colorCode
+                        - createdAt
+                        - updatedAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    create-group:
+      summary: create new group
+      post:
+        tags:
+          - group
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                  colorCode:
+                    type: string
+                    minLength: 1
+                required:
+                  - name
+                  - colorCode
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        colorCode:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - colorCode
+                        - createdAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    update-group:
+      summary: update group
+      put:
+        tags:
+          - group
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                  colorCode:
+                    type: string
+                    minLength: 1
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        colorCode:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - colorCode
+                        - updatedAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    delete-group:
+      summary: delete group
+      delete:
+        tags:
+          - group
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                      required:
+                        - id
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    change-source-group:
+      summary: change source group
+      patch:
+        tags:
+          - group
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sourceId:
+                    type: number
+                  targetGroupId:
+                    type: number
+                required:
+                  - sourceId
+                  - targetGroupId
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                      required:
+                        - id
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Alta api key

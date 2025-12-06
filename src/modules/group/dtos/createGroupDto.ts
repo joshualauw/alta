@@ -1,5 +1,4 @@
 import z from "zod";
-import { Group } from "@/database/generated/prisma/client";
 
 export const createGroupRequest = z.object({
     name: z.string().min(1),
@@ -8,6 +7,11 @@ export const createGroupRequest = z.object({
 
 export type CreateGroupRequest = z.infer<typeof createGroupRequest>;
 
-export type CreateGroupResponse = Pick<Group, "id" | "name" | "colorCode"> & {
-    createdAt: string;
-};
+export const createGroupResponse = z.object({
+    id: z.number(),
+    name: z.string(),
+    colorCode: z.string(),
+    createdAt: z.string()
+});
+
+export type CreateGroupResponse = z.infer<typeof createGroupResponse>;
