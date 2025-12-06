@@ -14,7 +14,7 @@ describe("Preset API Integration Test", () => {
                 topK: 10,
                 topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 100,
+                maxResponseTokens: 512,
                 rerankModel: "aaa",
                 responsesModel: "bbb"
             };
@@ -118,7 +118,7 @@ describe("Preset API Integration Test", () => {
                 topK: 10,
                 topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 100,
+                maxResponseTokens: 512,
                 rerankModel: "aaa",
                 responsesModel: "bbb"
             };
@@ -157,7 +157,7 @@ describe("Preset API Integration Test", () => {
                 topK: 10,
                 topN: 5,
                 minSimilarityScore: 0.1,
-                maxResponseTokens: 100,
+                maxResponseTokens: 512,
                 rerankModel: "aaa",
                 responsesModel: "bbb"
             };
