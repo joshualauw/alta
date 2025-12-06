@@ -1,5 +1,4 @@
 import z from "zod";
-import { Source } from "@/database/generated/prisma/client";
 
 export const getAllSourceQuery = z.object({
     groupId: z.string().min(1).optional()
@@ -7,7 +6,14 @@ export const getAllSourceQuery = z.object({
 
 export type GetAllSourceQuery = z.infer<typeof getAllSourceQuery>;
 
-export type GetAllSourceResponse = Pick<Source, "id" | "name" | "fileUrl" | "groupId" | "status"> & {
-    createdAt: string;
-    groupName: string | null;
-};
+export const getAllSourceResponse = z.object({
+    id: z.number(),
+    name: z.string(),
+    fileUrl: z.string().nullable(),
+    groupId: z.number().nullable(),
+    groupName: z.string().nullable(),
+    status: z.enum(["PENDING", "FAILED", "DONE"]),
+    createdAt: z.string()
+});
+
+export type GetAllSourceResponse = z.infer<typeof getAllSourceResponse>;

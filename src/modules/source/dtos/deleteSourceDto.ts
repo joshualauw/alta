@@ -1,3 +1,7 @@
-import { Source } from "@/database/generated/prisma/client";
+import z from "zod";
 
-export type DeleteSourceResponse = Pick<Source, "id">;
+export const deleteSourceResponse = z.object({
+    id: z.number()
+});
+
+export type DeleteSourceResponse = z.infer<typeof deleteSourceResponse>;

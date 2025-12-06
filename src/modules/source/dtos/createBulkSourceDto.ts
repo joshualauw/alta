@@ -5,12 +5,14 @@ export const createBulkSourceRequest = z.array(createSourceRequest).min(1);
 
 export type CreateBulkSourceRequest = z.infer<typeof createBulkSourceRequest>;
 
-export interface CreateBulkSourceResponse {
-    createdAt: string;
-}
-
 export const createBulkSourceQuery = z.object({
     preset: z.string().optional()
 });
 
 export type CreateBulkSourceQuery = z.infer<typeof createBulkSourceQuery>;
+
+export const createBulkSourceResponse = z.object({
+    createdAt: z.string()
+});
+
+export type CreateBulkSourceResponse = z.infer<typeof createBulkSourceResponse>;

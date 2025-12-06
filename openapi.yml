@@ -25,6 +25,20 @@ paths:
     $ref: "#/components/pathItems/update-preset"
   /api/preset/delete/:id:
     $ref: "#/components/pathItems/delete-preset"
+  /api/source/getAll:
+    $ref: "#/components/pathItems/get-all-source"
+  /api/source/getDetail/:id:
+    $ref: "#/components/pathItems/get-source-detail"
+  /api/source/create:
+    $ref: "#/components/pathItems/create-source"
+  /api/source/create/bulk:
+    $ref: "#/components/pathItems/create-bulk-source"
+  /api/source/search:
+    $ref: "#/components/pathItems/search-source"
+  /api/source/update/:id:
+    $ref: "#/components/pathItems/update-source"
+  /api/source/delete/:id:
+    $ref: "#/components/pathItems/delete-source"
 components:
   pathItems:
     get-all-group:
@@ -1205,6 +1219,953 @@ components:
       delete:
         tags:
           - preset
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                      required:
+                        - id
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-all-source:
+      summary: get all source
+      get:
+        tags:
+          - source
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          name:
+                            type: string
+                          fileUrl:
+                            nullable: true
+                            type: string
+                          groupId:
+                            nullable: true
+                            type: number
+                          groupName:
+                            nullable: true
+                            type: string
+                          status:
+                            type: string
+                            enum:
+                              - PENDING
+                              - FAILED
+                              - DONE
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - name
+                          - fileUrl
+                          - groupId
+                          - groupName
+                          - status
+                          - createdAt
+                        additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-source-detail:
+      summary: get source detail
+      get:
+        tags:
+          - source
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        content:
+                          type: string
+                        fileUrl:
+                          nullable: true
+                          type: string
+                        groupId:
+                          nullable: true
+                          type: number
+                        groupName:
+                          nullable: true
+                          type: string
+                        status:
+                          type: string
+                          enum:
+                            - PENDING
+                            - FAILED
+                            - DONE
+                        statusReason:
+                          nullable: true
+                          type: string
+                        createdAt:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - content
+                        - fileUrl
+                        - groupId
+                        - groupName
+                        - status
+                        - statusReason
+                        - createdAt
+                        - updatedAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    create-source:
+      summary: create new source
+      post:
+        tags:
+          - source
+        parameters:
+          - in: query
+            name: preset
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+                  content:
+                    type: string
+                    minLength: 1
+                  metadata:
+                    type: object
+                    additionalProperties: {}
+                  groupId:
+                    type: number
+                required:
+                  - name
+                  - content
+        responses:
+          "201":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        createdAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - createdAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    create-bulk-source:
+      summary: create sources (bulk) in background
+      post:
+        tags:
+          - source
+        parameters:
+          - in: query
+            name: preset
+            schema:
+              type: string
+        requestBody:
+          content:
+            application/json:
+              schema:
+                minItems: 1
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      minLength: 1
+                    content:
+                      type: string
+                      minLength: 1
+                    metadata:
+                      type: object
+                      additionalProperties: {}
+                    groupId:
+                      type: number
+                  required:
+                    - name
+                    - content
+        responses:
+          "201":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        createdAt:
+                          type: string
+                      required:
+                        - createdAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    search-source:
+      summary: search source
+      post:
+        parameters:
+          - in: query
+            name: rerank
+            schema:
+              type: string
+              enum:
+                - "0"
+                - "1"
+          - in: query
+            name: preset
+            schema:
+              type: string
+          - in: query
+            name: tone
+            schema:
+              type: string
+              enum:
+                - normal
+                - concise
+                - explanatory
+                - formal
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  question:
+                    type: string
+                    minLength: 1
+                  filters:
+                    anyOf:
+                      - type: object
+                        additionalProperties:
+                          anyOf:
+                            - type: object
+                              properties:
+                                $eq:
+                                  anyOf:
+                                    - type: boolean
+                                    - type: string
+                                    - type: number
+                              required:
+                                - $eq
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $ne:
+                                  anyOf:
+                                    - type: boolean
+                                    - type: string
+                                    - type: number
+                              required:
+                                - $ne
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $ne:
+                                  type: array
+                                  items:
+                                    anyOf:
+                                      - type: string
+                                      - type: number
+                              required:
+                                - $ne
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $ne:
+                                  type: array
+                                  items:
+                                    anyOf:
+                                      - type: string
+                                      - type: number
+                              required:
+                                - $ne
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $gt:
+                                  type: number
+                              required:
+                                - $gt
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $gte:
+                                  type: number
+                              required:
+                                - $gte
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $lt:
+                                  type: number
+                              required:
+                                - $lt
+                              additionalProperties: false
+                            - type: object
+                              properties:
+                                $lte:
+                                  type: number
+                              required:
+                                - $lte
+                              additionalProperties: false
+                      - type: object
+                        properties:
+                          $and:
+                            minItems: 1
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      $eq:
+                                        anyOf:
+                                          - type: boolean
+                                          - type: string
+                                          - type: number
+                                    required:
+                                      - $eq
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        anyOf:
+                                          - type: boolean
+                                          - type: string
+                                          - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        type: array
+                                        items:
+                                          anyOf:
+                                            - type: string
+                                            - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        type: array
+                                        items:
+                                          anyOf:
+                                            - type: string
+                                            - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $gt:
+                                        type: number
+                                    required:
+                                      - $gt
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $gte:
+                                        type: number
+                                    required:
+                                      - $gte
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $lt:
+                                        type: number
+                                    required:
+                                      - $lt
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $lte:
+                                        type: number
+                                    required:
+                                      - $lte
+                                    additionalProperties: false
+                        required:
+                          - $and
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          $or:
+                            minItems: 1
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties:
+                                anyOf:
+                                  - type: object
+                                    properties:
+                                      $eq:
+                                        anyOf:
+                                          - type: boolean
+                                          - type: string
+                                          - type: number
+                                    required:
+                                      - $eq
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        anyOf:
+                                          - type: boolean
+                                          - type: string
+                                          - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        type: array
+                                        items:
+                                          anyOf:
+                                            - type: string
+                                            - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $ne:
+                                        type: array
+                                        items:
+                                          anyOf:
+                                            - type: string
+                                            - type: number
+                                    required:
+                                      - $ne
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $gt:
+                                        type: number
+                                    required:
+                                      - $gt
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $gte:
+                                        type: number
+                                    required:
+                                      - $gte
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $lt:
+                                        type: number
+                                    required:
+                                      - $lt
+                                    additionalProperties: false
+                                  - type: object
+                                    properties:
+                                      $lte:
+                                        type: number
+                                    required:
+                                      - $lte
+                                    additionalProperties: false
+                        required:
+                          - $or
+                        additionalProperties: false
+                required:
+                  - question
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        answer:
+                          type: string
+                        references:
+                          type: array
+                          items:
+                            type: string
+                      required:
+                        - answer
+                        - references
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    update-source:
+      summary: update source
+      put:
+        tags:
+          - source
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: number
+            required: true
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    minLength: 1
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        name:
+                          type: string
+                        updatedAt:
+                          type: string
+                      required:
+                        - id
+                        - name
+                        - updatedAt
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: validation failed
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: not found
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    delete-source:
+      summary: delete source
+      delete:
+        tags:
+          - source
         parameters:
           - in: path
             name: id
