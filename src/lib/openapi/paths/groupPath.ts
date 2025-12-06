@@ -71,7 +71,7 @@ export const createGroupPath: ZodOpenApiPathItemObject = {
             }
         },
         responses: {
-            200: {
+            201: {
                 description: "success",
                 content: {
                     "application/json": { schema: successResponseSchema(createGroupResponse) }

@@ -1,3 +1,7 @@
-import { Preset } from "@/database/generated/prisma/client";
+import z from "zod";
 
-export type DeletePresetResponse = Pick<Preset, "id">;
+export const deletePresetResponse = z.object({
+    id: z.number()
+});
+
+export type DeletePresetResponse = z.infer<typeof deletePresetResponse>;

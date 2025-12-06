@@ -1,5 +1,6 @@
 import { createDocument } from "zod-openapi";
 import * as groupPath from "@/lib/openapi/paths/groupPath";
+import * as presetPath from "@/lib/openapi/paths/presetPath";
 
 const document = createDocument({
     openapi: "3.0.0",
@@ -13,7 +14,13 @@ const document = createDocument({
         "/api/group/create": groupPath.createGroupPath,
         "/api/group/update/:id": groupPath.updateGroupPath,
         "/api/group/delete/:id": groupPath.deleteGroupPath,
-        "/api/group/changeSourceGroup": groupPath.changeSourceGroupPath
+        "/api/group/changeSourceGroup": groupPath.changeSourceGroupPath,
+
+        "/api/preset/getAll": presetPath.getAllPresetPath,
+        "/api/preset/getDetail/:id": presetPath.getPresetDetailPath,
+        "/api/preset/create": presetPath.createPresetPath,
+        "/api/preset/update/:id": presetPath.updatePresetPath,
+        "/api/preset/delete/:id": presetPath.deletePresetPath
     },
     components: {
         securitySchemes: {

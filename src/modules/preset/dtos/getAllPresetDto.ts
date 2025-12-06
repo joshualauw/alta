@@ -1,5 +1,10 @@
-import { Preset } from "@/database/generated/prisma/client";
+import z from "zod";
 
-export type GetAllPresetResponse = Pick<Preset, "id" | "name" | "code"> & {
-    createdAt: string;
-};
+export const getAllPresetResponse = z.object({
+    id: z.number(),
+    name: z.string(),
+    code: z.string(),
+    createdAt: z.string()
+});
+
+export type GetAllPresetResponse = z.infer<typeof getAllPresetResponse>;
