@@ -150,7 +150,8 @@ export const searchSourcePath: ZodOpenApiPathItemObject = {
                 },
                 headers: apiKeyHeaderSchema
             }
-        }
+        },
+        tags: ["source"]
     }
 };
 

@@ -22,7 +22,7 @@ export async function getPresetDetail(id: number): Promise<GetPresetDetailRespon
         where: { id }
     });
 
-    return preset;
+    return { ...preset, createdAt: preset.createdAt.toISOString(), updatedAt: preset.updatedAt.toISOString() };
 }
 
 export async function createPreset(payload: CreatePresetRequest): Promise<CreatePresetResponse> {

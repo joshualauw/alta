@@ -11,5 +11,11 @@ export async function getAllSearchLog(query: GetAllSearchLogQuery): Promise<GetA
         }
     });
 
-    return searchLogs;
+    return searchLogs.map((s) => ({
+        ...s,
+        chunkReranked: s.chunksReranked,
+        chunkRetrieved: s.chunksRetrieved,
+        createdAt: s.createdAt.toISOString(),
+        updatedAt: s.updatedAt.toISOString()
+    }));
 }
