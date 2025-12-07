@@ -1619,6 +1619,7 @@ components:
             application/json:
               schema:
                 minItems: 1
+                maxItems: 100
                 type: array
                 items:
                   type: object
