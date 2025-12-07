@@ -2,5 +2,5 @@ import config from "@/config";
 import { Pinecone } from "@pinecone-database/pinecone";
 
 export const pinecone = new Pinecone({
-    apiKey: config.pinecone.apiKey
+    apiKey: config.PINECONE_API_KEY
 });

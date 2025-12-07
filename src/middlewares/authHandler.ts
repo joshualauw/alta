@@ -12,7 +12,7 @@ export function authorize(req: Request, res: Response, next: NextFunction) {
     }
 
     const userBuffer = Buffer.from(apiKey.toString());
-    const keyBuffer = Buffer.from(config.alta.apiKey);
+    const keyBuffer = Buffer.from(config.ALTA_API_KEY);
 
     if (userBuffer.length !== keyBuffer.length) {
         crypto.timingSafeEqual(Buffer.alloc(keyBuffer.length), keyBuffer);

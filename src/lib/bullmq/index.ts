@@ -5,8 +5,8 @@ import { IngestJob } from "@/modules/source/types/IngestJob";
 import { SearchLogJob } from "@/modules/analytics/types/SearchLogJob";
 
 export const connection = new IORedis({
-    host: config.redis.host,
-    port: config.redis.port,
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT,
     maxRetriesPerRequest: null
 });
 

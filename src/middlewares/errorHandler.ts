@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import config from "@/config";
 
 export function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
-    if (config.nodeEnv != "test") {
+    if (config.NODE_ENV != "test") {
         console.error(err);
     }
 

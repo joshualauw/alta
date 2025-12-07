@@ -90,7 +90,7 @@ export async function ingest(source: Source, preset: Preset) {
     const cleanedText = cleanText(source.content);
     const chunks = await chunkText(cleanedText, preset);
 
-    const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
+    const index = pinecone.index(config.PINECONE_INDEX_NAME);
 
     const records = chunks.map((c, i) => {
         const idx = i + 1;
@@ -116,7 +116,7 @@ export async function search(
     tone: AnswerTone
 ): Promise<RagSearchResult> {
     const startTime = Date.now();
-    const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
+    const index = pinecone.index(config.PINECONE_INDEX_NAME);
 
     const result = await index.searchRecords({
         query: {
@@ -183,6 +183,6 @@ export async function search(
 }
 
 export async function remove(sourceId: number) {
-    const index = pinecone.index(config.pinecone.indexName).namespace(config.rag.namespace);
+    const index = pinecone.index(config.PINECONE_INDEX_NAME);
     await index.deleteMany({ source_id: { $eq: sourceId } });
 }
