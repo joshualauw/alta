@@ -15,15 +15,10 @@ No need to assemble your own RAG stack.
 ## ✨ Features
 
 - **Source Management**: Upload documents, URLs, or raw text to build your knowledge base.
-
-- **Grouping**: Organize sources into groups for better structure and targeted querying.
-
+- **Grouping**: Organize sources into groups for better structure.
 - **Bulk Upload**: Create multiple sources at once. Ingestion is processed asynchronously.
-
-- **Automated Ingestion Pipeline**: Automatic chunking, embedding, and vector storage.
-
+- **Ingestion Pipeline**: Automatic chunking, embedding, and vector storage.
 - **Preset Configurations**: Customize chunk sizes, embedding models, and query sensitivity.
-
 - **Smart Search**: Ask your sources using natural language with support for tone and reranking options.
 
 ## 🧱 Architecture
