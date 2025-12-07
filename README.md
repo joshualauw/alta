@@ -128,7 +128,7 @@ alta/
 │  │     ├─ dtos/                            # DTO schemas (validation)
 │  │     ├─ controller.ts                    # Controller layer (HTTP request handlers)
 │  │     ├─ route.ts                         # API route definitions
-│  │     └─ groupService.ts                  # Business logic for grouping functionality
+│  │     └─ service.ts                       # Business logic
 │  ├─ tests/
 │  │  ├─ dummy/                              # Dummy data for tests
 │  │  ├─ integration/                        # Integration test suites
