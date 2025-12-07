@@ -15,8 +15,10 @@ const app = express();
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 
-app.use(apiLimiter);
-app.use(requestLogger);
+if (config.NODE_ENV != "development") {
+    app.use(apiLimiter);
+    app.use(requestLogger);
+}
 
 app.get("/openapi.yml", (req, res) => res.sendFile("openapi.yml", { root: "." }));
 app.get("/docs", redoc({ title: "Alta API Documentation", specUrl: "openapi.yml" }));

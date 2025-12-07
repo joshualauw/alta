@@ -76,7 +76,7 @@ ALTA_API_KEY=alta_
 
 Start required services:
 ```
-docker-compose -d up
+docker compose up -d
 ```
 
 Start the server and workers:
