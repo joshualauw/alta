@@ -14,23 +14,17 @@ No need to assemble your own RAG stack.
 
 ## ✨ Features
 
-- Source Management
-Upload documents, URLs, or raw text to build your knowledge base.
+- **Source Management**: Upload documents, URLs, or raw text to build your knowledge base.
 
-- Grouping
-Organize sources into groups for better structure and targeted querying.
+- **Grouping**: Organize sources into groups for better structure and targeted querying.
 
-- Bulk Upload
-Create multiple sources at once. Ingestion is processed asynchronously.
+- **Bulk Upload**: Create multiple sources at once. Ingestion is processed asynchronously.
 
-- Automated Ingestion Pipeline
-Automatic chunking, embedding, and vector storage.
+- **Automated Ingestion Pipeline**: Automatic chunking, embedding, and vector storage.
 
-- Preset Configurations
-Customize chunk sizes, embedding models, and query sensitivity.
+- **Preset Configurations**: Customize chunk sizes, embedding models, and query sensitivity.
 
-- Smart Search
-Ask your sources using natural language with support for tone and reranking options.
+- **Smart Search**: Ask your sources using natural language with support for tone and reranking options.
 
 ## 🧱 Architecture
 
@@ -38,20 +32,18 @@ Ask your sources using natural language with support for tone and reranking opti
 
 Alta is built on a reliable and scalable stack:
 
-- Express.js — Primary backend server and orchestrator.
-- OpenAI — LLM for generating refined, human-readable answers from retrieved context.
-- BullMQ — Queue processing system for background ingestion tasks.
-- PostgreSQL — Stores raw sources, configurations, metadata, and analytics.
-- Pinecone — High-performance vector database for embeddings and retrieval.
+- **Express.js** — Primary backend server and orchestrator.
+- **OpenAI** — LLM for generating refined, human-readable answers from retrieved context.
+- **BullMQ** — Queue processing system for background ingestion tasks.
+- **PostgreSQL** — Stores raw sources, configurations, metadata, and analytics.
+- **Pinecone** — High-performance vector database for embeddings and retrieval.
 
 ## 📦 Prequisites
 
-- Docker
-- Node.js ≥ v22
-- Pinecone account
-https://www.pinecone.io/
-- OpenAI API key
-https://openai.com/
+- **Docker**
+- **Node.js** ≥ v22
+- **Pinecone account** https://www.pinecone.io/
+- **OpenAI API key** https://openai.com/
 
 ## Project Setup
 
@@ -83,7 +75,6 @@ PINECONE_INDEX_NAME=alta-dev
 
 OPENAI_API_KEY=sk_
 ALTA_API_KEY=alta_
-
 ```
 
 ### Running local developmet
@@ -114,7 +105,7 @@ alta/
 │  │     ├─ schema.prisma                    # Prisma data model + datasource
 │  │     └─ seed.ts                          # Database seeding script
 │  ├─ lib/
-│  │  ├─ bullmq/                             # BullMQ queues and job processors
+│  │  ├─ bullmq/                             # BullMQ queue setup
 │  │  ├─ internal/                           # Internal utilities (not exposed to modules)
 │  │  ├─ openai/                             # OpenAI client + helper functions
 │  │  ├─ openapi/                            # OpenAPI (Swagger) generation & configs
@@ -126,6 +117,7 @@ alta/
 │  ├─ modules/                               # Feature-based module architecture
 │  │  └─ <module_name>/
 │  │     ├─ dtos/                            # DTO schemas (validation)
+│  │     ├─ workers/                         # BullMQ workers
 │  │     ├─ controller.ts                    # Controller layer (HTTP request handlers)
 │  │     ├─ route.ts                         # API route definitions
 │  │     └─ service.ts                       # Business logic
@@ -144,5 +136,4 @@ alta/
 ├─ tsconfig.json                             # TypeScript configuration
 ├─ vite.config.ts                            # Vite config (for docs/tools)
 └─ prisma.config.ts                          # Prisma CLI config
-
 ```
