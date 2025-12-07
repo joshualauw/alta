@@ -3,11 +3,12 @@ import { connection, SOURCE_QUEUE } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
 import * as ragService from "@/modules/source/services/ragService";
 import { IngestJob } from "@/modules/source/types/IngestJob";
+import logger from "@/lib/pino";
 
 const worker = new Worker(
     SOURCE_QUEUE,
     async (job: Job<IngestJob>) => {
-        console.log("processing source started", job.id);
+        logger.info({ jobId: job.id }, "processing source started");
 
         const source = await prisma.source.findUniqueOrThrow({
             where: { jobId: job.data.jobId }
@@ -23,7 +24,7 @@ const worker = new Worker(
 );
 
 worker.on("completed", async (job: Job<IngestJob>) => {
-    console.log("processing source finished", job.id);
+    logger.info({ jobId: job.id }, "processing source finished");
 
     await prisma.source.update({
         where: { jobId: job.data.jobId },
@@ -31,15 +32,15 @@ worker.on("completed", async (job: Job<IngestJob>) => {
     });
 });
 
-worker.on("failed", async (job: Job<IngestJob> | undefined, err) => {
+worker.on("failed", async (job: Job<IngestJob> | undefined, error) => {
     if (job) {
-        console.log("processing source failed", job.id);
+        logger.error({ jobId: job.id, error }, "processing source failed");
 
         await prisma.source.update({
             where: { jobId: job.data.jobId },
-            data: { status: "FAILED", statusReason: err.message }
+            data: { status: "FAILED", statusReason: error.message }
         });
     }
 });
 
-console.log("source worker is running");
+logger.info("source worker is running");

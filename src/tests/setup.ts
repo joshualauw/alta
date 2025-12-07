@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
+import logger from "@/lib/pino";
 
 declare global {
     var pgContainer: StartedPostgreSqlContainer;
@@ -26,12 +27,12 @@ export async function setup() {
     process.env.REDIS_PORT = globalThis.redisContainer.getPort().toString();
     process.env.REDIS_HOST = globalThis.redisContainer.getHost();
 
-    console.log("testcontainer started");
+    logger.info("testcontainer started");
 }
 
 export async function teardown() {
     await globalThis.pgContainer.stop();
     await globalThis.redisContainer.stop();
 
-    console.log("testcontainer stopped");
+    logger.info("testcontainer stopped");
 }

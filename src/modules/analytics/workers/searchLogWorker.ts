@@ -3,11 +3,12 @@ import { connection, SEARCH_LOG_QUEUE } from "@/lib/bullmq";
 import { SearchLogJob } from "@/modules/analytics/types/SearchLogJob";
 import { prisma } from "@/lib/prisma";
 import { InputJsonValue } from "@prisma/client/runtime/client";
+import logger from "@/lib/pino";
 
 const worker = new Worker(
     SEARCH_LOG_QUEUE,
     async (job: Job<SearchLogJob>) => {
-        console.log("processing search log started", job.id);
+        logger.info({ jobId: job.id }, "processing search log started");
 
         await prisma.searchLog.create({
             data: {
@@ -21,13 +22,13 @@ const worker = new Worker(
 );
 
 worker.on("completed", async (job: Job<SearchLogJob>) => {
-    console.log("processing search log finished", job.id);
+    logger.info({ jobId: job.id }, "processing search log finished");
 });
 
-worker.on("failed", async (job: Job<SearchLogJob> | undefined, err) => {
+worker.on("failed", async (job: Job<SearchLogJob> | undefined, error) => {
     if (job) {
-        console.log("processing search log failed", job.id, err.message);
+        logger.error({ jobId: job.id, error }, "processing search log failed");
     }
 });
 
-console.log("search log worker is running");
+logger.info("search log worker is running");

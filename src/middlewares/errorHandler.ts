@@ -4,18 +4,16 @@ import { PrismaClientValidationError } from "@/database/generated/prisma/interna
 import { ServiceError } from "@/lib/internal/errors";
 import { apiResponse } from "@/utils/apiResponse";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import config from "@/config";
+import logger from "@/lib/pino";
 
 export function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
-    if (config.NODE_ENV != "test") {
-        console.error(err);
-    }
-
     if (err instanceof ServiceError) {
+        logger.error(err);
         return apiResponse.error(res, err.message, err.statusCode);
     }
 
     if (err instanceof PrismaClientKnownRequestError) {
+        logger.error(err);
         switch (err.code) {
             case "P2002": {
                 const modelName = (err.meta?.modelName as string | undefined) || "record";
@@ -35,6 +33,7 @@ export function errorHandler(err: unknown, req: Request, res: Response, _: NextF
     }
 
     if (err instanceof PrismaClientValidationError) {
+        logger.error(err);
         return apiResponse.error(res, "invalid data", StatusCodes.UNPROCESSABLE_ENTITY);
     }
 

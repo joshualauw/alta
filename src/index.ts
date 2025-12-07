@@ -8,6 +8,7 @@ import presetRoute from "@/modules/preset/presetRoute";
 import sourceRoute from "@/modules/source/sourceRoute";
 import redoc from "redoc-express";
 import apiLimiter from "@/lib/rate-limit";
+import logger from "@/lib/pino";
 
 const app = express();
 
@@ -29,7 +30,7 @@ app.use("/api/analytics", analyticsRoute);
 app.use(errorHandler);
 
 app.listen(config.PORT, () => {
-    console.log(`Server running on http://localhost:${config.PORT}`);
+    logger.info(`Server running on http://localhost:${config.PORT}`);
 });
 
 export default app;

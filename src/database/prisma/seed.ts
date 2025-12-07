@@ -1,5 +1,6 @@
 import { ResponsesModel } from "openai/resources/shared";
 import { prisma } from "@/lib/prisma";
+import logger from "@/lib/pino";
 
 async function main() {
     const defaultPreset = await prisma.preset.findFirst({
@@ -7,7 +8,7 @@ async function main() {
     });
 
     if (defaultPreset) {
-        console.log("default preset already exist");
+        logger.warn("default preset already exist");
         process.exit(1);
     }
 
@@ -26,7 +27,7 @@ async function main() {
         }
     });
 
-    console.log("✅ Preset 'Default' seeded.");
+    logger.info("✅ Preset 'Default' seeded.");
 }
 
 main()
