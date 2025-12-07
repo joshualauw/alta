@@ -11,15 +11,21 @@
         "start": "node dist/index.js",
         "source-worker:start": "node dist/modules/source/workers/sourceWorker.js",
         "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
-        "lint": "eslint",
-        "lint:fix": "eslint --fix",
         "test": "vitest run",
-        "generate:docs": "ts-node -r tsconfig-paths/register src/lib/openapi/generate.ts"
+        "generate:docs": "ts-node -r tsconfig-paths/register src/lib/openapi/generate.ts",
+        "prepare": "husky"
+    },
+    "lint-staged": {
+        "*.{ts,js}": [
+            "eslint --fix"
+        ]
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "@commitlint/cli": "^20.2.0",
+        "@commitlint/config-conventional": "^20.2.0",
         "@eslint/js": "^9.39.1",
         "@faker-js/faker": "^10.1.0",
         "@testcontainers/postgresql": "^11.9.0",
@@ -30,6 +36,8 @@
         "@types/supertest": "^6.0.3",
         "eslint": "^9.39.1",
         "globals": "^16.5.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.2.7",
         "prettier": "^3.7.2",
         "prisma": "^7.0.1",
         "supertest": "^7.1.4",
