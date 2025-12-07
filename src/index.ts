@@ -7,11 +7,14 @@ import groupRoute from "@/modules/group/groupRoute";
 import presetRoute from "@/modules/preset/presetRoute";
 import sourceRoute from "@/modules/source/sourceRoute";
 import redoc from "redoc-express";
+import apiLimiter from "@/lib/rate-limit";
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1mb" }));
+
+app.use(apiLimiter);
 
 app.get("/openapi.yml", (req, res) => res.sendFile("openapi.yml", { root: "." }));
 app.get("/docs", redoc({ title: "Alta API Documentation", specUrl: "openapi.yml" }));

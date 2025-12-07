@@ -6,6 +6,10 @@ export default {
     database: {
         url: process.env.DATABASE_URL || "postgresql://postgres:123456@localhost:5433/alta"
     },
+    rateLimit: {
+        window: process.env.RATE_LIMIT_WINDOW ? Number(process.env.RATE_LIMIT_WINDOW) : 300000,
+        maxReq: process.env.RATE_LIMIT_MAX_REC ? Number(process.env.RATE_LIMIT_MAX_REC) : 100
+    },
     redis: {
         host: process.env.REDIS_HOST || "localhost",
         port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379
