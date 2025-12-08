@@ -4,7 +4,7 @@ import { apiResponse } from "@/utils/apiResponse";
 import config from "@/config";
 import crypto from "crypto";
 
-export function authorize(req: Request, res: Response, next: NextFunction) {
+export default function authorize(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers["x-api-key"];
 
     if (!apiKey) {

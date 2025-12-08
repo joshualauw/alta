@@ -7,7 +7,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import logger from "@/lib/pino";
 import config from "@/config";
 
-export function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
+export default function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
     if (err instanceof ServiceError) {
         if (config.NODE_ENV != "test") logger.error(err);
 

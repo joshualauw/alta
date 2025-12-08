@@ -7,6 +7,7 @@ const configSchema = z.object({
     DATABASE_URL: z.string().min(1),
     RATE_LIMIT_WINDOW: z.coerce.number().min(1000).default(300000),
     RATE_LIMIT_MAX_REC: z.coerce.number().min(1).default(100),
+    FRONTEND_URL: z.string().min(1),
     REDIS_HOST: z.string().min(1),
     REDIS_PORT: z.coerce.number().min(1).default(6379),
     ALTA_API_KEY: z.string().min(1),
