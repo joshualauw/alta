@@ -3,25 +3,47 @@ import { StatusCodes } from "http-status-codes";
 import { apiResponse } from "@/utils/apiResponse";
 import config from "@/config";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { UserJwtPayload } from "@/types/UserJwtPayload";
 
 export default function authorize(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers["x-api-key"];
 
-    if (!apiKey) {
-        return apiResponse.error(res, "invalid API Key", StatusCodes.UNAUTHORIZED);
+    if (apiKey) {
+        const userBuffer = Buffer.from(apiKey.toString());
+        const keyBuffer = Buffer.from(config.ALTA_API_KEY);
+
+        // Timing-safe comparison to prevent timing attacks
+        if (userBuffer.length !== keyBuffer.length) {
+            crypto.timingSafeEqual(Buffer.alloc(keyBuffer.length), keyBuffer);
+            return apiResponse.error(res, "invalid API Key", StatusCodes.UNAUTHORIZED);
+        }
+
+        if (!crypto.timingSafeEqual(userBuffer, keyBuffer)) {
+            return apiResponse.error(res, "invalid API Key", StatusCodes.UNAUTHORIZED);
+        }
+
+        return next();
     }
 
-    const userBuffer = Buffer.from(apiKey.toString());
-    const keyBuffer = Buffer.from(config.ALTA_API_KEY);
+    const authHeader = req.headers.authorization;
 
-    if (userBuffer.length !== keyBuffer.length) {
-        crypto.timingSafeEqual(Buffer.alloc(keyBuffer.length), keyBuffer);
-        return apiResponse.error(res, "invalid API Key", StatusCodes.UNAUTHORIZED);
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.substring(7);
+
+        try {
+            const decoded = jwt.verify(token, config.JWT_SECRET);
+            req.user = decoded as UserJwtPayload;
+
+            return next();
+        } catch (error) {
+            let message = "Invalid or expired token";
+            if (error instanceof jwt.JsonWebTokenError) {
+                message = error.message;
+            }
+            return apiResponse.error(res, message, StatusCodes.UNAUTHORIZED);
+        }
     }
 
-    if (!crypto.timingSafeEqual(userBuffer, keyBuffer)) {
-        return apiResponse.error(res, "invalid API Key", StatusCodes.UNAUTHORIZED);
-    }
-
-    next();
+    return apiResponse.error(res, "Unauthorized", StatusCodes.UNAUTHORIZED);
 }

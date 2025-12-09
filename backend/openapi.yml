@@ -41,6 +41,8 @@ paths:
     $ref: "#/components/pathItems/delete-source"
   /api/analytics/searchLog:
     $ref: "#/components/pathItems/get-all-search-log"
+  /api/user/login:
+    $ref: "#/components/pathItems/login"
 components:
   pathItems:
     get-all-group:
@@ -2341,6 +2343,100 @@ components:
                           - createdAt
                           - updatedAt
                         additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    login:
+      summary: login admin
+      get:
+        tags:
+          - user
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  password:
+                    type: string
+                required:
+                  - email
+                  - password
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        email:
+                          type: string
+                        role:
+                          type: string
+                          enum:
+                            - ADMIN
+                        token:
+                          type: string
+                      required:
+                        - id
+                        - email
+                        - role
+                        - token
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "401":
+            description: invalid credentials
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
                     message:
                       type: string
                     errors:
