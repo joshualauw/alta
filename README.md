@@ -45,7 +45,7 @@ Alta is built on a reliable and scalable stack:
 Clone the repository:
 ```
 git clone https://github.com/joshualauw/alta.git
-cd alta/backend
+cd alta
 ```
 
 Copy the environment template:
@@ -68,8 +68,7 @@ RATE_LIMIT_WINDOW=300000
 RATE_LIMIT_MAX_REQ=100
 
 DATABASE_URL=postgresql://postgres:123456@localhost:5433/alta
-REDIS_HOST=localhost
-REDIS_PORT=6379
+REDIS_URL=redis://localhost:6379
 
 PINECONE_API_KEY=pcsk_
 PINECONE_INDEX_NAME=alta-dev
@@ -87,9 +86,7 @@ docker compose up -d
 
 Start the server and workers:
 ```
-npm run dev
-npm run source-worker:dev
-npm run search-log-worker:dev
+npm run dev:all
 ```
 
 Then open API documentation at: http://localhost:3001/docs
@@ -97,7 +94,7 @@ Then open API documentation at: http://localhost:3001/docs
 ## Project Structure
 
 ``` 
-backend/
+alta/
 ├─ src/                                      # Application source code
 │  ├─ config/                                # App configuration (env, constants, settings)
 │  ├─ database/
