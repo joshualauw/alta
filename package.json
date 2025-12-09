@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "start": "cd backend & npm run start",
+        "source-worker:start": "cd backend & npm run source-worker:start",
+        "search-log-worker:start": "cd backend & npm search-log-worker:start",
+        "build": "npm run build:frontend & npm run build:backend",
+        "build:frontend": "cd frontend & npm run build",
+        "build:backend": "cd backend & npm run build"
+    }
+}
