@@ -2359,7 +2359,7 @@ components:
                   additionalProperties: false
     login:
       summary: login admin
-      get:
+      post:
         tags:
           - user
         requestBody:

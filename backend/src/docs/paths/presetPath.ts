@@ -2,8 +2,8 @@ import {
     errorResponseSchema,
     successResponseSchema,
     validationErrorResponseSchema
-} from "@/lib/openapi/schemas/apiResponseSchema";
-import { apiKeyHeaderSchema } from "@/lib/openapi/schemas/headerSchema";
+} from "@/docs/schemas/apiResponseSchema";
+import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { createPresetRequest, createPresetResponse } from "@/modules/preset/dtos/createPresetDto";
 import { deletePresetResponse } from "@/modules/preset/dtos/deletePresetDto";
 import { getAllPresetResponse } from "@/modules/preset/dtos/getAllPresetDto";

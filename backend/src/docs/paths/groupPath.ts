@@ -1,4 +1,4 @@
-import { apiKeyHeaderSchema } from "@/lib/openapi/schemas/headerSchema";
+import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { getAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
 import { getGroupDetailResponse } from "@/modules/group/dtos/getGroupDetailDto";
 import { ZodOpenApiPathItemObject } from "zod-openapi";
@@ -6,7 +6,7 @@ import {
     successResponseSchema,
     errorResponseSchema,
     validationErrorResponseSchema
-} from "@/lib/openapi/schemas/apiResponseSchema";
+} from "@/docs/schemas/apiResponseSchema";
 import z from "zod";
 import { createGroupRequest, createGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { updateGroupRequest, updateGroupResponse } from "@/modules/group/dtos/updateGroupDto";

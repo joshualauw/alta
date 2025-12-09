@@ -1,5 +1,5 @@
-import { successResponseSchema } from "@/lib/openapi/schemas/apiResponseSchema";
-import { apiKeyHeaderSchema } from "@/lib/openapi/schemas/headerSchema";
+import { successResponseSchema } from "@/docs/schemas/apiResponseSchema";
+import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { getAllSearchLogQuery, getAllSearchLogResponse } from "@/modules/analytics/dtos/getAllSearchLogDto";
 import z from "zod";
 import { ZodOpenApiPathItemObject } from "zod-openapi";

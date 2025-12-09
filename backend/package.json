@@ -12,7 +12,7 @@
         "source-worker:start": "node dist/modules/source/workers/sourceWorker.js",
         "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
         "test": "vitest run",
-        "generate:docs": "ts-node -r tsconfig-paths/register src/lib/openapi/generate.ts",
+        "generate:docs": "ts-node -r tsconfig-paths/register src/docs/generate.ts",
         "prepare": "cd .. && husky"
     },
     "lint-staged": {

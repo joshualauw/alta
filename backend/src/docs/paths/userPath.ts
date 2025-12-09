@@ -1,11 +1,11 @@
-import { errorResponseSchema, successResponseSchema } from "@/lib/openapi/schemas/apiResponseSchema";
+import { errorResponseSchema, successResponseSchema } from "@/docs/schemas/apiResponseSchema";
 import { loginRequest, loginResponse } from "@/modules/user/dtos/loginDto";
 import { ZodOpenApiPathItemObject } from "zod-openapi";
 
 export const loginPath: ZodOpenApiPathItemObject = {
     id: "login",
     summary: "login admin",
-    get: {
+    post: {
         requestBody: {
             content: {
                 "application/json": { schema: loginRequest }

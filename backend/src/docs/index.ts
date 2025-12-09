@@ -1,9 +1,9 @@
 import { createDocument } from "zod-openapi";
-import * as groupPath from "@/lib/openapi/paths/groupPath";
-import * as presetPath from "@/lib/openapi/paths/presetPath";
-import * as sourcePath from "@/lib/openapi/paths/sourcePath";
-import * as analyticsPath from "@/lib/openapi/paths/analyticsPath";
-import * as userPath from "@/lib/openapi/paths/userPath";
+import * as groupPath from "@/docs/paths/groupPath";
+import * as presetPath from "@/docs/paths/presetPath";
+import * as sourcePath from "@/docs/paths/sourcePath";
+import * as analyticsPath from "@/docs/paths/analyticsPath";
+import * as userPath from "@/docs/paths/userPath";
 
 const document = createDocument({
     openapi: "3.0.0",

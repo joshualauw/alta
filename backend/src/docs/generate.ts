@@ -1,8 +1,8 @@
 import { stringify } from "yaml";
 import fs from "fs";
 import path from "path";
-import document from "@/lib/openapi";
 import logger from "@/lib/pino";
+import document from "@/docs";
 
 function generateOpenApiSpec() {
     const yaml = stringify(document, { aliasDuplicateObjects: false });

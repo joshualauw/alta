@@ -2,8 +2,8 @@ import {
     errorResponseSchema,
     successResponseSchema,
     validationErrorResponseSchema
-} from "@/lib/openapi/schemas/apiResponseSchema";
-import { apiKeyHeaderSchema } from "@/lib/openapi/schemas/headerSchema";
+} from "@/docs/schemas/apiResponseSchema";
+import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import {
     createBulkSourceQuery,
     createBulkSourceRequest,
