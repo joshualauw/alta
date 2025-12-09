@@ -1,12 +1,10 @@
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
-import config from "@/config";
 import { IngestJob } from "@/modules/source/types/IngestJob";
 import { SearchLogJob } from "@/modules/analytics/types/SearchLogJob";
+import config from "@/config";
 
-export const connection = new IORedis({
-    host: config.REDIS_HOST,
-    port: config.REDIS_PORT,
+export const connection = new IORedis(config.REDIS_URL, {
     maxRetriesPerRequest: null
 });
 
