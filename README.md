@@ -45,7 +45,7 @@ Alta is built on a reliable and scalable stack:
 Clone the repository:
 ```
 git clone https://github.com/joshualauw/alta.git
-cd alta
+cd alta/backend
 ```
 
 Copy the environment template:
@@ -57,6 +57,12 @@ Then populate the required values:
 ```
 PORT=3001
 NODE_ENV=development
+
+JWT_SECRET=
+JWT_EXPIRES_IN=86400
+
+ADMIN_EMAIL=admin@mail.com
+ADMIN_PASSWORD=
 
 RATE_LIMIT_WINDOW=300000
 RATE_LIMIT_MAX_REQ=100
@@ -91,7 +97,7 @@ Then open API documentation at: http://localhost:3001/docs
 ## Project Structure
 
 ``` 
-alta/
+backend/
 ├─ src/                                      # Application source code
 │  ├─ config/                                # App configuration (env, constants, settings)
 │  ├─ database/
@@ -99,15 +105,17 @@ alta/
 │  │     ├─ migrations/                      # Prisma migration history
 │  │     ├─ schema.prisma                    # Prisma data model + datasource
 │  │     └─ seed.ts                          # Database seeding script
+│  ├─ docs/                                  
+│  │  ├─ paths/                              # OpenAPI (Swagger) list of paths using zod
+│  │  ├─ schemas/                            # OpenAPI schema helpers
+│  │  └─ generate.ts                         # Generate OpenAPI specs to file
 │  ├─ lib/
 │  │  ├─ bullmq/                             # BullMQ queue setup
 │  │  ├─ internal/                           # Internal utilities (not exposed to modules)
 │  │  ├─ openai/                             # OpenAI client + helper functions
-│  │  ├─ openapi/                            # OpenAPI (Swagger) generation & configs
 │  │  ├─ pinecone/                           # Pinecone client + vector DB helpers
 │  │  ├─ pino/                               # Logger setup (Pino)
-│  │  ├─ prisma/                             # Prisma client instance
-│  │  └─ rate-limit/                         # Rate limiting utilities & middlewares
+│  │  └─ prisma/                             # Prisma client instance
 │  ├─ middlewares/                           # Express middlewares (auth, errors, etc.)
 │  ├─ modules/                               # Feature-based module architecture
 │  │  └─ <module_name>/
