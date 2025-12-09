@@ -13,7 +13,7 @@
         "search-log-worker:start": "node dist/modules/analytics/workers/searchLogWorker.js",
         "test": "vitest run",
         "generate:docs": "ts-node -r tsconfig-paths/register src/lib/openapi/generate.ts",
-        "prepare": "husky"
+        "prepare": "cd .. && husky"
     },
     "lint-staged": {
         "*.{ts,js}": [
@@ -35,6 +35,7 @@
         "@types/node": "^24.10.1",
         "@types/pg": "^8.15.6",
         "@types/supertest": "^6.0.3",
+        "concurrently": "^9.2.1",
         "eslint": "^9.39.1",
         "globals": "^16.5.0",
         "husky": "^9.1.7",
