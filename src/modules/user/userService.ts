@@ -7,14 +7,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
-    const user = await prisma.user.findFirstOrThrow({
+    const user = await prisma.user.findFirst({
         where: { email: payload.email }
     });
 
+    if (!user) throw new UnauthorizedError("invalid credentials");
+
     const isValidPassword = await bcrypt.compare(payload.password, user.password);
-    if (!isValidPassword) {
-        throw new UnauthorizedError("invalid credentials");
-    }
+    if (!isValidPassword) throw new UnauthorizedError("invalid credentials");
 
     const userPayload = pick(user, "id", "name", "email", "role");
 
