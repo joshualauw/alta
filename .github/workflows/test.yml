@@ -24,6 +24,8 @@ jobs:
 
       - name: Run prisma generate
         run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://postgres:123456@localhost:5433/alta"
 
       - name: Run tests
         run: npm run test
