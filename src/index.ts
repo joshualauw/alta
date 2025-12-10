@@ -27,6 +27,7 @@ if (config.NODE_ENV != "development") {
     app.use(requestLogger);
 }
 
+app.get("/healthcheck", (req, res) => res.send("ok"));
 app.get("/openapi.yml", (req, res) => res.sendFile(path.join(process.cwd(), "openapi.yml")));
 app.get("/docs", redoc({ title: "Alta API Documentation", specUrl: "openapi.yml" }));
 

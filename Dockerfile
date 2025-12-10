@@ -1,7 +1,5 @@
 FROM node:20
 
-ARG DATABASE_URL
-
 WORKDIR /usr/src/app
 
 COPY package*.json ./
