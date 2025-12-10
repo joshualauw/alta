@@ -1,6 +1,5 @@
 import request from "supertest";
 import { afterAll, describe, expect, it } from "vitest";
-import { MOCK_API_KEY } from "../mock";
 import { createSourceFactory } from "@/tests/prisma";
 import app from "@/index";
 import { vi } from "vitest";
@@ -8,6 +7,8 @@ import { ingest, remove, search } from "@/modules/source/services/ragService";
 import { searchLogQueue, sourceQueue } from "@/lib/bullmq";
 
 describe("Source API Integration Test", () => {
+    const MOCK_API_KEY = process.env.ALTA_API_KEY || "";
+
     afterAll(() => {
         vi.clearAllMocks();
     });

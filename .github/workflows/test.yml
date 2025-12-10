@@ -5,18 +5,19 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-env:
+env: 
+# placeholders that will be managed by testcontainer
   NODE_ENV: "test"
-  JWT_SECRET: "SomeSecretKey"
-  ADMIN_EMAIL: "admin@mail.com"
-  ADMIN_PASSWORD: "SomePassword"
-  DATABASE_URL: "postgresql://postgres:123456@localhost:5433/alta"
-  REDIS_URL: "redis://localhost:6379"
-  FRONTEND_URL: "http://localhost:5173"
-  PINECONE_API_KEY: "pcsk_"
-  PINECONE_INDEX_NAME: "alta-dev"
-  OPENAI_API_KEY: "pk-"
-  ALTA_API_KEY: "alta_"
+  JWT_SECRET: "ci-test-secret"
+  ADMIN_EMAIL: "ci@test.com"
+  ADMIN_PASSWORD: "ci-test-password"
+  DATABASE_URL: "ci-test-url"
+  REDIS_URL: "ci-test-url"
+  FRONTEND_URL: "ci-test-url"
+  PINECONE_API_KEY: "ci-test-secret"
+  PINECONE_INDEX_NAME: "ci-test-name"
+  OPENAI_API_KEY: "ci-test-secret"
+  ALTA_API_KEY: "ci-test-secret"
 
 jobs:
   build-and-test:

@@ -1,10 +1,11 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { MOCK_API_KEY } from "../mock";
 import { createPresetFactory } from "@/tests/prisma";
 import app from "@/index";
 
 describe("Preset API Integration Test", () => {
+    const MOCK_API_KEY = process.env.ALTA_API_KEY || "";
+
     describe("POST /api/preset/create", () => {
         it("should create a new preset", async () => {
             const data = {

@@ -10,6 +10,7 @@ declare global {
 
 export async function setup() {
     process.env.NODE_ENV = "test";
+    process.env.ALTA_API_KEY = "SomeApiKey";
 
     globalThis.pgContainer = await new PostgreSqlContainer("postgres:15")
         .withDatabase("testdb")

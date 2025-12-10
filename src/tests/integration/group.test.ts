@@ -1,10 +1,11 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { MOCK_API_KEY } from "../mock";
 import { createGroupFactory, createSourceFactory } from "@/tests/prisma";
 import app from "@/index";
 
 describe("Group API Integration Test", () => {
+    const MOCK_API_KEY = process.env.ALTA_API_KEY || "";
+
     describe("POST /api/group/create", () => {
         it("should create a new group", async () => {
             const data = {

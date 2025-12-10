@@ -7,7 +7,7 @@ describe("User API Integration Test", () => {
         it("should failed at wrong credentials", async () => {
             const data = {
                 email: "admin@mail.com",
-                password: "wrongpassword"
+                password: "WrongPassword"
             };
 
             const res = await request(app).post("/api/user/login").send(data);
