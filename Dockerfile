@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN npm run build
+
 RUN npm install pm2 -g
 
 RUN useradd -m appuser && chown -R appuser /usr/src/app
