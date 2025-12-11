@@ -3,8 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { apiResponse } from "@/utils/apiResponse";
 import config from "@/config";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
-import { UserJwtPayload } from "@/types/UserJwtPayload";
 
 export default function authorize(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers["x-api-key"];
@@ -24,25 +22,6 @@ export default function authorize(req: Request, res: Response, next: NextFunctio
         }
 
         return next();
-    }
-
-    const authHeader = req.headers.authorization;
-
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-        const token = authHeader.substring(7);
-
-        try {
-            const decoded = jwt.verify(token, config.JWT_SECRET);
-            req.user = decoded as UserJwtPayload;
-
-            return next();
-        } catch (error) {
-            let message = "Invalid or expired token";
-            if (error instanceof jwt.JsonWebTokenError) {
-                message = error.message;
-            }
-            return apiResponse.error(res, message, StatusCodes.UNAUTHORIZED);
-        }
     }
 
     return apiResponse.error(res, "Unauthorized", StatusCodes.UNAUTHORIZED);

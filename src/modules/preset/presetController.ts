@@ -4,9 +4,10 @@ import { UpdatePresetRequest } from "@/modules/preset/dtos/updatePresetDto";
 import * as presetService from "@/modules/preset/presetService";
 import { apiResponse } from "@/utils/apiResponse";
 import { StatusCodes } from "http-status-codes";
+import { PagingQuery } from "@/types/PagingQuery";
 
-export async function getAllPreset(req: Request, res: Response) {
-    const result = await presetService.getAllPreset();
+export async function getAllPreset(req: Request<{}, {}, {}, PagingQuery>, res: Response) {
+    const result = await presetService.getAllPreset(req.query);
     return apiResponse.success(res, result, "get all preset successful");
 }
 

@@ -1,5 +1,6 @@
 import {
     errorResponseSchema,
+    pagingResponseSchema,
     successResponseSchema,
     validationErrorResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
@@ -11,7 +12,7 @@ import {
 } from "@/modules/source/dtos/createBulkSourceDto";
 import { createSourceQuery, createSourceRequest, createSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { deleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
-import { getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
+import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest, updateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
@@ -22,12 +23,15 @@ export const getAllSourcePath: ZodOpenApiPathItemObject = {
     id: "get-all-source",
     summary: "get all source",
     get: {
+        requestParams: {
+            query: getAllSourceQuery
+        },
         responses: {
             200: {
                 description: "success",
                 content: {
                     "application/json": {
-                        schema: successResponseSchema(z.array(getAllSourceResponse))
+                        schema: successResponseSchema(pagingResponseSchema(getAllSourceResponse))
                     }
                 },
                 headers: apiKeyHeaderSchema

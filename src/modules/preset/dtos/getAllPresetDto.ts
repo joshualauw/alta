@@ -1,3 +1,4 @@
+import { PagingResponse } from "@/types/PagingResponse";
 import z from "zod";
 
 export const getAllPresetResponse = z.object({
@@ -7,4 +8,4 @@ export const getAllPresetResponse = z.object({
     createdAt: z.string()
 });
 
-export type GetAllPresetResponse = z.infer<typeof getAllPresetResponse>;
+export type GetAllPresetResponse = PagingResponse<z.infer<typeof getAllPresetResponse>>;

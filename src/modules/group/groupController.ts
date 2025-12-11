@@ -5,9 +5,10 @@ import { CreateGroupRequest } from "@/modules/group/dtos/createGroupDto";
 import { UpdateGroupRequest } from "@/modules/group/dtos/updateGroupDto";
 import * as groupService from "@/modules/group/groupService";
 import { apiResponse } from "@/utils/apiResponse";
+import { PagingQuery } from "@/types/PagingQuery";
 
-export async function getAllGroup(req: Request, res: Response) {
-    const result = await groupService.getAllGroup();
+export async function getAllGroup(req: Request<{}, {}, {}, PagingQuery>, res: Response) {
+    const result = await groupService.getAllGroup(req.query);
     return apiResponse.success(res, result, "get all group successful");
 }
 

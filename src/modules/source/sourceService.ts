@@ -17,24 +17,32 @@ import * as ragService from "@/modules/source/services/ragService";
 import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
+import { pagingResponse } from "@/utils/apiResponse";
 
-export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse[]> {
+export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
     if (query.groupId) {
         filters.groupId = Number(query.groupId);
     }
 
-    const sources = await prisma.source.findMany({
-        where: filters,
-        include: { group: true }
-    });
+    const [sources, count] = await prisma.$transaction([
+        prisma.source.findMany({
+            skip: (query.page - 1) * query.size,
+            take: query.size,
+            where: filters,
+            include: { group: true }
+        }),
+        prisma.source.count()
+    ]);
 
-    return sources.map((s) => ({
+    const items = sources.map((s) => ({
         ...pick(s, "id", "name", "fileUrl", "status"),
         groupId: s.groupId,
         groupName: s.group?.name ?? null,
         createdAt: s.createdAt.toISOString()
     }));
+
+    return pagingResponse(items, count, query.page, query.size);
 }
 
 export async function getSourceDetail(id: number): Promise<GetSourceDetailResponse> {

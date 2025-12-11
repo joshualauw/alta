@@ -8,15 +8,13 @@ import logger from "@/lib/pino";
 import config from "@/config";
 
 export default function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
-    if (err instanceof ServiceError) {
-        if (config.NODE_ENV != "test") logger.error(err);
+    if (config.NODE_ENV != "test") logger.error(err);
 
+    if (err instanceof ServiceError) {
         return apiResponse.error(res, err.message, err.statusCode);
     }
 
     if (err instanceof PrismaClientKnownRequestError) {
-        if (config.NODE_ENV != "test") logger.error(err);
-
         switch (err.code) {
             case "P2002": {
                 const modelName = (err.meta?.modelName as string | undefined) || "record";
@@ -36,8 +34,6 @@ export default function errorHandler(err: unknown, req: Request, res: Response, 
     }
 
     if (err instanceof PrismaClientValidationError) {
-        if (config.NODE_ENV != "test") logger.error(err);
-
         return apiResponse.error(res, "invalid data", StatusCodes.UNPROCESSABLE_ENTITY);
     }
 
