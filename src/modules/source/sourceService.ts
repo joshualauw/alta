@@ -13,13 +13,14 @@ import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/g
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
-import * as ragService from "@/modules/source/services/ragService";
 import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { pagingResponse } from "@/utils/apiResponse";
 import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
 import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
+import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
+import * as ragSearchService from "@/modules/source/services/ragSearchService";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -99,7 +100,7 @@ export async function createSource(
 
     const source = await prisma.$transaction(async (tx) => {
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-        await ragService.ingest(source, preset);
+        await ragIngestionService.ingest(source, preset);
 
         return source;
     });
@@ -157,7 +158,7 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
         await tx.source.delete({
             where: { id }
         });
-        await ragService.remove(id);
+        await ragIngestionService.remove(id);
     });
 
     return { id };
@@ -173,7 +174,6 @@ export async function searchSource(
 
     const rerank = query.rerank ? Number(query.rerank) == 1 : false;
     const tone: AnswerTone = query.tone ? query.tone : "normal";
-
     const source_ids: number[] = [];
 
     if (payload.filters) {
@@ -184,7 +184,8 @@ export async function searchSource(
         );
         source_ids.push(...sources.map((s) => s.id));
     }
-    const result = await ragService.search(payload, source_ids, rerank, preset, tone);
+
+    const result = await ragSearchService.search(payload, source_ids, rerank, preset, tone);
 
     await searchLogQueue.add(`job_${uuidv4()}`, {
         question: payload.question,

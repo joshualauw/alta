@@ -1,7 +1,7 @@
 import { Job, Worker } from "bullmq";
 import { connection, SOURCE_QUEUE } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
-import * as ragService from "@/modules/source/services/ragService";
+import * as ragService from "@/modules/source/services/ragSearchService";
 import { IngestJob } from "@/modules/source/types/IngestJob";
 import logger from "@/lib/pino";
 

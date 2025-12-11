@@ -1,11 +1,9 @@
 import { vi } from "vitest";
 
-vi.mock("@/modules/source/services/ragService", async (importOriginal) => {
+vi.mock("@/modules/source/services/ragSearchService", async (importOriginal) => {
     const actual: object = await importOriginal();
     return {
         ...actual,
-        ingest: vi.fn(),
-        remove: vi.fn(),
         search: vi.fn().mockResolvedValue({
             answer: "mock answer",
             responseTimeMs: 100,
@@ -16,6 +14,15 @@ vi.mock("@/modules/source/services/ragService", async (importOriginal) => {
             chunksReranked: [],
             chunksReferences: ["1", "2"]
         })
+    };
+});
+
+vi.mock("@/modules/source/services/ragIngestionService", async (importOriginal) => {
+    const actual: object = await importOriginal();
+    return {
+        ...actual,
+        ingest: vi.fn(),
+        remove: vi.fn()
     };
 });
 
