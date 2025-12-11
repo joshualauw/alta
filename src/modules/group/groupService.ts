@@ -5,15 +5,25 @@ import { DeleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { GetAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
 import { GetGroupDetailResponse } from "@/modules/group/dtos/getGroupDetailDto";
 import { UpdateGroupRequest, UpdateGroupResponse } from "@/modules/group/dtos/updateGroupDto";
+import { PagingQuery } from "@/types/PagingQuery";
+import { pagingResponse } from "@/utils/apiResponse";
 import { pick } from "@/utils/mapper";
 
-export async function getAllGroup(): Promise<GetAllGroupResponse[]> {
-    const groups = await prisma.group.findMany();
+export async function getAllGroup(query: PagingQuery): Promise<GetAllGroupResponse> {
+    const [groups, count] = await prisma.$transaction([
+        prisma.group.findMany({
+            skip: (query.page - 1) * query.size,
+            take: query.size
+        }),
+        prisma.group.count()
+    ]);
 
-    return groups.map((g) => ({
+    const items = groups.map((g) => ({
         ...pick(g, "id", "name", "colorCode"),
         createdAt: g.createdAt.toISOString()
     }));
+
+    return pagingResponse(items, count, query.page, query.size);
 }
 
 export async function getGroupDetail(id: number): Promise<GetGroupDetailResponse> {

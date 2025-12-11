@@ -1,3 +1,4 @@
+import { PagingResponse } from "@/types/PagingResponse";
 import z from "zod";
 import "zod-openapi";
 
@@ -8,4 +9,4 @@ export const getAllGroupResponse = z.object({
     createdAt: z.string()
 });
 
-export type GetAllGroupResponse = z.infer<typeof getAllGroupResponse>;
+export type GetAllGroupResponse = PagingResponse<z.infer<typeof getAllGroupResponse>>;
