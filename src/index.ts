@@ -5,7 +5,6 @@ import analyticsRoute from "@/modules/analytics/analyticsRoute";
 import groupRoute from "@/modules/group/groupRoute";
 import presetRoute from "@/modules/preset/presetRoute";
 import sourceRoute from "@/modules/source/sourceRoute";
-import userRoute from "@/modules/user/userRoute";
 import redoc from "redoc-express";
 import path from "path";
 
@@ -42,7 +41,6 @@ app.use("/api/source", authorize, sourceRoute);
 app.use("/api/group", authorize, groupRoute);
 app.use("/api/preset", authorize, presetRoute);
 app.use("/api/analytics", authorize, analyticsRoute);
-app.use("/api/user", userRoute);
 
 app.use(errorHandler);
 
