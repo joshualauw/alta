@@ -18,6 +18,8 @@ import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { pagingResponse } from "@/utils/apiResponse";
+import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
+import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -60,22 +62,36 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
     };
 }
 
-function getCreateSourcePayload(payload: CreateSourceRequest) {
-    const { metadata, ...rest } = payload;
-    const data: SourceCreateInput = { ...rest };
+export async function filterSource(query: FilterSourceRequest): Promise<FilterSourceResponse> {
+    const { sql, params } = buildMetadataFilter(query);
+    const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(
+        `SELECT id FROM "Source" WHERE ${sql}`,
+        ...params
+    );
 
-    if (metadata) {
-        data.metadata = metadata as JsonObject;
-    }
+    const sources = await prisma.source.findMany({
+        where: { id: { in: filteredSources.map((s) => s.id) } },
+        include: { group: true }
+    });
 
-    return data;
+    return sources.map((s) => ({
+        ...pick(s, "id", "name", "fileUrl", "status"),
+        groupId: s.groupId,
+        groupName: s.group?.name ?? null,
+        createdAt: s.createdAt.toISOString()
+    }));
 }
 
 export async function createSource(
     payload: CreateSourceRequest,
     query: CreateSourceQuery
 ): Promise<CreateSourceResponse> {
-    const data = getCreateSourcePayload(payload);
+    const { metadata, ...rest } = payload;
+    const data: SourceCreateInput = { ...rest };
+
+    if (metadata) {
+        data.metadata = metadata as JsonObject;
+    }
 
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
@@ -100,8 +116,12 @@ export async function createBulkSource(
     });
 
     const sources = payload.map((p) => {
-        const data = getCreateSourcePayload(p);
-        data.jobId = uuidv4();
+        const { metadata, ...rest } = p;
+        const data: SourceCreateInput = { ...rest, jobId: uuidv4() };
+
+        if (metadata) {
+            data.metadata = metadata as JsonObject;
+        }
 
         return data;
     });
@@ -154,11 +174,19 @@ export async function searchSource(
     const rerank = query.rerank ? Number(query.rerank) == 1 : false;
     const tone: AnswerTone = query.tone ? query.tone : "normal";
 
-    const result = await ragService.search(payload, rerank, preset, tone);
+    const source_ids: number[] = [];
 
-    const jobId = uuidv4();
+    if (payload.filters) {
+        const { sql, params } = buildMetadataFilter(payload.filters);
+        const sources = await prisma.$queryRawUnsafe<{ id: number }[]>(
+            `SELECT id FROM "Source" WHERE ${sql}`,
+            ...params
+        );
+        source_ids.push(...sources.map((s) => s.id));
+    }
+    const result = await ragService.search(payload, source_ids, rerank, preset, tone);
 
-    await searchLogQueue.add(`job_${jobId}`, {
+    await searchLogQueue.add(`job_${uuidv4()}`, {
         question: payload.question,
         isRerank: rerank,
         tone: tone,

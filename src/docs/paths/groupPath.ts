@@ -1,18 +1,18 @@
-import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
-import { getAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
-import { getGroupDetailResponse } from "@/modules/group/dtos/getGroupDetailDto";
+import z from "zod";
 import { ZodOpenApiPathItemObject } from "zod-openapi";
 import {
-    successResponseSchema,
     errorResponseSchema,
-    validationErrorResponseSchema,
-    pagingResponseSchema
+    pagingResponseSchema,
+    successResponseSchema,
+    validationErrorResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
-import z from "zod";
-import { createGroupRequest, createGroupResponse } from "@/modules/group/dtos/createGroupDto";
-import { updateGroupRequest, updateGroupResponse } from "@/modules/group/dtos/updateGroupDto";
-import { deleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
+import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { changeSourceGroupRequest, changeSourceGroupResponse } from "@/modules/group/dtos/changeSourceGroupDto";
+import { createGroupRequest, createGroupResponse } from "@/modules/group/dtos/createGroupDto";
+import { deleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
+import { getAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
+import { getGroupDetailResponse } from "@/modules/group/dtos/getGroupDetailDto";
+import { updateGroupRequest, updateGroupResponse } from "@/modules/group/dtos/updateGroupDto";
 import { pagingQuery } from "@/types/PagingQuery";
 
 export const getAllGroupPath: ZodOpenApiPathItemObject = {
@@ -57,7 +57,9 @@ export const getGroupDetailPath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -72,21 +74,27 @@ export const createGroupPath: ZodOpenApiPathItemObject = {
     post: {
         requestBody: {
             content: {
-                "application/json": { schema: createGroupRequest }
+                "application/json": {
+                    schema: createGroupRequest
+                }
             }
         },
         responses: {
             201: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(createGroupResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(createGroupResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -104,28 +112,36 @@ export const updateGroupPath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: updateGroupRequest }
+                "application/json": {
+                    schema: updateGroupRequest
+                }
             }
         },
         responses: {
             200: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(updateGroupResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(updateGroupResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -154,7 +170,9 @@ export const deleteGroupPath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -169,28 +187,36 @@ export const changeSourceGroupPath: ZodOpenApiPathItemObject = {
     patch: {
         requestBody: {
             content: {
-                "application/json": { schema: changeSourceGroupRequest }
+                "application/json": {
+                    schema: changeSourceGroupRequest
+                }
             }
         },
         responses: {
             200: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(changeSourceGroupResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(changeSourceGroupResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }

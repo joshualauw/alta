@@ -1620,7 +1620,14 @@ components:
                     minLength: 1
                   metadata:
                     type: object
-                    additionalProperties: {}
+                    additionalProperties:
+                      anyOf:
+                        - type: string
+                        - type: number
+                        - type: boolean
+                        - type: array
+                          items:
+                            type: string
                   groupId:
                     type: number
                 required:
@@ -1733,7 +1740,14 @@ components:
                       minLength: 1
                     metadata:
                       type: object
-                      additionalProperties: {}
+                      additionalProperties:
+                        anyOf:
+                          - type: string
+                          - type: number
+                          - type: boolean
+                          - type: array
+                            items:
+                              type: string
                     groupId:
                       type: number
                   required:
@@ -1848,244 +1862,28 @@ components:
                     type: string
                     minLength: 1
                   filters:
-                    anyOf:
-                      - type: object
-                        additionalProperties:
-                          anyOf:
-                            - type: object
-                              properties:
-                                $eq:
-                                  anyOf:
-                                    - type: boolean
-                                    - type: string
-                                    - type: number
-                              required:
-                                - $eq
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $ne:
-                                  anyOf:
-                                    - type: boolean
-                                    - type: string
-                                    - type: number
-                              required:
-                                - $ne
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $ne:
-                                  type: array
-                                  items:
-                                    anyOf:
-                                      - type: string
-                                      - type: number
-                              required:
-                                - $ne
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $ne:
-                                  type: array
-                                  items:
-                                    anyOf:
-                                      - type: string
-                                      - type: number
-                              required:
-                                - $ne
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $gt:
-                                  type: number
-                              required:
-                                - $gt
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $gte:
-                                  type: number
-                              required:
-                                - $gte
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $lt:
-                                  type: number
-                              required:
-                                - $lt
-                              additionalProperties: false
-                            - type: object
-                              properties:
-                                $lte:
-                                  type: number
-                              required:
-                                - $lte
-                              additionalProperties: false
-                      - type: object
-                        properties:
-                          $and:
-                            minItems: 1
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties:
-                                anyOf:
-                                  - type: object
-                                    properties:
-                                      $eq:
-                                        anyOf:
-                                          - type: boolean
-                                          - type: string
-                                          - type: number
-                                    required:
-                                      - $eq
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        anyOf:
-                                          - type: boolean
-                                          - type: string
-                                          - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        type: array
-                                        items:
-                                          anyOf:
-                                            - type: string
-                                            - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        type: array
-                                        items:
-                                          anyOf:
-                                            - type: string
-                                            - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $gt:
-                                        type: number
-                                    required:
-                                      - $gt
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $gte:
-                                        type: number
-                                    required:
-                                      - $gte
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $lt:
-                                        type: number
-                                    required:
-                                      - $lt
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $lte:
-                                        type: number
-                                    required:
-                                      - $lte
-                                    additionalProperties: false
-                        required:
-                          - $and
-                        additionalProperties: false
-                      - type: object
-                        properties:
-                          $or:
-                            minItems: 1
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties:
-                                anyOf:
-                                  - type: object
-                                    properties:
-                                      $eq:
-                                        anyOf:
-                                          - type: boolean
-                                          - type: string
-                                          - type: number
-                                    required:
-                                      - $eq
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        anyOf:
-                                          - type: boolean
-                                          - type: string
-                                          - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        type: array
-                                        items:
-                                          anyOf:
-                                            - type: string
-                                            - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $ne:
-                                        type: array
-                                        items:
-                                          anyOf:
-                                            - type: string
-                                            - type: number
-                                    required:
-                                      - $ne
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $gt:
-                                        type: number
-                                    required:
-                                      - $gt
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $gte:
-                                        type: number
-                                    required:
-                                      - $gte
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $lt:
-                                        type: number
-                                    required:
-                                      - $lt
-                                    additionalProperties: false
-                                  - type: object
-                                    properties:
-                                      $lte:
-                                        type: number
-                                    required:
-                                      - $lte
-                                    additionalProperties: false
-                        required:
-                          - $or
-                        additionalProperties: false
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        $eq: {}
+                        $ne: {}
+                        $gt:
+                          type: number
+                        $gte:
+                          type: number
+                        $lt:
+                          type: number
+                        $lte:
+                          type: number
+                        $in:
+                          type: array
+                          items:
+                            type: string
+                        $nin:
+                          type: array
+                          items:
+                            type: string
                 required:
                   - question
         responses:

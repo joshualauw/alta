@@ -1,27 +1,25 @@
 import z from "zod";
 
-const Eq = z.object({ $eq: z.union([z.boolean(), z.string(), z.number()]) }).strict();
-const Ne = z.object({ $ne: z.union([z.boolean(), z.string(), z.number()]) }).strict();
-const In = z.object({ $ne: z.array(z.union([z.string(), z.number()])) }).strict();
-const Nin = z.object({ $ne: z.array(z.union([z.string(), z.number()])) }).strict();
-const Gt = z.object({ $gt: z.number() }).strict();
-const Gte = z.object({ $gte: z.number() }).strict();
-const Lt = z.object({ $lt: z.number() }).strict();
-const Lte = z.object({ $lte: z.number() }).strict();
+const filterOperators = z.object({
+    $eq: z.any().optional(),
+    $ne: z.any().optional(),
+    $gt: z.number().optional(),
+    $gte: z.number().optional(),
+    $lt: z.number().optional(),
+    $lte: z.number().optional(),
+    $in: z.array(z.string()).optional(),
+    $nin: z.array(z.string()).optional()
+});
 
-const ComparisonOperatorSchema = z.union([Eq, Ne, In, Nin, Gt, Gte, Lt, Lte]);
-const FieldComparisonSchema = z.record(z.string(), ComparisonOperatorSchema);
+export type FilterOperators = z.infer<typeof filterOperators>;
 
-const And = z.object({ $and: z.array(FieldComparisonSchema).min(1) }).strict();
-const Or = z.object({ $or: z.array(FieldComparisonSchema).min(1) }).strict();
+export const filterSchema = z.record(z.string(), filterOperators);
 
-const FilterSchema = z.union([FieldComparisonSchema, And, Or]);
-
-export type FilterSchema = z.infer<typeof FilterSchema>;
+export type FilterSchema = z.infer<typeof filterSchema>;
 
 export const searchSourceRequest = z.object({
     question: z.string().min(1),
-    filters: FilterSchema.optional()
+    filters: filterSchema.optional()
 });
 
 export type SearchSourceRequest = z.infer<typeof searchSourceRequest>;

@@ -248,12 +248,40 @@ describe("Source API Integration Test", () => {
         });
     });
 
+    describe("POST /api/source/filter", () => {
+        it("should filter source", async () => {
+            const data = {
+                property: { $eq: "test" }
+            };
+
+            const res = await request(app).post("/api/source/filter").set("x-api-key", MOCK_API_KEY).send(data);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "filter source successful",
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number),
+                        name: expect.any(String),
+                        fileUrl: expect.toBeOneOf([String, null]),
+                        status: expect.toBeOneOf(["PENDING", "FAILED", "DONE"]),
+                        groupId: expect.toBeOneOf([Number, null]),
+                        groupName: expect.toBeOneOf([String, null]),
+                        createdAt: expect.any(String)
+                    })
+                ])
+            });
+        });
+    });
+
     describe("POST /api/source/search", () => {
         it("should search source", async () => {
             const data = {
                 question: "who is obama?",
                 filters: {
-                    type: { $eq: "test" }
+                    property: { $eq: "test" }
                 }
             };
 

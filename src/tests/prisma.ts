@@ -30,7 +30,8 @@ export async function createSourceFactory() {
         data: {
             name: faker.lorem.words({ min: 3, max: 7 }),
             content: faker.lorem.paragraphs({ min: 5, max: 15 }),
-            status: "DONE"
+            status: "DONE",
+            metadata: { property: "test" }
         }
     });
 }
