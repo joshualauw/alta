@@ -1,3 +1,5 @@
+import z from "zod";
+import { ZodOpenApiPathItemObject } from "zod-openapi";
 import {
     errorResponseSchema,
     pagingResponseSchema,
@@ -11,8 +13,6 @@ import { getAllPresetResponse } from "@/modules/preset/dtos/getAllPresetDto";
 import { getPresetDetailResponse } from "@/modules/preset/dtos/getPresetDetailDto";
 import { updatePresetRequest, updatePresetResponse } from "@/modules/preset/dtos/updatePresetDto";
 import { pagingQuery } from "@/types/PagingQuery";
-import z from "zod";
-import { ZodOpenApiPathItemObject } from "zod-openapi";
 
 export const getAllPresetPath: ZodOpenApiPathItemObject = {
     id: "get-all-preset",
@@ -56,7 +56,9 @@ export const getPresetDetailPath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -71,7 +73,9 @@ export const createPresetPath: ZodOpenApiPathItemObject = {
     post: {
         requestBody: {
             content: {
-                "application/json": { schema: createPresetRequest }
+                "application/json": {
+                    schema: createPresetRequest
+                }
             }
         },
         responses: {
@@ -87,7 +91,9 @@ export const createPresetPath: ZodOpenApiPathItemObject = {
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -105,28 +111,36 @@ export const updatePresetPath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: updatePresetRequest }
+                "application/json": {
+                    schema: updatePresetRequest
+                }
             }
         },
         responses: {
             200: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(updatePresetResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(updatePresetResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -155,7 +169,9 @@ export const deletePresetPath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }

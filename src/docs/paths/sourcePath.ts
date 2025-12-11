@@ -1,3 +1,5 @@
+import z from "zod";
+import { ZodOpenApiPathItemObject } from "zod-openapi";
 import {
     errorResponseSchema,
     pagingResponseSchema,
@@ -17,8 +19,6 @@ import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/g
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest, updateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
-import z from "zod";
-import { ZodOpenApiPathItemObject } from "zod-openapi";
 
 export const getAllSourcePath: ZodOpenApiPathItemObject = {
     id: "get-all-source",
@@ -62,7 +62,9 @@ export const getSourceDetailPath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -80,21 +82,27 @@ export const createSourcePath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: createSourceRequest }
+                "application/json": {
+                    schema: createSourceRequest
+                }
             }
         },
         responses: {
             201: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(createSourceResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(createSourceResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -262,7 +270,9 @@ export const deleteSourcePath: ZodOpenApiPathItemObject = {
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
