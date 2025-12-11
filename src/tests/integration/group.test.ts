@@ -184,7 +184,20 @@ describe("Group API Integration Test", () => {
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
-                data: expect.any(Array),
+                data: {
+                    items: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            name: expect.any(String),
+                            colorCode: expect.any(String),
+                            createdAt: expect.any(String)
+                        })
+                    ]),
+                    totalItems: expect.any(Number),
+                    totalPages: expect.any(Number),
+                    hasNextPage: expect.any(Boolean),
+                    hasPrevPage: expect.any(Boolean)
+                },
                 message: "get all group successful"
             });
         });

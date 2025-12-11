@@ -226,7 +226,23 @@ describe("Source API Integration Test", () => {
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
-                data: expect.any(Array),
+                data: {
+                    items: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            name: expect.any(String),
+                            fileUrl: expect.toBeOneOf([String, null]),
+                            status: expect.toBeOneOf(["PENDING", "FAILED", "DONE"]),
+                            groupId: expect.toBeOneOf([Number, null]),
+                            groupName: expect.toBeOneOf([String, null]),
+                            createdAt: expect.any(String)
+                        })
+                    ]),
+                    totalItems: expect.any(Number),
+                    totalPages: expect.any(Number),
+                    hasNextPage: expect.any(Boolean),
+                    hasPrevPage: expect.any(Boolean)
+                },
                 message: "get all source successful"
             });
         });
