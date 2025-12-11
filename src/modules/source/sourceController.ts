@@ -7,6 +7,7 @@ import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceService from "@/modules/source/sourceService";
 import { apiResponse } from "@/utils/apiResponse";
 import { StatusCodes } from "http-status-codes";
+import { FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
@@ -16,6 +17,11 @@ export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, 
 export async function getSourceDetail(req: Request<{ id: string }>, res: Response) {
     const result = await sourceService.getSourceDetail(Number(req.params.id));
     return apiResponse.success(res, result, "get source detail successful");
+}
+
+export async function filterSource(req: Request<{}, {}, FilterSourceRequest>, res: Response) {
+    const result = await sourceService.filterSource(req.body);
+    return apiResponse.success(res, result, "filter source successful");
 }
 
 export async function createSource(req: Request<{}, {}, CreateSourceRequest, CreateSourceQuery>, res: Response) {

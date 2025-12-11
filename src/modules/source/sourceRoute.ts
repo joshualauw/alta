@@ -6,11 +6,13 @@ import { getAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { searchSourceQuery, searchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceController from "@/modules/source/sourceController";
+import { filterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 
 const router = Router();
 
 router.get("/getAll", validate(getAllSourceQuery, "query"), sourceController.getAllSource);
 router.get("/getDetail/:id", sourceController.getSourceDetail);
+router.post("/filter", validate(filterSourceRequest), sourceController.filterSource);
 router.post(
     "/create",
     validate(createSourceQuery, "query"),

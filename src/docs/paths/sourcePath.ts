@@ -12,6 +12,7 @@ import {
 } from "@/modules/source/dtos/createBulkSourceDto";
 import { createSourceQuery, createSourceRequest, createSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { deleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
+import { filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
@@ -102,6 +103,31 @@ export const createSourcePath: ZodOpenApiPathItemObject = {
     }
 };
 
+export const filterSource: ZodOpenApiPathItemObject = {
+    id: "filter-source",
+    summary: "filter source by metadata",
+    post: {
+        requestBody: {
+            content: {
+                "application/json": {
+                    schema: filterSourceRequest
+                }
+            }
+        },
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(filterSourceResponse)
+                    }
+                }
+            }
+        },
+        tags: ["source"]
+    }
+};
+
 export const createBulkSourcePath: ZodOpenApiPathItemObject = {
     id: "create-bulk-source",
     summary: "create sources (bulk) in background",
@@ -111,21 +137,27 @@ export const createBulkSourcePath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: createBulkSourceRequest }
+                "application/json": {
+                    schema: createBulkSourceRequest
+                }
             }
         },
         responses: {
             201: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(createBulkSourceResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(createBulkSourceResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -143,14 +175,18 @@ export const searchSourcePath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: searchSourceRequest }
+                "application/json": {
+                    schema: searchSourceRequest
+                }
             }
         },
         responses: {
             200: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(searchSourceResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(searchSourceResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
@@ -168,28 +204,36 @@ export const updateSourcePath: ZodOpenApiPathItemObject = {
         },
         requestBody: {
             content: {
-                "application/json": { schema: updateSourceRequest }
+                "application/json": {
+                    schema: updateSourceRequest
+                }
             }
         },
         responses: {
             200: {
                 description: "success",
                 content: {
-                    "application/json": { schema: successResponseSchema(updateSourceResponse) }
+                    "application/json": {
+                        schema: successResponseSchema(updateSourceResponse)
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             400: {
                 description: "validation failed",
                 content: {
-                    "application/json": { schema: validationErrorResponseSchema }
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             },
             404: {
                 description: "not found",
                 content: {
-                    "application/json": { schema: errorResponseSchema }
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
                 },
                 headers: apiKeyHeaderSchema
             }
