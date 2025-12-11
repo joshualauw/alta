@@ -7,6 +7,7 @@ import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { ChunksReranked, RagSearchResult } from "@/modules/source/types/RagSearchResult";
 import { SourceMetadata } from "@/modules/source/types/SourceMetadata";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { SearchRecordsQuery } from "@pinecone-database/pinecone/dist/data";
 import { JsonObject } from "@prisma/client/runtime/client";
 
 function cleanText(rawText: string) {
@@ -111,6 +112,7 @@ export async function ingest(source: Source, preset: Preset) {
 
 export async function search(
     payload: SearchSourceRequest,
+    source_ids: number[],
     rerank: boolean,
     preset: Preset,
     tone: AnswerTone
@@ -118,13 +120,15 @@ export async function search(
     const startTime = Date.now();
     const index = pinecone.index(config.PINECONE_INDEX_NAME);
 
-    const result = await index.searchRecords({
-        query: {
-            topK: preset.topK,
-            inputs: { text: payload.question },
-            filter: payload.filters
-        }
-    });
+    const query: SearchRecordsQuery = {
+        topK: preset.topK,
+        inputs: { text: payload.question }
+    };
+    if (source_ids.length > 0) {
+        query.filter = { source_id: { $in: source_ids } };
+    }
+
+    const result = await index.searchRecords({ query });
 
     const filteredChunks = result.result.hits.filter((c) => c._score > preset.minSimilarityScore);
     const chunksRetrieved = filteredChunks.map((c) => ({ id: c._id, similarityScore: c._score }));

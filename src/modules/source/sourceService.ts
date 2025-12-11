@@ -18,6 +18,7 @@ import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { pagingResponse } from "@/utils/apiResponse";
+import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -154,11 +155,19 @@ export async function searchSource(
     const rerank = query.rerank ? Number(query.rerank) == 1 : false;
     const tone: AnswerTone = query.tone ? query.tone : "normal";
 
-    const result = await ragService.search(payload, rerank, preset, tone);
+    const source_ids: number[] = [];
 
-    const jobId = uuidv4();
+    if (payload.filters) {
+        const { sql, params } = buildMetadataFilter(payload.filters);
+        const sources = await prisma.$queryRawUnsafe<{ id: number }[]>(
+            `SELECT id FROM "Source" WHERE ${sql}`,
+            ...params
+        );
+        source_ids.push(...sources.map((s) => s.id));
+    }
+    const result = await ragService.search(payload, source_ids, rerank, preset, tone);
 
-    await searchLogQueue.add(`job_${jobId}`, {
+    await searchLogQueue.add(`job_${uuidv4()}`, {
         question: payload.question,
         isRerank: rerank,
         tone: tone,
