@@ -15,6 +15,8 @@ import requestLogger from "@/middlewares/requestLogger";
 import rateLimiter from "@/middlewares/rateLimiter";
 import corsHandler from "@/middlewares/corsHandler";
 import errorHandler from "@/middlewares/errorHandler";
+import { prisma } from "@/lib/prisma";
+import { connection } from "@/lib/bullmq";
 
 const app = express();
 
@@ -27,7 +29,12 @@ if (config.NODE_ENV != "development") {
     app.use(requestLogger);
 }
 
-app.get("/healthcheck", (req, res) => res.send("ok"));
+app.get("/", async (req, res) => {
+    await prisma.$queryRaw`SELECT 1`;
+    await connection.ping();
+    return res.send("ok");
+});
+
 app.get("/openapi.yml", (req, res) => res.sendFile(path.join(process.cwd(), "openapi.yml")));
 app.get("/docs", redoc({ title: "Alta API Documentation", specUrl: "openapi.yml" }));
 
