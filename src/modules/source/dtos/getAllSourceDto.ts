@@ -1,8 +1,12 @@
+import { pagingQuery } from "@/types/PagingQuery";
+import { PagingResponse } from "@/types/PagingResponse";
 import z from "zod";
 
-export const getAllSourceQuery = z.object({
-    groupId: z.string().min(1).optional()
-});
+export const getAllSourceQuery = z
+    .object({
+        groupId: z.string().min(1).optional()
+    })
+    .merge(pagingQuery);
 
 export type GetAllSourceQuery = z.infer<typeof getAllSourceQuery>;
 
@@ -16,4 +20,4 @@ export const getAllSourceResponse = z.object({
     createdAt: z.string()
 });
 
-export type GetAllSourceResponse = z.infer<typeof getAllSourceResponse>;
+export type GetAllSourceResponse = PagingResponse<z.infer<typeof getAllSourceResponse>>;
