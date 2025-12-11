@@ -1,9 +1,11 @@
 import z from "zod";
 
+const AllowedMetadata = z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]); //from pinecone docs
+
 export const createSourceRequest = z.object({
     name: z.string().min(1),
     content: z.string().min(1),
-    metadata: z.record(z.string().min(1), z.unknown()).optional(),
+    metadata: z.record(z.string().min(1), AllowedMetadata).optional(),
     groupId: z.number().optional()
 });
 
