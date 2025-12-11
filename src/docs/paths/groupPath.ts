@@ -5,24 +5,29 @@ import { ZodOpenApiPathItemObject } from "zod-openapi";
 import {
     successResponseSchema,
     errorResponseSchema,
-    validationErrorResponseSchema
+    validationErrorResponseSchema,
+    pagingResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
 import z from "zod";
 import { createGroupRequest, createGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { updateGroupRequest, updateGroupResponse } from "@/modules/group/dtos/updateGroupDto";
 import { deleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { changeSourceGroupRequest, changeSourceGroupResponse } from "@/modules/group/dtos/changeSourceGroupDto";
+import { pagingQuery } from "@/types/PagingQuery";
 
 export const getAllGroupPath: ZodOpenApiPathItemObject = {
     id: "get-all-group",
     summary: "get all group",
     get: {
+        requestParams: {
+            query: pagingQuery
+        },
         responses: {
             200: {
                 description: "success",
                 content: {
                     "application/json": {
-                        schema: successResponseSchema(z.array(getAllGroupResponse))
+                        schema: successResponseSchema(pagingResponseSchema(getAllGroupResponse))
                     }
                 },
                 headers: apiKeyHeaderSchema

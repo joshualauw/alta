@@ -41,8 +41,6 @@ paths:
     $ref: "#/components/pathItems/delete-source"
   /api/analytics/searchLog:
     $ref: "#/components/pathItems/get-all-search-log"
-  /api/user/login:
-    $ref: "#/components/pathItems/login"
 components:
   pathItems:
     get-all-group:
@@ -50,6 +48,20 @@ components:
       get:
         tags:
           - group
+        parameters:
+          - in: query
+            name: page
+            schema:
+              default: 1
+              type: number
+              minimum: 1
+          - in: query
+            name: size
+            schema:
+              default: 20
+              type: number
+              minimum: 1
+              maximum: 20
         responses:
           "200":
             description: success
@@ -69,24 +81,42 @@ components:
                         - true
                     data:
                       nullable: true
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: number
-                          colorCode:
-                            type: string
-                          name:
-                            type: string
-                          createdAt:
-                            type: string
-                        required:
-                          - id
-                          - colorCode
-                          - name
-                          - createdAt
-                        additionalProperties: false
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: number
+                              colorCode:
+                                type: string
+                              name:
+                                type: string
+                              createdAt:
+                                type: string
+                            required:
+                              - id
+                              - colorCode
+                              - name
+                              - createdAt
+                            additionalProperties: false
+                        totalItems:
+                          type: number
+                        totalPages:
+                          type: number
+                        hasNextPage:
+                          type: boolean
+                        hasPrevPage:
+                          type: boolean
+                      required:
+                        - items
+                        - totalItems
+                        - totalPages
+                        - hasNextPage
+                        - hasPrevPage
+                      additionalProperties: false
                     message:
                       type: string
                     errors:
@@ -658,6 +688,20 @@ components:
       get:
         tags:
           - preset
+        parameters:
+          - in: query
+            name: page
+            schema:
+              default: 1
+              type: number
+              minimum: 1
+          - in: query
+            name: size
+            schema:
+              default: 20
+              type: number
+              minimum: 1
+              maximum: 20
         responses:
           "200":
             description: success
@@ -677,24 +721,42 @@ components:
                         - true
                     data:
                       nullable: true
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: number
-                          name:
-                            type: string
-                          code:
-                            type: string
-                          createdAt:
-                            type: string
-                        required:
-                          - id
-                          - name
-                          - code
-                          - createdAt
-                        additionalProperties: false
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: number
+                              name:
+                                type: string
+                              code:
+                                type: string
+                              createdAt:
+                                type: string
+                            required:
+                              - id
+                              - name
+                              - code
+                              - createdAt
+                            additionalProperties: false
+                        totalItems:
+                          type: number
+                        totalPages:
+                          type: number
+                        hasNextPage:
+                          type: boolean
+                        hasPrevPage:
+                          type: boolean
+                      required:
+                        - items
+                        - totalItems
+                        - totalPages
+                        - hasNextPage
+                        - hasPrevPage
+                      additionalProperties: false
                     message:
                       type: string
                     errors:
@@ -1309,6 +1371,25 @@ components:
       get:
         tags:
           - source
+        parameters:
+          - in: query
+            name: groupId
+            schema:
+              type: string
+              minLength: 1
+          - in: query
+            name: page
+            schema:
+              default: 1
+              type: number
+              minimum: 1
+          - in: query
+            name: size
+            schema:
+              default: 20
+              type: number
+              minimum: 1
+              maximum: 20
         responses:
           "200":
             description: success
@@ -1328,40 +1409,58 @@ components:
                         - true
                     data:
                       nullable: true
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: number
-                          name:
-                            type: string
-                          fileUrl:
-                            nullable: true
-                            type: string
-                          groupId:
-                            nullable: true
-                            type: number
-                          groupName:
-                            nullable: true
-                            type: string
-                          status:
-                            type: string
-                            enum:
-                              - PENDING
-                              - FAILED
-                              - DONE
-                          createdAt:
-                            type: string
-                        required:
-                          - id
-                          - name
-                          - fileUrl
-                          - groupId
-                          - groupName
-                          - status
-                          - createdAt
-                        additionalProperties: false
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: number
+                              name:
+                                type: string
+                              fileUrl:
+                                nullable: true
+                                type: string
+                              groupId:
+                                nullable: true
+                                type: number
+                              groupName:
+                                nullable: true
+                                type: string
+                              status:
+                                type: string
+                                enum:
+                                  - PENDING
+                                  - FAILED
+                                  - DONE
+                              createdAt:
+                                type: string
+                            required:
+                              - id
+                              - name
+                              - fileUrl
+                              - groupId
+                              - groupName
+                              - status
+                              - createdAt
+                            additionalProperties: false
+                        totalItems:
+                          type: number
+                        totalPages:
+                          type: number
+                        hasNextPage:
+                          type: boolean
+                        hasPrevPage:
+                          type: boolean
+                      required:
+                        - items
+                        - totalItems
+                        - totalPages
+                        - hasNextPage
+                        - hasPrevPage
+                      additionalProperties: false
                     message:
                       type: string
                     errors:
@@ -2343,100 +2442,6 @@ components:
                           - createdAt
                           - updatedAt
                         additionalProperties: false
-                    message:
-                      type: string
-                    errors:
-                      minItems: 0
-                      maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-    login:
-      summary: login admin
-      post:
-        tags:
-          - user
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  email:
-                    type: string
-                  password:
-                    type: string
-                required:
-                  - email
-                  - password
-        responses:
-          "200":
-            description: success
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - true
-                    data:
-                      nullable: true
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        email:
-                          type: string
-                        role:
-                          type: string
-                          enum:
-                            - ADMIN
-                        token:
-                          type: string
-                      required:
-                        - id
-                        - email
-                        - role
-                        - token
-                      additionalProperties: false
-                    message:
-                      type: string
-                    errors:
-                      minItems: 0
-                      maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-          "401":
-            description: invalid credentials
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - false
-                    data:
-                      type: string
-                      nullable: true
-                      enum:
-                        - null
                     message:
                       type: string
                     errors:

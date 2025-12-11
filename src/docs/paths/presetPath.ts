@@ -1,5 +1,6 @@
 import {
     errorResponseSchema,
+    pagingResponseSchema,
     successResponseSchema,
     validationErrorResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
@@ -9,6 +10,7 @@ import { deletePresetResponse } from "@/modules/preset/dtos/deletePresetDto";
 import { getAllPresetResponse } from "@/modules/preset/dtos/getAllPresetDto";
 import { getPresetDetailResponse } from "@/modules/preset/dtos/getPresetDetailDto";
 import { updatePresetRequest, updatePresetResponse } from "@/modules/preset/dtos/updatePresetDto";
+import { pagingQuery } from "@/types/PagingQuery";
 import z from "zod";
 import { ZodOpenApiPathItemObject } from "zod-openapi";
 
@@ -16,12 +18,15 @@ export const getAllPresetPath: ZodOpenApiPathItemObject = {
     id: "get-all-preset",
     summary: "get all preset",
     get: {
+        requestParams: {
+            query: pagingQuery
+        },
         responses: {
             200: {
                 description: "success",
                 content: {
                     "application/json": {
-                        schema: successResponseSchema(z.array(getAllPresetResponse))
+                        schema: successResponseSchema(pagingResponseSchema(getAllPresetResponse))
                     }
                 },
                 headers: apiKeyHeaderSchema
