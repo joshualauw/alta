@@ -7,14 +7,24 @@ import { GetAllPresetResponse } from "@/modules/preset/dtos/getAllPresetDto";
 import { GetPresetDetailResponse } from "@/modules/preset/dtos/getPresetDetailDto";
 import { UpdatePresetRequest, UpdatePresetResponse } from "@/modules/preset/dtos/updatePresetDto";
 import { omit, pick } from "@/utils/mapper";
+import { PagingQuery } from "@/types/PagingQuery";
+import { pagingResponse } from "@/utils/apiResponse";
 
-export async function getAllPreset(): Promise<GetAllPresetResponse[]> {
-    const presets = await prisma.preset.findMany();
+export async function getAllPreset(query: PagingQuery): Promise<GetAllPresetResponse> {
+    const [presets, count] = await prisma.$transaction([
+        prisma.preset.findMany({
+            skip: (query.page - 1) * query.size,
+            take: query.size
+        }),
+        prisma.preset.count()
+    ]);
 
-    return presets.map((p) => ({
+    const items = presets.map((p) => ({
         ...pick(p, "id", "name", "code"),
         createdAt: p.createdAt.toISOString()
     }));
+
+    return pagingResponse(items, count, query.page, query.size);
 }
 
 export async function getPresetDetail(id: number): Promise<GetPresetDetailResponse> {
