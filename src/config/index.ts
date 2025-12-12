@@ -20,6 +20,7 @@ const configSchema = z.object({
     R2_SECRET_ACCESS_KEY: z.string(),
     R2_BUCKET_NAME: z.string().default("alta"),
     R2_ENDPOINT: z.string(),
+    R2_PUBLIC_URL: z.string(),
 
     FRONTEND_URL: z.string(),
 

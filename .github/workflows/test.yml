@@ -22,6 +22,7 @@ env:
   R2_SECRET_ACCESS_KEY: "ci-test-value"
   R2_BUCKET_NAME: "ci-test-value"
   R2_ENDPOINT: "ci-test-value"
+  R2_PUBLIC_URL: "ci-test-value"
 
 jobs:
   build-and-test:
