@@ -19,6 +19,8 @@ import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/g
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest, updateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
+import { getSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
+import { uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
 
 export const getAllSourcePath: ZodOpenApiPathItemObject = {
     id: "get-all-source",
@@ -111,7 +113,59 @@ export const createSourcePath: ZodOpenApiPathItemObject = {
     }
 };
 
-export const filterSource: ZodOpenApiPathItemObject = {
+export const getSourcePresignedUrlPath: ZodOpenApiPathItemObject = {
+    id: "get-source-presigned-url",
+    summary: "get presigned url from S3 to upload file",
+    get: {
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(getSourcePresignedUrlResponse)
+                    }
+                }
+            }
+        },
+        tags: ["source"]
+    }
+};
+
+export const uploadSourcePath: ZodOpenApiPathItemObject = {
+    id: "upload-source",
+    summary: "upload source by referencing object key",
+    post: {
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(uploadSourceRequest)
+                    }
+                }
+            },
+            404: {
+                description: "file not found",
+                content: {
+                    "application/json": {
+                        schema: errorResponseSchema
+                    }
+                }
+            },
+            400: {
+                description: "error",
+                content: {
+                    "application/json": {
+                        schema: validationErrorResponseSchema
+                    }
+                }
+            }
+        },
+        tags: ["source"]
+    }
+};
+
+export const filterSourcePath: ZodOpenApiPathItemObject = {
     id: "filter-source",
     summary: "filter source by metadata",
     post: {
@@ -128,6 +182,14 @@ export const filterSource: ZodOpenApiPathItemObject = {
                 content: {
                     "application/json": {
                         schema: successResponseSchema(filterSourceResponse)
+                    }
+                }
+            },
+            400: {
+                description: "error",
+                content: {
+                    "application/json": {
+                        schema: validationErrorResponseSchema
                     }
                 }
             }

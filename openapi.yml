@@ -29,6 +29,12 @@ paths:
     $ref: "#/components/pathItems/get-all-source"
   /api/source/getDetail/:id:
     $ref: "#/components/pathItems/get-source-detail"
+  /api/source/presigned:
+    $ref: "#/components/pathItems/get-source-presigned-url"
+  /api/source/upload:
+    $ref: "#/components/pathItems/upload-source"
+  /api/source/filter:
+    $ref: "#/components/pathItems/filter-source"
   /api/source/create:
     $ref: "#/components/pathItems/create-source"
   /api/source/create/bulk:
@@ -1587,6 +1593,284 @@ components:
                     errors:
                       minItems: 0
                       maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-source-presigned-url:
+      summary: get presigned url from S3 to upload file
+      get:
+        tags:
+          - source
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                        objectKey:
+                          type: string
+                      required:
+                        - url
+                        - objectKey
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    upload-source:
+      summary: upload source by referencing object key
+      post:
+        tags:
+          - source
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                        objectKey:
+                          type: string
+                        metadata:
+                          type: object
+                          additionalProperties:
+                            anyOf:
+                              - type: string
+                              - type: number
+                              - type: boolean
+                              - type: array
+                                items:
+                                  type: string
+                        groupId:
+                          type: number
+                      required:
+                        - name
+                        - objectKey
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "404":
+            description: file not found
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    filter-source:
+      summary: filter source by metadata
+      post:
+        tags:
+          - source
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    $eq: {}
+                    $ne: {}
+                    $gt:
+                      type: number
+                    $gte:
+                      type: number
+                    $lt:
+                      type: number
+                    $lte:
+                      type: number
+                    $in:
+                      type: array
+                      items:
+                        type: string
+                    $nin:
+                      type: array
+                      items:
+                        type: string
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: number
+                          name:
+                            type: string
+                          fileUrl:
+                            nullable: true
+                            type: string
+                          groupId:
+                            nullable: true
+                            type: number
+                          groupName:
+                            nullable: true
+                            type: string
+                          status:
+                            type: string
+                            enum:
+                              - PENDING
+                              - FAILED
+                              - DONE
+                          createdAt:
+                            type: string
+                        required:
+                          - id
+                          - name
+                          - fileUrl
+                          - groupId
+                          - groupName
+                          - status
+                          - createdAt
+                        additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
                       type: array
                       items:
                         type: string
