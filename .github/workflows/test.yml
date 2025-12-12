@@ -9,8 +9,6 @@ env:
 # placeholders that will be managed by testcontainer
   NODE_ENV: "test"
   JWT_SECRET: "ci-test-secret"
-  ADMIN_EMAIL: "ci@test.com"
-  ADMIN_PASSWORD: "ci-test-password"
   DATABASE_URL: "ci-test-url"
   REDIS_URL: "ci-test-url"
   FRONTEND_URL: "ci-test-url"
