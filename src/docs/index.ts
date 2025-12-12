@@ -26,6 +26,7 @@ const document = createDocument({
 
         "/api/source/getAll": sourcePath.getAllSourcePath,
         "/api/source/getDetail/:id": sourcePath.getSourceDetailPath,
+        "/api/source/filter": sourcePath.filterSource,
         "/api/source/create": sourcePath.createSourcePath,
         "/api/source/create/bulk": sourcePath.createBulkSourcePath,
         "/api/source/search": sourcePath.searchSourcePath,

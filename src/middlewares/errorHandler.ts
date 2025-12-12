@@ -6,6 +6,7 @@ import { apiResponse } from "@/utils/apiResponse";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import logger from "@/lib/pino";
 import config from "@/config";
+import { NoSuchKey, S3ServiceException } from "@aws-sdk/client-s3";
 
 export default function errorHandler(err: unknown, req: Request, res: Response, _: NextFunction) {
     if (config.NODE_ENV != "test") logger.error(err);
@@ -35,6 +36,13 @@ export default function errorHandler(err: unknown, req: Request, res: Response, 
 
     if (err instanceof PrismaClientValidationError) {
         return apiResponse.error(res, "invalid data", StatusCodes.UNPROCESSABLE_ENTITY);
+    }
+
+    if (err instanceof NoSuchKey) {
+        return apiResponse.error(res, "S3 file not found", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+    if (err instanceof S3ServiceException) {
+        return apiResponse.error(res, "S3 internal error", StatusCodes.NOT_FOUND);
     }
 
     return apiResponse.error(res, "internal server error");

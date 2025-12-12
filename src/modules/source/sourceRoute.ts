@@ -7,11 +7,19 @@ import { searchSourceQuery, searchSourceRequest } from "@/modules/source/dtos/se
 import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceController from "@/modules/source/sourceController";
 import { filterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
+import { uploadSourceQuery, uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
 
 const router = Router();
 
 router.get("/getAll", validate(getAllSourceQuery, "query"), sourceController.getAllSource);
 router.get("/getDetail/:id", sourceController.getSourceDetail);
+router.get("/presigned", sourceController.getSourcePresignedUrl);
+router.post(
+    "/upload",
+    validate(uploadSourceQuery, "query"),
+    validate(uploadSourceRequest),
+    sourceController.uploadSource
+);
 router.post("/filter", validate(filterSourceRequest), sourceController.filterSource);
 router.post(
     "/create",

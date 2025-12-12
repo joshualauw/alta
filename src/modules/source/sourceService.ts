@@ -19,8 +19,15 @@ import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { pagingResponse } from "@/utils/apiResponse";
 import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
 import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
+import { GetSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
+import { S3 } from "@/lib/r2";
+import { GetObjectCommand, PutObjectCommand, _Error } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { UploadSourceQuery, UploadSourceRequest, UploadSourceResponse } from "@/modules/source/dtos/uploadSourceDto";
+import config from "@/config";
 import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
 import * as ragSearchService from "@/modules/source/services/ragSearchService";
+import { InternalServerError } from "@/lib/internal/errors";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -63,6 +70,52 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
     };
 }
 
+export async function getSourcePresignedUrl(): Promise<GetSourcePresignedUrlResponse> {
+    const objectKey = `source_${uuidv4()}`;
+
+    const command = new PutObjectCommand({
+        Bucket: config.R2_BUCKET_NAME,
+        Key: objectKey,
+        ContentType: "text/plain"
+    });
+    const putUrl = await getSignedUrl(S3, command, { expiresIn: 1500 });
+
+    return { url: putUrl, objectKey };
+}
+
+export async function uploadSource(
+    query: UploadSourceQuery,
+    payload: UploadSourceRequest
+): Promise<UploadSourceResponse> {
+    const command = new GetObjectCommand({
+        Bucket: config.R2_BUCKET_NAME,
+        Key: payload.objectKey
+    });
+
+    const response = await S3.send(command);
+    if (!response.Body) throw new InternalServerError("response body not found");
+
+    const preset = await prisma.preset.findFirstOrThrow({
+        where: { code: query.preset ? query.preset : "default" }
+    });
+
+    const content = await response.Body.transformToString();
+    const { metadata, ...rest } = payload;
+    const data: SourceCreateInput = { ...omit(rest, "objectKey"), content };
+    if (metadata) {
+        data.metadata = metadata as JsonObject;
+    }
+
+    const source = await prisma.$transaction(async (tx) => {
+        const source = await tx.source.create({ data: { ...data, status: "DONE" } });
+        await ragIngestionService.ingest(source, preset);
+
+        return source;
+    });
+
+    return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
+}
+
 export async function filterSource(query: FilterSourceRequest): Promise<FilterSourceResponse> {
     const { sql, params } = buildMetadataFilter(query);
     const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(
@@ -87,16 +140,15 @@ export async function createSource(
     payload: CreateSourceRequest,
     query: CreateSourceQuery
 ): Promise<CreateSourceResponse> {
-    const { metadata, ...rest } = payload;
-    const data: SourceCreateInput = { ...rest };
-
-    if (metadata) {
-        data.metadata = metadata as JsonObject;
-    }
-
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
+
+    const { metadata, ...rest } = payload;
+    const data: SourceCreateInput = { ...rest };
+    if (metadata) {
+        data.metadata = metadata as JsonObject;
+    }
 
     const source = await prisma.$transaction(async (tx) => {
         const source = await tx.source.create({ data: { ...data, status: "DONE" } });
@@ -112,14 +164,13 @@ export async function createBulkSource(
     payload: CreateBulkSourceRequest,
     query: CreateBulkSourceQuery
 ): Promise<CreateBulkSourceResponse> {
-    await prisma.preset.findFirstOrThrow({
+    const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
 
     const sources = payload.map((p) => {
         const { metadata, ...rest } = p;
         const data: SourceCreateInput = { ...rest, jobId: uuidv4() };
-
         if (metadata) {
             data.metadata = metadata as JsonObject;
         }
@@ -129,13 +180,12 @@ export async function createBulkSource(
 
     await prisma.$transaction(async (tx) => {
         await tx.source.createMany({ data: sources });
-
         await sourceQueue.addBulk(
             sources.map((s) => ({
                 name: `job_${s.jobId}`,
                 data: {
                     jobId: s.jobId!,
-                    preset: query.preset
+                    preset: preset.name
                 }
             }))
         );

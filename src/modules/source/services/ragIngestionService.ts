@@ -38,8 +38,8 @@ async function chunkText(text: string, preset: Preset) {
 }
 
 export async function ingest(source: Source, preset: Preset) {
-    const cleanedText = cleanText(source.content);
-    const chunks = await chunkText(cleanedText, preset);
+    const text = cleanText(source.content);
+    const chunks = await chunkText(text, preset);
 
     const index = pinecone.index(config.PINECONE_INDEX_NAME);
 

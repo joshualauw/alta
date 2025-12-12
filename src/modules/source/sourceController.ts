@@ -8,6 +8,7 @@ import * as sourceService from "@/modules/source/sourceService";
 import { apiResponse } from "@/utils/apiResponse";
 import { StatusCodes } from "http-status-codes";
 import { FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
+import { UploadSourceQuery, UploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
@@ -17,6 +18,16 @@ export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, 
 export async function getSourceDetail(req: Request<{ id: string }>, res: Response) {
     const result = await sourceService.getSourceDetail(Number(req.params.id));
     return apiResponse.success(res, result, "get source detail successful");
+}
+
+export async function getSourcePresignedUrl(req: Request, res: Response) {
+    const result = await sourceService.getSourcePresignedUrl();
+    return apiResponse.success(res, result, "get source presigned url successful");
+}
+
+export async function uploadSource(req: Request<{}, {}, UploadSourceRequest, UploadSourceQuery>, res: Response) {
+    const result = await sourceService.uploadSource(req.query, req.body);
+    return apiResponse.success(res, result, "upload source successful");
 }
 
 export async function filterSource(req: Request<{}, {}, FilterSourceRequest>, res: Response) {
