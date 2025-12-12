@@ -1,7 +1,7 @@
 import { Job, Worker } from "bullmq";
 import { connection, SOURCE_QUEUE } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
-import * as ragService from "@/modules/source/services/ragSearchService";
+import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
 import { IngestJob } from "@/modules/source/types/IngestJob";
 import logger from "@/lib/pino";
 
@@ -18,7 +18,7 @@ const worker = new Worker(
             where: { code: job.data.preset ? job.data.preset : "default" }
         });
 
-        await ragService.ingest(source, preset);
+        await ragIngestionService.ingest(source, preset);
     },
     { connection }
 );
