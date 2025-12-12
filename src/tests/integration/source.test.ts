@@ -3,7 +3,8 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createSourceFactory } from "@/tests/prisma";
 import app from "@/index";
 import { vi } from "vitest";
-import { ingest, remove, search } from "@/modules/source/services/ragService";
+import { ingest, remove } from "@/modules/source/services/ragIngestionService";
+import { search } from "@/modules/source/services/ragSearchService";
 import { searchLogQueue, sourceQueue } from "@/lib/bullmq";
 
 describe("Source API Integration Test", () => {

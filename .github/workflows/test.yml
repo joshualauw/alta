@@ -8,16 +8,20 @@ on:
 env: 
 # placeholders that will be managed by testcontainer
   NODE_ENV: "test"
-  JWT_SECRET: "ci-test-secret"
-  ADMIN_EMAIL: "ci@test.com"
-  ADMIN_PASSWORD: "ci-test-password"
-  DATABASE_URL: "ci-test-url"
-  REDIS_URL: "ci-test-url"
-  FRONTEND_URL: "ci-test-url"
-  PINECONE_API_KEY: "ci-test-secret"
-  PINECONE_INDEX_NAME: "ci-test-name"
-  OPENAI_API_KEY: "ci-test-secret"
-  ALTA_API_KEY: "ci-test-secret"
+  JWT_SECRET: "ci-test-valuet"
+  DATABASE_URL: "ci-test-value"
+  REDIS_URL: "ci-test-value"
+  FRONTEND_URL: "ci-test-value"
+  PINECONE_API_KEY: "ci-test-value"
+  PINECONE_INDEX_NAME: "ci-test-value"
+  OPENAI_API_KEY: "ci-test-value"
+  ALTA_API_KEY: "ci-test-value"
+  R2_ACCOUNT_ID: "ci-test-value"
+  R2_API_TOKEN: "ci-test-value"
+  R2_ACCESS_KEY: "ci-test-value"
+  R2_SECRET_ACCESS_KEY: "ci-test-value"
+  R2_BUCKET_NAME: "ci-test-value"
+  R2_ENDPOINT: "ci-test-value"
 
 jobs:
   build-and-test:

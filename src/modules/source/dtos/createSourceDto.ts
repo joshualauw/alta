@@ -1,6 +1,6 @@
 import z from "zod";
 
-const allowedSourceMetadata = z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]); //from pinecone docs
+export const allowedSourceMetadata = z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]); //from pinecone docs
 
 export type AllowedSourceMetadata = z.infer<typeof allowedSourceMetadata>;
 
