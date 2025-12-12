@@ -49,6 +49,7 @@ export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSour
         ...pick(s, "id", "name", "fileUrl", "status"),
         groupId: s.groupId,
         groupName: s.group?.name ?? null,
+        fileUrl: s.fileUrl ? `${config.R2_PUBLIC_URL}/${s.fileUrl}` : null,
         createdAt: s.createdAt.toISOString()
     }));
 
@@ -65,6 +66,7 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
         ...pick(source, "id", "name", "content", "fileUrl", "status", "statusReason"),
         groupId: source.groupId,
         groupName: source.group?.name ?? null,
+        fileUrl: source.fileUrl ? `${config.R2_PUBLIC_URL}/${source.fileUrl}` : null,
         createdAt: source.createdAt.toISOString(),
         updatedAt: source.updatedAt.toISOString()
     };
@@ -100,8 +102,9 @@ export async function uploadSource(
     });
 
     const content = await response.Body.transformToString();
+
     const { metadata, ...rest } = payload;
-    const data: SourceCreateInput = { ...omit(rest, "objectKey"), content };
+    const data: SourceCreateInput = { ...omit(rest, "objectKey"), content, fileUrl: payload.objectKey };
     if (metadata) {
         data.metadata = metadata as JsonObject;
     }
@@ -132,6 +135,7 @@ export async function filterSource(query: FilterSourceRequest): Promise<FilterSo
         ...pick(s, "id", "name", "fileUrl", "status"),
         groupId: s.groupId,
         groupName: s.group?.name ?? null,
+        fileUrl: s.fileUrl ? `${config.R2_PUBLIC_URL}/${s.fileUrl}` : null,
         createdAt: s.createdAt.toISOString()
     }));
 }
