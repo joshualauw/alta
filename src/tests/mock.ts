@@ -28,11 +28,7 @@ vi.mock("@/modules/source/services/ragIngestionService", async (importOriginal) 
 
 vi.mock("@/lib/bullmq", async () => {
     return {
-        sourceQueue: {
-            addBulk: vi.fn()
-        },
-        searchLogQueue: {
-            add: vi.fn()
-        }
+        addSourceJobs: vi.fn(),
+        addSearchLogJob: vi.fn()
     };
 });

@@ -5,7 +5,7 @@ import app from "@/index";
 import { vi } from "vitest";
 import { ingest, remove } from "@/modules/source/services/ragIngestionService";
 import { search } from "@/modules/source/services/ragSearchService";
-import { searchLogQueue, sourceQueue } from "@/lib/bullmq";
+import { addSearchLogJob, addSourceJobs } from "@/lib/bullmq";
 
 describe("Source API Integration Test", () => {
     const MOCK_API_KEY = process.env.ALTA_API_KEY || "";
@@ -78,7 +78,7 @@ describe("Source API Integration Test", () => {
                 .send(data);
 
             expect(res.statusCode).toBe(201);
-            expect(sourceQueue.addBulk).toBeCalled();
+            expect(addSourceJobs).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 message: "create bulk source successful",
@@ -293,7 +293,7 @@ describe("Source API Integration Test", () => {
 
             expect(res.statusCode).toBe(200);
             expect(search).toBeCalled();
-            expect(searchLogQueue.add).toBeCalled();
+            expect(addSearchLogJob).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 errors: [],

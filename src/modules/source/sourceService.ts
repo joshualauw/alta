@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
-import { searchLogQueue, sourceQueue } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
 import {
     CreateBulkSourceQuery,
@@ -20,14 +19,12 @@ import { pagingResponse } from "@/utils/apiResponse";
 import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
 import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { GetSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
-import { S3 } from "@/lib/r2";
-import { GetObjectCommand, PutObjectCommand, _Error } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { UploadSourceQuery, UploadSourceRequest, UploadSourceResponse } from "@/modules/source/dtos/uploadSourceDto";
 import config from "@/config";
+import * as r2Service from "@/lib/r2";
+import * as bullmqService from "@/lib/bullmq";
 import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
 import * as ragSearchService from "@/modules/source/services/ragSearchService";
-import { InternalServerError } from "@/lib/internal/errors";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -75,12 +72,11 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
 export async function getSourcePresignedUrl(): Promise<GetSourcePresignedUrlResponse> {
     const objectKey = `source_${uuidv4()}`;
 
-    const command = new PutObjectCommand({
-        Bucket: config.R2_BUCKET_NAME,
-        Key: objectKey,
-        ContentType: "text/plain"
+    const putUrl = await r2Service.getPresignedUrl({
+        objectKey,
+        contentType: "text/plain",
+        expiresIn: 1500
     });
-    const putUrl = await getSignedUrl(S3, command, { expiresIn: 1500 });
 
     return { url: putUrl, objectKey };
 }
@@ -89,19 +85,11 @@ export async function uploadSource(
     query: UploadSourceQuery,
     payload: UploadSourceRequest
 ): Promise<UploadSourceResponse> {
-    const command = new GetObjectCommand({
-        Bucket: config.R2_BUCKET_NAME,
-        Key: payload.objectKey
-    });
-
-    const response = await S3.send(command);
-    if (!response.Body) throw new InternalServerError("response body not found");
+    const content = await r2Service.getFileContent({ objectKey: payload.objectKey });
 
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
-
-    const content = await response.Body.transformToString();
 
     const { metadata, ...rest } = payload;
     const data: SourceCreateInput = { ...omit(rest, "objectKey"), content, fileUrl: payload.objectKey };
@@ -184,13 +172,11 @@ export async function createBulkSource(
 
     await prisma.$transaction(async (tx) => {
         await tx.source.createMany({ data: sources });
-        await sourceQueue.addBulk(
+        await bullmqService.addSourceJobs(
             sources.map((s) => ({
                 name: `job_${s.jobId}`,
-                data: {
-                    jobId: s.jobId!,
-                    preset: preset.name
-                }
+                jobId: s.jobId!,
+                preset: preset.name
             }))
         );
     });
@@ -241,7 +227,7 @@ export async function searchSource(
 
     const result = await ragSearchService.search(payload, source_ids, rerank, preset, tone);
 
-    await searchLogQueue.add(`job_${uuidv4()}`, {
+    await bullmqService.addSearchLogJob(`job_${uuidv4()}`, {
         question: payload.question,
         isRerank: rerank,
         tone: tone,
