@@ -1,13 +1,12 @@
 import { Job, Worker } from "bullmq";
-import { connection, SOURCE_QUEUE } from "@/lib/bullmq";
+import { connection, CreateSourceJob, SOURCE_QUEUE } from "@/lib/bullmq";
 import { prisma } from "@/lib/prisma";
-import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
-import { IngestJob } from "@/modules/source/types/IngestJob";
 import logger from "@/lib/pino";
+import * as pineconeService from "@/lib/pinecone";
 
 const worker = new Worker(
     SOURCE_QUEUE,
-    async (job: Job<IngestJob>) => {
+    async (job: Job<CreateSourceJob>) => {
         logger.info({ jobId: job.id }, "processing source started");
 
         const source = await prisma.source.findUniqueOrThrow({
@@ -18,12 +17,12 @@ const worker = new Worker(
             where: { code: job.data.preset ? job.data.preset : "default" }
         });
 
-        await ragIngestionService.ingest(source, preset);
+        await pineconeService.upsertText({ source, preset });
     },
     { connection }
 );
 
-worker.on("completed", async (job: Job<IngestJob>) => {
+worker.on("completed", async (job: Job<CreateSourceJob>) => {
     logger.info({ jobId: job.id }, "processing source finished");
 
     await prisma.source.update({
@@ -32,7 +31,7 @@ worker.on("completed", async (job: Job<IngestJob>) => {
     });
 });
 
-worker.on("failed", async (job: Job<IngestJob> | undefined, error) => {
+worker.on("failed", async (job: Job<CreateSourceJob> | undefined, error) => {
     if (job) {
         logger.error({ jobId: job.id, error }, "processing source failed");
 

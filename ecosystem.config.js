@@ -9,11 +9,6 @@ module.exports = {
             name: "source-worker",
             script: "npm run source-worker:start",
             watch: false
-        },
-        {
-            name: "search-log-worker",
-            script: "npm run search-log-worker:start",
-            watch: false
         }
     ]
 };

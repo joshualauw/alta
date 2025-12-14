@@ -1,11 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { SourceCreateInput, SourceWhereInput } from "@/database/generated/prisma/models";
 import { prisma } from "@/lib/prisma";
-import {
-    CreateBulkSourceQuery,
-    CreateBulkSourceRequest,
-    CreateBulkSourceResponse
-} from "@/modules/source/dtos/createBulkSourceDto";
+import { CreateBulkSourceQuery, CreateBulkSourceRequest, CreateBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
 import { CreateSourceQuery, CreateSourceRequest, CreateSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
@@ -14,17 +10,17 @@ import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
-import { AnswerTone } from "@/modules/source/types/AnswerTone";
 import { pagingResponse } from "@/utils/apiResponse";
 import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
 import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { GetSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
 import { UploadSourceQuery, UploadSourceRequest, UploadSourceResponse } from "@/modules/source/dtos/uploadSourceDto";
+import { AnswerTone } from "@/lib/openai/types/AnswerTone";
 import config from "@/config";
 import * as r2Service from "@/lib/r2";
 import * as bullmqService from "@/lib/bullmq";
-import * as ragIngestionService from "@/modules/source/services/ragIngestionService";
-import * as ragSearchService from "@/modules/source/services/ragSearchService";
+import * as pineconeService from "@/lib/pinecone";
+import * as openaiService from "@/lib/openai";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const filters: SourceWhereInput = {};
@@ -81,10 +77,7 @@ export async function getSourcePresignedUrl(): Promise<GetSourcePresignedUrlResp
     return { url: putUrl, objectKey };
 }
 
-export async function uploadSource(
-    query: UploadSourceQuery,
-    payload: UploadSourceRequest
-): Promise<UploadSourceResponse> {
+export async function uploadSource(query: UploadSourceQuery, payload: UploadSourceRequest): Promise<UploadSourceResponse> {
     const content = await r2Service.getFileContent({ objectKey: payload.objectKey });
 
     const preset = await prisma.preset.findFirstOrThrow({
@@ -97,22 +90,22 @@ export async function uploadSource(
         data.metadata = metadata as JsonObject;
     }
 
-    const source = await prisma.$transaction(async (tx) => {
-        const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-        await ragIngestionService.ingest(source, preset);
+    const source = await prisma.$transaction(
+        async (tx) => {
+            const source = await tx.source.create({ data: { ...data, status: "DONE" } });
+            await pineconeService.upsertText({ source, preset });
 
-        return source;
-    });
+            return source;
+        },
+        { timeout: 10000 }
+    );
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
 
 export async function filterSource(query: FilterSourceRequest): Promise<FilterSourceResponse> {
     const { sql, params } = buildMetadataFilter(query);
-    const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(
-        `SELECT id FROM "Source" WHERE ${sql}`,
-        ...params
-    );
+    const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(`SELECT id FROM "Source" WHERE ${sql}`, ...params);
 
     const sources = await prisma.source.findMany({
         where: { id: { in: filteredSources.map((s) => s.id) } },
@@ -128,10 +121,7 @@ export async function filterSource(query: FilterSourceRequest): Promise<FilterSo
     }));
 }
 
-export async function createSource(
-    payload: CreateSourceRequest,
-    query: CreateSourceQuery
-): Promise<CreateSourceResponse> {
+export async function createSource(payload: CreateSourceRequest, query: CreateSourceQuery): Promise<CreateSourceResponse> {
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
@@ -142,20 +132,20 @@ export async function createSource(
         data.metadata = metadata as JsonObject;
     }
 
-    const source = await prisma.$transaction(async (tx) => {
-        const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-        await ragIngestionService.ingest(source, preset);
+    const source = await prisma.$transaction(
+        async (tx) => {
+            const source = await tx.source.create({ data: { ...data, status: "DONE" } });
+            await pineconeService.upsertText({ source, preset });
 
-        return source;
-    });
+            return source;
+        },
+        { timeout: 10000 }
+    );
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
 
-export async function createBulkSource(
-    payload: CreateBulkSourceRequest,
-    query: CreateBulkSourceQuery
-): Promise<CreateBulkSourceResponse> {
+export async function createBulkSource(payload: CreateBulkSourceRequest, query: CreateBulkSourceQuery): Promise<CreateBulkSourceResponse> {
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
@@ -170,16 +160,19 @@ export async function createBulkSource(
         return data;
     });
 
-    await prisma.$transaction(async (tx) => {
-        await tx.source.createMany({ data: sources });
-        await bullmqService.addSourceJobs(
-            sources.map((s) => ({
-                name: `job_${s.jobId}`,
-                jobId: s.jobId!,
-                preset: preset.name
-            }))
-        );
-    });
+    await prisma.$transaction(
+        async (tx) => {
+            await tx.source.createMany({ data: sources });
+            await bullmqService.addSourceJobs(
+                sources.map((s) => ({
+                    name: `job_${s.jobId}`,
+                    jobId: s.jobId!,
+                    preset: preset.code
+                }))
+            );
+        },
+        { timeout: 10000 }
+    );
 
     return { createdAt: new Date().toISOString() };
 }
@@ -198,44 +191,41 @@ export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
         await tx.source.delete({
             where: { id }
         });
-        await ragIngestionService.remove(id);
+        await pineconeService.deleteByFilter({
+            source_id: { $eq: id }
+        });
     });
 
     return { id };
 }
 
-export async function searchSource(
-    payload: SearchSourceRequest,
-    query: SearchSourceQuery
-): Promise<SearchSourceResponse> {
+export async function searchSource(payload: SearchSourceRequest, query: SearchSourceQuery): Promise<SearchSourceResponse> {
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
     });
 
     const rerank = query.rerank ? Number(query.rerank) == 1 : false;
     const tone: AnswerTone = query.tone ? query.tone : "normal";
-    const source_ids: number[] = [];
 
-    if (payload.filters) {
-        const { sql, params } = buildMetadataFilter(payload.filters);
-        const sources = await prisma.$queryRawUnsafe<{ id: number }[]>(
-            `SELECT id FROM "Source" WHERE ${sql}`,
-            ...params
-        );
-        source_ids.push(...sources.map((s) => s.id));
-    }
+    const { question, sourceIds } = payload;
 
-    const result = await ragSearchService.search(payload, source_ids, rerank, preset, tone);
+    const chunks = await pineconeService.searchAndRerank({ question, sourceIds, preset, rerank });
 
-    await bullmqService.addSearchLogJob(`job_${uuidv4()}`, {
-        question: payload.question,
-        isRerank: rerank,
-        tone: tone,
-        searchOptions: omit(preset, "id", "name", "code", "createdAt", "updatedAt"),
-        metadataFilters: payload.filters,
-        ...pick(result, "answer", "responseTimeMs", "readUnitCost", "rerankUnitCost", "embeddingTokenCost"),
-        ...pick(result, "chunksRetrieved", "chunksReranked")
+    const chunksContext = chunks.map((c) => c.content);
+    const chunkIds = chunks.map((c) => c.id);
+
+    const answer = await openaiService.generateRagResponse({ question, chunksContext, preset, tone });
+
+    await prisma.searchLog.create({
+        data: {
+            question,
+            answer,
+            rerank,
+            tone,
+            sourceIds,
+            chunkIds
+        }
     });
 
-    return { answer: result.answer, references: result.chunksReferences };
+    return { answer, references: chunkIds };
 }

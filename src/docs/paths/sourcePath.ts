@@ -7,11 +7,7 @@ import {
     validationErrorResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
 import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
-import {
-    createBulkSourceQuery,
-    createBulkSourceRequest,
-    createBulkSourceResponse
-} from "@/modules/source/dtos/createBulkSourceDto";
+import { createBulkSourceQuery, createBulkSourceRequest, createBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
 import { createSourceQuery, createSourceRequest, createSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { deleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";

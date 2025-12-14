@@ -1,11 +1,11 @@
 import request from "supertest";
 import { afterAll, describe, expect, it } from "vitest";
 import { createSourceFactory } from "@/tests/prisma";
-import app from "@/index";
 import { vi } from "vitest";
-import { ingest, remove } from "@/modules/source/services/ragIngestionService";
-import { search } from "@/modules/source/services/ragSearchService";
-import { addSearchLogJob, addSourceJobs } from "@/lib/bullmq";
+import { deleteByFilter, searchAndRerank, upsertText } from "@/lib/pinecone";
+import { addSourceJobs } from "@/lib/bullmq";
+import { generateRagResponse } from "@/lib/openai";
+import app from "@/index";
 
 describe("Source API Integration Test", () => {
     const MOCK_API_KEY = process.env.ALTA_API_KEY || "";
@@ -24,13 +24,10 @@ describe("Source API Integration Test", () => {
                 }
             };
 
-            const res = await request(app)
-                .post("/api/source/create?preset=default")
-                .set("x-api-key", MOCK_API_KEY)
-                .send(data);
+            const res = await request(app).post("/api/source/create?preset=default").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(201);
-            expect(ingest).toBeCalled();
+            expect(upsertText).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 message: "create source successful",
@@ -49,10 +46,7 @@ describe("Source API Integration Test", () => {
                 content: ""
             };
 
-            const res = await request(app)
-                .post("/api/source/create?preset=default")
-                .set("x-api-key", MOCK_API_KEY)
-                .send(data);
+            const res = await request(app).post("/api/source/create?preset=default").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -72,10 +66,7 @@ describe("Source API Integration Test", () => {
                     content: "This is a general document about general stuff."
                 }
             ];
-            const res = await request(app)
-                .post("/api/source/create/bulk?preset=default")
-                .set("x-api-key", MOCK_API_KEY)
-                .send(data);
+            const res = await request(app).post("/api/source/create/bulk?preset=default").set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(201);
             expect(addSourceJobs).toBeCalled();
@@ -135,10 +126,7 @@ describe("Source API Integration Test", () => {
             const data = {
                 name: "Updated"
             };
-            const res = await request(app)
-                .put(`/api/source/update/${source.id}`)
-                .set("x-api-key", MOCK_API_KEY)
-                .send(data);
+            const res = await request(app).put(`/api/source/update/${source.id}`).set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(200);
             expect(res.body).toEqual({
@@ -174,10 +162,7 @@ describe("Source API Integration Test", () => {
             const data = {
                 name: ""
             };
-            const res = await request(app)
-                .put(`/api/source/update/${source.id}`)
-                .set("x-api-key", MOCK_API_KEY)
-                .send(data);
+            const res = await request(app).put(`/api/source/update/${source.id}`).set("x-api-key", MOCK_API_KEY).send(data);
 
             expect(res.statusCode).toBe(400);
             expect(res.body).toEqual({
@@ -195,7 +180,7 @@ describe("Source API Integration Test", () => {
             const res = await request(app).delete(`/api/source/delete/${source.id}`).set("x-api-key", MOCK_API_KEY);
 
             expect(res.statusCode).toBe(200);
-            expect(remove).toBeCalled();
+            expect(deleteByFilter).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
@@ -281,9 +266,7 @@ describe("Source API Integration Test", () => {
         it("should search source", async () => {
             const data = {
                 question: "who is obama?",
-                filters: {
-                    property: { $eq: "test" }
-                }
+                sourceIds: [1, 2, 3]
             };
 
             const res = await request(app)
@@ -292,8 +275,8 @@ describe("Source API Integration Test", () => {
                 .send(data);
 
             expect(res.statusCode).toBe(200);
-            expect(search).toBeCalled();
-            expect(addSearchLogJob).toBeCalled();
+            expect(searchAndRerank).toBeCalled();
+            expect(generateRagResponse).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 errors: [],

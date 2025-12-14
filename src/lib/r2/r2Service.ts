@@ -20,6 +20,7 @@ export async function getPresignedUrl({ objectKey, contentType, expiresIn = 1500
         Key: objectKey,
         ContentType: contentType
     });
+
     return getAwsSignedUrl(S3, command, { expiresIn });
 }
 

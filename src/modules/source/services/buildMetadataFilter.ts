@@ -1,7 +1,7 @@
 import { AllowedSourceMetadata } from "@/modules/source/dtos/createSourceDto";
-import { FilterSchema } from "@/modules/source/dtos/searchSourceDto";
+import { FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 
-export function buildMetadataFilter(filters: FilterSchema): { sql: string; params: AllowedSourceMetadata[] } {
+export function buildMetadataFilter(filters: FilterSourceRequest): { sql: string; params: AllowedSourceMetadata[] } {
     const clauses: string[] = [];
     const params: AllowedSourceMetadata[] = [];
 
