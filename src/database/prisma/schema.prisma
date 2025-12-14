@@ -66,19 +66,13 @@ model Group {
 }
 
 model SearchLog {
-  id                 Int     @id @default(autoincrement())
-  question           String
-  answer             String
-  responseTimeMs     Float
-  searchOptions      Json
-  isRerank           Boolean
-  tone               String
-  metadataFilters    Json?
-  readUnitCost       Int
-  rerankUnitCost     Int?
-  embeddingTokenCost Int?
-  chunksRetrieved    Json[]
-  chunksReranked     Json[]  @default([])
+  id        Int      @id @default(autoincrement())
+  question  String
+  answer    String
+  rerank    Boolean
+  tone      String
+  sourceIds Int[]
+  chunkIds  String[] @default([])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt

@@ -1,6 +1,3 @@
-import config from "@/config";
-import { Pinecone } from "@pinecone-database/pinecone";
-
-export const pinecone = new Pinecone({
-    apiKey: config.PINECONE_API_KEY
-});
+export * from "./pineconeService";
+export * from "./types/UpsertText";
+export * from "./types/SearchAndRerank";

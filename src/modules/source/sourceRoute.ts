@@ -14,32 +14,12 @@ const router = Router();
 router.get("/getAll", validate(getAllSourceQuery, "query"), sourceController.getAllSource);
 router.get("/getDetail/:id", sourceController.getSourceDetail);
 router.get("/presigned", sourceController.getSourcePresignedUrl);
-router.post(
-    "/upload",
-    validate(uploadSourceQuery, "query"),
-    validate(uploadSourceRequest),
-    sourceController.uploadSource
-);
+router.post("/upload", validate(uploadSourceQuery, "query"), validate(uploadSourceRequest), sourceController.uploadSource);
 router.post("/filter", validate(filterSourceRequest), sourceController.filterSource);
-router.post(
-    "/create",
-    validate(createSourceQuery, "query"),
-    validate(createSourceRequest),
-    sourceController.createSource
-);
-router.post(
-    "/create/bulk",
-    validate(createBulkSourceQuery, "query"),
-    validate(createBulkSourceRequest),
-    sourceController.createBulkSource
-);
+router.post("/create", validate(createSourceQuery, "query"), validate(createSourceRequest), sourceController.createSource);
+router.post("/create/bulk", validate(createBulkSourceQuery, "query"), validate(createBulkSourceRequest), sourceController.createBulkSource);
 router.put("/update/:id", validate(updateSourceRequest), sourceController.updateSource);
 router.delete("/delete/:id", sourceController.deleteSource);
-router.post(
-    "/search",
-    validate(searchSourceQuery, "query"),
-    validate(searchSourceRequest),
-    sourceController.searchSource
-);
+router.post("/search", validate(searchSourceQuery, "query"), validate(searchSourceRequest), sourceController.searchSource);
 
 export default router;

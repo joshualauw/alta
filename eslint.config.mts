@@ -5,8 +5,15 @@ import js from "@eslint/js";
 
 export default defineConfig([
     globalIgnores(["node_modules", "dist"]),
+    ...tseslint.configs.recommended,
     {
         files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+        languageOptions: {
+            globals: {
+                ...globals.browser,
+                ...globals.node
+            }
+        },
         plugins: { js },
         extends: ["js/recommended"],
         rules: {
@@ -27,8 +34,6 @@ export default defineConfig([
             ],
             "no-unused-vars": "warn",
             "no-undef": "warn"
-        },
-        languageOptions: { globals: globals.browser }
-    },
-    tseslint.configs.recommended
+        }
+    }
 ]);

@@ -40,10 +40,7 @@ export async function createSource(req: Request<{}, {}, CreateSourceRequest, Cre
     return apiResponse.success(res, result, "create source successful", StatusCodes.CREATED);
 }
 
-export async function createBulkSource(
-    req: Request<{}, {}, CreateBulkSourceRequest, CreateBulkSourceQuery>,
-    res: Response
-) {
+export async function createBulkSource(req: Request<{}, {}, CreateBulkSourceRequest, CreateBulkSourceQuery>, res: Response) {
     const result = await sourceService.createBulkSource(req.body, req.query);
     return apiResponse.success(res, result, "create bulk source successful", StatusCodes.CREATED);
 }

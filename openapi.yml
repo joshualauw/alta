@@ -45,8 +45,6 @@ paths:
     $ref: "#/components/pathItems/update-source"
   /api/source/delete/:id:
     $ref: "#/components/pathItems/delete-source"
-  /api/analytics/searchLog:
-    $ref: "#/components/pathItems/get-all-search-log"
 components:
   pathItems:
     get-all-group:
@@ -2145,31 +2143,14 @@ components:
                   question:
                     type: string
                     minLength: 1
-                  filters:
-                    type: object
-                    additionalProperties:
-                      type: object
-                      properties:
-                        $eq: {}
-                        $ne: {}
-                        $gt:
-                          type: number
-                        $gte:
-                          type: number
-                        $lt:
-                          type: number
-                        $lte:
-                          type: number
-                        $in:
-                          type: array
-                          items:
-                            type: string
-                        $nin:
-                          type: array
-                          items:
-                            type: string
+                  sourceIds:
+                    minItems: 1
+                    type: array
+                    items:
+                      type: number
                 required:
                   - question
+                  - sourceIds
         responses:
           "200":
             description: success
@@ -2421,109 +2402,6 @@ components:
                       nullable: true
                       enum:
                         - null
-                    message:
-                      type: string
-                    errors:
-                      minItems: 0
-                      maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-    get-all-search-log:
-      summary: get all search log
-      get:
-        tags:
-          - analytics
-        parameters:
-          - in: query
-            name: startDate
-            schema:
-              type: string
-            required: true
-          - in: query
-            name: endDate
-            schema:
-              type: string
-            required: true
-        responses:
-          "200":
-            description: success
-            headers:
-              x-api-key:
-                required: true
-                schema:
-                  type: string
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - true
-                    data:
-                      nullable: true
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          id:
-                            type: number
-                          question:
-                            type: string
-                          answer:
-                            type: string
-                          responseTimeMs:
-                            type: number
-                          searchOptions: {}
-                          isRerank:
-                            type: boolean
-                          tone:
-                            type: string
-                          metadataFilters:
-                            nullable: true
-                          readUnitCost:
-                            type: number
-                          rerankUnitCost:
-                            nullable: true
-                            type: number
-                          embeddingTokenCost:
-                            nullable: true
-                            type: number
-                          chunkRetrieved:
-                            type: array
-                            items: {}
-                          chunkReranked:
-                            type: array
-                            items: {}
-                          createdAt:
-                            type: string
-                          updatedAt:
-                            type: string
-                        required:
-                          - id
-                          - question
-                          - answer
-                          - responseTimeMs
-                          - searchOptions
-                          - isRerank
-                          - tone
-                          - metadataFilters
-                          - readUnitCost
-                          - rerankUnitCost
-                          - embeddingTokenCost
-                          - chunkRetrieved
-                          - chunkReranked
-                          - createdAt
-                          - updatedAt
-                        additionalProperties: false
                     message:
                       type: string
                     errors:
