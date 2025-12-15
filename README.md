@@ -27,11 +27,12 @@ No need to assemble your own RAG stack.
 
 Alta is built on a reliable and scalable stack:
 
-- **Express.js** — Primary backend server and orchestrator.
+- **Express** — Primary backend server and orchestrator.
 - **OpenAI** — LLM for generating refined, human-readable answers from retrieved context.
 - **BullMQ** — Queue processing system for background ingestion tasks.
 - **PostgreSQL** — Stores raw sources, configurations, metadata, and analytics.
 - **Pinecone** — High-performance vector database for embeddings and retrieval.
+- **R2** - Scalable and secure object storage for storing user sources.
 
 ## 📦 Prequisites
 
@@ -39,6 +40,7 @@ Alta is built on a reliable and scalable stack:
 - **Node.js** ≥ v22
 - **Pinecone account** https://www.pinecone.io/
 - **OpenAI API key** https://openai.com/
+- **Cloudflare account** https://developers.cloudflare.com/
 
 ## Project Setup
 
@@ -53,29 +55,7 @@ Copy the environment template:
 cp .env.example .env
 ```
 
-Then populate the required values:
-```
-PORT=3001
-NODE_ENV=development
-
-JWT_SECRET=
-JWT_EXPIRES_IN=86400
-
-ADMIN_EMAIL=admin@mail.com
-ADMIN_PASSWORD=
-
-RATE_LIMIT_WINDOW=300000
-RATE_LIMIT_MAX_REQ=100
-
-DATABASE_URL=postgresql://postgres:123456@localhost:5433/alta
-REDIS_URL=redis://localhost:6379
-
-PINECONE_API_KEY=pcsk_
-PINECONE_INDEX_NAME=alta-dev
-
-OPENAI_API_KEY=sk_
-ALTA_API_KEY=alta_
-```
+Then populate the required values
 
 ### Running local developmet
 
@@ -112,7 +92,8 @@ alta/
 │  │  ├─ openai/                             # OpenAI client + helper functions
 │  │  ├─ pinecone/                           # Pinecone client + vector DB helpers
 │  │  ├─ pino/                               # Logger setup (Pino)
-│  │  └─ prisma/                             # Prisma client instance
+│  │  ├─ prisma/                             # Prisma client instance
+│  ├─ ├─ r2/                                 # R2 client + helper functions
 │  ├─ middlewares/                           # Express middlewares (auth, errors, etc.)
 │  ├─ modules/                               # Feature-based module architecture
 │  │  └─ <module_name>/
@@ -135,5 +116,6 @@ alta/
 ├─ package.json                              # Dependencies & npm scripts
 ├─ tsconfig.json                             # TypeScript configuration
 ├─ vite.config.ts                            # Vite config (for docs/tools)
+├─ ecosystem.config.js                       # Scripts to run via PM2
 └─ prisma.config.ts                          # Prisma CLI config
 ```
