@@ -96,8 +96,5 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          railway up \
-            --project ${{ secrets.RAILWAY_PROJECT_ID }} \
-            --service ${{ secrets.RAILWAY_SERVICE_ID }} \
-            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        run:
+          railway redeploy --service ${{ secrets.RAILWAY_SERVICE_ID }}
