@@ -87,6 +87,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args:
+            DATABASE_URL=${{ env.DATABASE_URL }}
 
       - name: Install Railway CLI
         run: npm install -g @railway/cli
