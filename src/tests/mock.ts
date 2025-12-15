@@ -6,6 +6,13 @@ vi.mock("@/lib/openai", async () => {
     };
 });
 
+vi.mock("@/lib/r2", async () => {
+    return {
+        getPresignedUrl: vi.fn().mockResolvedValue("https://example.com/presigned-url"),
+        getFileContent: vi.fn().mockResolvedValue("file content")
+    };
+});
+
 vi.mock("@/lib/bullmq", async () => {
     return {
         addSourceJobs: vi.fn()

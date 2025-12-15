@@ -5,6 +5,7 @@ import { vi } from "vitest";
 import { deleteByFilter, searchAndRerank, upsertText } from "@/lib/pinecone";
 import { addSourceJobs } from "@/lib/bullmq";
 import { generateRagResponse } from "@/lib/openai";
+import { getFileContent, getPresignedUrl } from "@/lib/r2";
 import app from "@/index";
 
 describe("Source API Integration Test", () => {
@@ -230,6 +231,52 @@ describe("Source API Integration Test", () => {
                     hasPrevPage: expect.any(Boolean)
                 },
                 message: "get all source successful"
+            });
+        });
+    });
+
+    describe("GET /api/source/presigned", () => {
+        it("should get presigned url", async () => {
+            const res = await request(app).get("/api/source/presigned").set("x-api-key", MOCK_API_KEY);
+
+            expect(res.statusCode).toBe(200);
+            expect(getPresignedUrl).toBeCalled();
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "get source presigned url successful",
+                data: {
+                    url: expect.any(String),
+                    objectKey: expect.any(String)
+                }
+            });
+        });
+    });
+
+    describe("POST /api/source/upload", () => {
+        it("should upload source", async () => {
+            const data = {
+                name: "Test",
+                objectKey: "test.txt",
+                metadata: {
+                    type: "test"
+                }
+            };
+
+            const res = await request(app).post(`/api/source/upload?preset=default`).set("x-api-key", MOCK_API_KEY).send(data);
+
+            expect(res.statusCode).toBe(200);
+            expect(getFileContent).toBeCalled();
+            expect(upsertText).toBeCalled();
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "upload source successful",
+                data: {
+                    id: expect.any(Number),
+                    name: expect.any(String),
+                    createdAt: expect.any(String)
+                }
             });
         });
     });
