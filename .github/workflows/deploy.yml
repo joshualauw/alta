@@ -97,5 +97,6 @@ jobs:
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run:
-          railway redeploy --service ${{ secrets.RAILWAY_SERVICE_ID }}
+        run: |
+          railway link --service=${{ secrets.RAILWAY_SERVICE_ID }} --project_id=${{ secrets.RAILWAY_PROJECT_ID }} --environment=${{ secrets.RAILWAY_ENVIRONMENT_ID }}
+          railway redeploy --yes
