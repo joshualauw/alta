@@ -1,9 +1,8 @@
-name: Build and Deploy to Railway
+name: Deploy to Railway
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
@@ -26,7 +25,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract Docker metadata
         id: meta
