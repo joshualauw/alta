@@ -90,14 +90,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args:
             DATABASE_URL=${{ env.DATABASE_URL }}
-
-      - name: Install Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: |
-          railway login
-          railway link --service=${{ secrets.RAILWAY_SERVICE_ID }} --project_id=${{ secrets.RAILWAY_PROJECT_ID }} --environment=${{ secrets.RAILWAY_ENVIRONMENT_ID }}
-          railway redeploy --yes
