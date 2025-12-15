@@ -1,11 +1,9 @@
 import { execSync } from "child_process";
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from "@testcontainers/postgresql";
-import { RedisContainer, StartedRedisContainer } from "@testcontainers/redis";
 import logger from "@/lib/pino";
 
 declare global {
     var pgContainer: StartedPostgreSqlContainer;
-    var redisContainer: StartedRedisContainer;
 }
 
 export async function setup() {
@@ -18,22 +16,16 @@ export async function setup() {
         .withPassword("test")
         .start();
 
-    process.env.DATABASE_URL = pgContainer.getConnectionUri();
+    process.env.DATABASE_URL = globalThis.pgContainer.getConnectionUri();
 
     execSync("npx prisma migrate deploy");
     execSync("npx prisma db seed");
-
-    globalThis.redisContainer = await new RedisContainer("redis:7-alpine").start();
-
-    process.env.REDIS_PORT = globalThis.redisContainer.getPort().toString();
-    process.env.REDIS_HOST = globalThis.redisContainer.getHost();
 
     logger.info("testcontainer started");
 }
 
 export async function teardown() {
     await globalThis.pgContainer.stop();
-    await globalThis.redisContainer.stop();
 
     logger.info("testcontainer stopped");
 }
