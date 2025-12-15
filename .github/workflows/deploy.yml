@@ -1,15 +1,61 @@
-name: Deploy to Railway
+name: Test, Build and Deploy
 
 on:
   push:
     branches: [ main ]
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+  # placeholders for test runtime
+  NODE_ENV: "test"
+  JWT_SECRET: "test"
+  DATABASE_URL: "test"
+  REDIS_URL: "test"
+  FRONTEND_URL: "test"
+  PINECONE_API_KEY: "test"
+  PINECONE_INDEX_NAME: "test"
+  OPENAI_API_KEY: "test"
+  ALTA_API_KEY: "test"
+  R2_ACCOUNT_ID: "test"
+  R2_API_TOKEN: "test"
+  R2_ACCESS_KEY: "test"
+  R2_SECRET_ACCESS_KEY: "test"
+  R2_BUCKET_NAME: "test"
+  R2_ENDPOINT: "test"
+  R2_PUBLIC_URL: "test"
+
 jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run prisma generate
+        run: npx prisma generate
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build project
+        run: npm run build
+
   build-and-deploy:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     permissions:
