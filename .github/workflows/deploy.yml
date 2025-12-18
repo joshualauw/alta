@@ -19,6 +19,8 @@ env:
   PINECONE_INDEX_NAME: "test"
   OPENAI_API_KEY: "test"
   ALTA_API_KEY: "test"
+  ADMIN_EMAIL: "test@mail.com"
+  ADMIN_PASSWORD: "test"
   R2_ACCOUNT_ID: "test"
   R2_API_TOKEN: "test"
   R2_ACCESS_KEY: "test"

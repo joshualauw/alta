@@ -26,6 +26,9 @@ const configSchema = z.object({
 
     ALTA_API_KEY: z.string(),
 
+    ADMIN_EMAIL: z.string().min(1),
+    ADMIN_PASSWORD: z.string().min(1),
+
     PINECONE_API_KEY: z.string(),
     PINECONE_INDEX_NAME: z.string(),
 

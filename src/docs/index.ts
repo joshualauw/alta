@@ -2,6 +2,7 @@ import { createDocument } from "zod-openapi";
 import * as groupPath from "@/docs/paths/groupPath";
 import * as presetPath from "@/docs/paths/presetPath";
 import * as sourcePath from "@/docs/paths/sourcePath";
+import * as userPath from "@/docs/paths/userPath";
 
 const document = createDocument({
     openapi: "3.0.0",
@@ -32,7 +33,9 @@ const document = createDocument({
         "/api/source/create/bulk": sourcePath.createBulkSourcePath,
         "/api/source/search": sourcePath.searchSourcePath,
         "/api/source/update/:id": sourcePath.updateSourcePath,
-        "/api/source/delete/:id": sourcePath.deleteSourcePath
+        "/api/source/delete/:id": sourcePath.deleteSourcePath,
+
+        "/api/user/login": userPath.loginPath
     },
     components: {
         securitySchemes: {
