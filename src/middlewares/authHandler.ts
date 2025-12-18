@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { apiResponse } from "@/utils/apiResponse";
 import config from "@/config";
 import crypto from "crypto";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 
 export default function authorize(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers["x-api-key"];
@@ -22,6 +23,23 @@ export default function authorize(req: Request, res: Response, next: NextFunctio
         }
 
         return next();
+    }
+
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return apiResponse.error(res, "Missing or invalid token format", StatusCodes.UNAUTHORIZED);
+    }
+
+    try {
+        const token = authHeader.split(" ")[1];
+        jwt.verify(token, config.JWT_SECRET);
+
+        return next();
+    } catch (err) {
+        if (err instanceof JsonWebTokenError) {
+            return apiResponse.error(res, "Unauthorized", StatusCodes.UNAUTHORIZED);
+        }
     }
 
     return apiResponse.error(res, "Unauthorized", StatusCodes.UNAUTHORIZED);
