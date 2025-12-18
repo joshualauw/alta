@@ -45,6 +45,8 @@ paths:
     $ref: "#/components/pathItems/update-source"
   /api/source/delete/:id:
     $ref: "#/components/pathItems/delete-source"
+  /api/user/login:
+    $ref: "#/components/pathItems/login"
 components:
   pathItems:
     get-all-group:
@@ -2388,6 +2390,96 @@ components:
                 required: true
                 schema:
                   type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - false
+                    data:
+                      type: string
+                      nullable: true
+                      enum:
+                        - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    login:
+      summary: login
+      post:
+        tags:
+          - user
+        requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    minLength: 1
+                    format: email
+                    pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+                  password:
+                    type: string
+                    minLength: 1
+                required:
+                  - email
+                  - password
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        userId:
+                          type: number
+                        token:
+                          type: string
+                      required:
+                        - userId
+                        - token
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+          "400":
+            description: invalid credentials
             content:
               application/json:
                 schema:

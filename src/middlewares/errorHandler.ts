@@ -39,10 +39,10 @@ export default function errorHandler(err: unknown, req: Request, res: Response, 
     }
 
     if (err instanceof NoSuchKey) {
-        return apiResponse.error(res, "S3 file not found", StatusCodes.INTERNAL_SERVER_ERROR);
+        return apiResponse.error(res, "S3 file not found", StatusCodes.NOT_FOUND);
     }
     if (err instanceof S3ServiceException) {
-        return apiResponse.error(res, "S3 internal error", StatusCodes.NOT_FOUND);
+        return apiResponse.error(res, "S3 internal error", StatusCodes.INTERNAL_SERVER_ERROR);
     }
 
     return apiResponse.error(res, "internal server error");
