@@ -13,7 +13,8 @@ export async function getAllGroup(query: PagingQuery): Promise<GetAllGroupRespon
     const [groups, count] = await prisma.$transaction([
         prisma.group.findMany({
             skip: (query.page - 1) * query.size,
-            take: query.size
+            take: query.size,
+            select: { id: true, name: true, colorCode: true, createdAt: true }
         }),
         prisma.group.count()
     ]);
@@ -36,7 +37,8 @@ export async function getGroupDetail(id: number): Promise<GetGroupDetailResponse
 
 export async function createGroup(payload: CreateGroupRequest): Promise<CreateGroupResponse> {
     const group = await prisma.group.create({
-        data: payload
+        data: payload,
+        select: { id: true, name: true, colorCode: true, createdAt: true }
     });
 
     return { ...pick(group, "id", "name", "colorCode"), createdAt: group.createdAt.toISOString() };

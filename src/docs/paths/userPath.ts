@@ -22,7 +22,7 @@ export const loginPath: ZodOpenApiPathItemObject = {
                     }
                 }
             },
-            400: {
+            401: {
                 description: "invalid credentials",
                 content: {
                     "application/json": {

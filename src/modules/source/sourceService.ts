@@ -33,7 +33,7 @@ export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSour
             skip: (query.page - 1) * query.size,
             take: query.size,
             where: filters,
-            include: { group: true }
+            select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
         }),
         prisma.source.count()
     ]);
@@ -109,7 +109,7 @@ export async function filterSource(query: FilterSourceRequest): Promise<FilterSo
 
     const sources = await prisma.source.findMany({
         where: { id: { in: filteredSources.map((s) => s.id) } },
-        include: { group: true }
+        select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
     });
 
     return sources.map((s) => ({
