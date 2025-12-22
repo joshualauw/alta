@@ -1,6 +1,25 @@
 import { errorResponseSchema, successResponseSchema } from "@/docs/schemas/apiResponseSchema";
 import { loginRequest, loginResponse } from "@/modules/user/dtos/loginDto";
+import { meResponse } from "@/modules/user/dtos/meDto";
 import { ZodOpenApiPathItemObject } from "zod-openapi";
+
+export const mePath: ZodOpenApiPathItemObject = {
+    id: "me",
+    summary: "get current logged in user",
+    get: {
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(meResponse)
+                    }
+                }
+            }
+        },
+        tags: ["user"]
+    }
+};
 
 export const loginPath: ZodOpenApiPathItemObject = {
     id: "login",

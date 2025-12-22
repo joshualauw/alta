@@ -1,9 +1,24 @@
 import config from "@/config";
-import { UnauthorizedError } from "@/lib/internal/errors";
+import { NotFoundError, UnauthorizedError } from "@/lib/internal/errors";
 import { prisma } from "@/lib/prisma";
 import { LoginRequest, LoginResponse } from "@/modules/user/dtos/loginDto";
+import { MeResponse } from "@/modules/user/dtos/meDto";
+import { UserJwtPayload } from "@/types/UserJwtPayload";
+import { pick } from "@/utils/mapper";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+export async function me(payload?: UserJwtPayload): Promise<MeResponse> {
+    if (!payload) throw new NotFoundError("current user not found");
+
+    const user = await prisma.user.findFirstOrThrow({
+        where: {
+            id: payload.id
+        }
+    });
+
+    return pick(user, "id", "email", "role");
+}
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
     const user = await prisma.user.findUnique({
