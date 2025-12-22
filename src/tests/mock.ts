@@ -9,7 +9,8 @@ vi.mock("@/lib/openai", async () => {
 vi.mock("@/lib/r2", async () => {
     return {
         getPresignedUrl: vi.fn().mockResolvedValue("https://example.com/presigned-url"),
-        getFileContent: vi.fn().mockResolvedValue("file content")
+        getFileContent: vi.fn().mockResolvedValue("objectKey"),
+        deleteFile: vi.fn().mockResolvedValue("objectKey")
     };
 });
 

@@ -5,7 +5,7 @@ import { vi } from "vitest";
 import { deleteByFilter, searchAndRerank, upsertText } from "@/lib/pinecone";
 import { addSourceJobs } from "@/lib/bullmq";
 import { generateRagResponse } from "@/lib/openai";
-import { getFileContent, getPresignedUrl } from "@/lib/r2";
+import { deleteFile, getFileContent, getPresignedUrl } from "@/lib/r2";
 import app from "@/index";
 
 describe("Source API Integration Test", () => {
@@ -96,8 +96,9 @@ describe("Source API Integration Test", () => {
                     id: expect.any(Number),
                     name: expect.any(String),
                     content: expect.any(String),
-                    fileUrl: expect.toBeOneOf([String, null]),
+                    fileUrl: expect.any(String),
                     status: expect.toBeOneOf(["PENDING", "FAILED", "DONE"]),
+                    metadata: expect.any(Object),
                     statusReason: expect.toBeOneOf([String, null]),
                     groupId: expect.toBeOneOf([Number, null]),
                     groupName: expect.toBeOneOf([String, null]),
@@ -182,6 +183,7 @@ describe("Source API Integration Test", () => {
 
             expect(res.statusCode).toBe(200);
             expect(deleteByFilter).toBeCalled();
+            expect(deleteFile).toBeCalled();
             expect(res.body).toEqual({
                 success: true,
                 errors: [],
@@ -218,7 +220,7 @@ describe("Source API Integration Test", () => {
                         expect.objectContaining({
                             id: expect.any(Number),
                             name: expect.any(String),
-                            fileUrl: expect.toBeOneOf([String, null]),
+                            fileUrl: expect.any(String),
                             status: expect.toBeOneOf(["PENDING", "FAILED", "DONE"]),
                             groupId: expect.toBeOneOf([Number, null]),
                             groupName: expect.toBeOneOf([String, null]),
@@ -298,7 +300,7 @@ describe("Source API Integration Test", () => {
                     expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String),
-                        fileUrl: expect.toBeOneOf([String, null]),
+                        fileUrl: expect.any(String),
                         status: expect.toBeOneOf(["PENDING", "FAILED", "DONE"]),
                         groupId: expect.toBeOneOf([Number, null]),
                         groupName: expect.toBeOneOf([String, null]),

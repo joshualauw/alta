@@ -7,6 +7,7 @@ export const getSourceDetailResponse = z.object({
     fileUrl: z.string().nullable(),
     groupId: z.number().nullable(),
     groupName: z.string().nullable(),
+    metadata: z.any(),
     status: z.enum(["PENDING", "FAILED", "DONE"]),
     statusReason: z.string().nullable(),
     createdAt: z.string(),
