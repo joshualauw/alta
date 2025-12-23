@@ -1,6 +1,12 @@
 import { getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import z from "zod";
 
+export const filterSourceQuery = z.object({
+    groupId: z.coerce.number().optional()
+});
+
+export type FilterSourceQuery = z.infer<typeof filterSourceQuery>;
+
 const filterOperators = z.object({
     $eq: z.any().optional(),
     $ne: z.any().optional(),
@@ -14,7 +20,7 @@ const filterOperators = z.object({
 
 export type FilterOperators = z.infer<typeof filterOperators>;
 
-export const filterSourceRequest = z.record(z.string(), filterOperators);
+export const filterSourceRequest = z.record(z.string(), filterOperators).optional();
 
 export type FilterSourceRequest = z.infer<typeof filterSourceRequest>;
 

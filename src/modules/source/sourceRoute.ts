@@ -6,7 +6,7 @@ import { getAllSourceQuery } from "@/modules/source/dtos/getAllSourceDto";
 import { searchSourceQuery, searchSourceRequest } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceController from "@/modules/source/sourceController";
-import { filterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
+import { filterSourceQuery, filterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 import { uploadSourceQuery, uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
 
 const router = Router();
@@ -15,7 +15,7 @@ router.get("/getAll", validate(getAllSourceQuery, "query"), sourceController.get
 router.get("/getDetail/:id", sourceController.getSourceDetail);
 router.get("/presigned", sourceController.getSourcePresignedUrl);
 router.post("/upload", validate(uploadSourceQuery, "query"), validate(uploadSourceRequest), sourceController.uploadSource);
-router.post("/filter", validate(filterSourceRequest), sourceController.filterSource);
+router.post("/filter", validate(filterSourceQuery, "query"), validate(filterSourceRequest), sourceController.filterSource);
 router.post("/create", validate(createSourceQuery, "query"), validate(createSourceRequest), sourceController.createSource);
 router.post("/create/bulk", validate(createBulkSourceQuery, "query"), validate(createBulkSourceRequest), sourceController.createBulkSource);
 router.put("/update/:id", validate(updateSourceRequest), sourceController.updateSource);

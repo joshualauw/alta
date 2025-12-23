@@ -13,8 +13,6 @@ paths:
     $ref: "#/components/pathItems/update-group"
   /api/group/delete/:id:
     $ref: "#/components/pathItems/delete-group"
-  /api/group/changeSourceGroup:
-    $ref: "#/components/pathItems/change-source-group"
   /api/preset/getAll:
     $ref: "#/components/pathItems/get-all-preset"
   /api/preset/getDetail/:id:
@@ -284,6 +282,7 @@ components:
                           type: string
                         colorCode:
                           type: string
+                          pattern: ^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$
                         createdAt:
                           type: string
                       required:
@@ -521,132 +520,6 @@ components:
                     errors:
                       minItems: 0
                       maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-          "404":
-            description: not found
-            headers:
-              x-api-key:
-                required: true
-                schema:
-                  type: string
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - false
-                    data:
-                      type: string
-                      nullable: true
-                      enum:
-                        - null
-                    message:
-                      type: string
-                    errors:
-                      minItems: 0
-                      maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-    change-source-group:
-      summary: change source group
-      patch:
-        tags:
-          - group
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  sourceId:
-                    type: number
-                  targetGroupId:
-                    type: number
-                required:
-                  - sourceId
-                  - targetGroupId
-        responses:
-          "200":
-            description: success
-            headers:
-              x-api-key:
-                required: true
-                schema:
-                  type: string
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - true
-                    data:
-                      nullable: true
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                      required:
-                        - id
-                      additionalProperties: false
-                    message:
-                      type: string
-                    errors:
-                      minItems: 0
-                      maxItems: 0
-                      type: array
-                      items:
-                        type: string
-                  required:
-                    - success
-                    - data
-                    - message
-                    - errors
-                  additionalProperties: false
-          "400":
-            description: validation failed
-            headers:
-              x-api-key:
-                required: true
-                schema:
-                  type: string
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    success:
-                      type: boolean
-                      enum:
-                        - false
-                    data:
-                      type: string
-                      nullable: true
-                      enum:
-                        - null
-                    message:
-                      type: string
-                    errors:
                       type: array
                       items:
                         type: string
@@ -1381,11 +1254,6 @@ components:
           - source
         parameters:
           - in: query
-            name: groupId
-            schema:
-              type: string
-              minLength: 1
-          - in: query
             name: page
             schema:
               default: 1
@@ -1768,6 +1636,11 @@ components:
       post:
         tags:
           - source
+        parameters:
+          - in: query
+            name: groupId
+            schema:
+              type: number
         requestBody:
           content:
             application/json:
@@ -2222,6 +2095,9 @@ components:
                   name:
                     type: string
                     minLength: 1
+                  groupId:
+                    nullable: true
+                    type: number
         responses:
           "200":
             description: success

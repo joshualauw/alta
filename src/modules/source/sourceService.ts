@@ -12,7 +12,7 @@ import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
 import { pagingResponse } from "@/utils/apiResponse";
 import { buildMetadataFilter } from "@/modules/source/services/buildMetadataFilter";
-import { FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
+import { FilterSourceQuery, FilterSourceRequest, FilterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { GetSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
 import { UploadSourceQuery, UploadSourceRequest, UploadSourceResponse } from "@/modules/source/dtos/uploadSourceDto";
 import { AnswerTone } from "@/lib/openai/types/AnswerTone";
@@ -23,17 +23,12 @@ import * as pineconeService from "@/lib/pinecone";
 import * as openaiService from "@/lib/openai";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
-    const filters: SourceWhereInput = {};
-    if (query.groupId) {
-        filters.groupId = Number(query.groupId);
-    }
-
     const [sources, count] = await prisma.$transaction([
         prisma.source.findMany({
             skip: (query.page - 1) * query.size,
             take: query.size,
-            where: filters,
-            select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
+            select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true },
+            orderBy: { createdAt: "desc" }
         }),
         prisma.source.count()
     ]);
@@ -110,13 +105,22 @@ export async function uploadSource(query: UploadSourceQuery, payload: UploadSour
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
 
-export async function filterSource(query: FilterSourceRequest): Promise<FilterSourceResponse> {
-    const { sql, params } = buildMetadataFilter(query);
-    const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(`SELECT id FROM "Source" WHERE ${sql}`, ...params);
+export async function filterSource(query: FilterSourceQuery, payload: FilterSourceRequest): Promise<FilterSourceResponse> {
+    const filters: SourceWhereInput = {};
+    if (query.groupId) {
+        filters.groupId = query.groupId;
+    }
+
+    if (payload) {
+        const { sql, params } = buildMetadataFilter(payload);
+        const filteredSources = await prisma.$queryRawUnsafe<{ id: number }[]>(`SELECT id FROM "Source" WHERE ${sql}`, ...params);
+        filters.id = { in: filteredSources.map((s) => s.id) };
+    }
 
     const sources = await prisma.source.findMany({
-        where: { id: { in: filteredSources.map((s) => s.id) } },
-        select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
+        where: filters,
+        select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true },
+        orderBy: { createdAt: "desc" }
     });
 
     return sources.map((s) => ({

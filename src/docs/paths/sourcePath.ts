@@ -10,7 +10,7 @@ import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { createBulkSourceQuery, createBulkSourceRequest, createBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
 import { createSourceQuery, createSourceRequest, createSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { deleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
-import { filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
+import { filterSourceQuery, filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
@@ -165,6 +165,9 @@ export const filterSourcePath: ZodOpenApiPathItemObject = {
     id: "filter-source",
     summary: "filter source by metadata",
     post: {
+        requestParams: {
+            query: filterSourceQuery
+        },
         requestBody: {
             content: {
                 "application/json": {
