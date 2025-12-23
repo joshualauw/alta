@@ -16,7 +16,6 @@ const document = createDocument({
         "/api/group/create": groupPath.createGroupPath,
         "/api/group/update/:id": groupPath.updateGroupPath,
         "/api/group/delete/:id": groupPath.deleteGroupPath,
-        "/api/group/changeSourceGroup": groupPath.changeSourceGroupPath,
 
         "/api/preset/getAll": presetPath.getAllPresetPath,
         "/api/preset/getDetail/:id": presetPath.getPresetDetailPath,

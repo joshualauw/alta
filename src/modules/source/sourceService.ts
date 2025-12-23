@@ -187,6 +187,12 @@ export async function createBulkSource(payload: CreateBulkSourceRequest, query: 
 }
 
 export async function updateSource(id: number, payload: UpdateSourceRequest): Promise<UpdateSourceResponse> {
+    if (payload.groupId) {
+        await prisma.group.findFirstOrThrow({
+            where: { id: payload.groupId }
+        });
+    }
+
     const updatedSource = await prisma.source.update({
         where: { id },
         data: payload
