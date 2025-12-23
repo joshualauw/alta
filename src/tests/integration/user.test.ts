@@ -25,5 +25,22 @@ describe("User API Integration Test", () => {
                 }
             });
         });
+
+        it("should failed login with wrong credentials", async () => {
+            const data = {
+                email: "fake@mail.com",
+                password: "fake-password"
+            };
+
+            const res = await request(app).post("/api/user/login").set("x-api-key", MOCK_API_KEY).send(data);
+
+            expect(res.statusCode).toBe(401);
+            expect(res.body).toEqual({
+                success: false,
+                message: "invalid credentials",
+                errors: [],
+                data: null
+            });
+        });
     });
 });

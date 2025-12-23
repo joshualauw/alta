@@ -7,7 +7,6 @@ import {
     validationErrorResponseSchema
 } from "@/docs/schemas/apiResponseSchema";
 import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
-import { changeSourceGroupRequest, changeSourceGroupResponse } from "@/modules/group/dtos/changeSourceGroupDto";
 import { createGroupRequest, createGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { deleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { getAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
@@ -163,50 +162,6 @@ export const deleteGroupPath: ZodOpenApiPathItemObject = {
                 content: {
                     "application/json": {
                         schema: successResponseSchema(deleteGroupResponse)
-                    }
-                },
-                headers: apiKeyHeaderSchema
-            },
-            404: {
-                description: "not found",
-                content: {
-                    "application/json": {
-                        schema: errorResponseSchema
-                    }
-                },
-                headers: apiKeyHeaderSchema
-            }
-        },
-        tags: ["group"]
-    }
-};
-
-export const changeSourceGroupPath: ZodOpenApiPathItemObject = {
-    id: "change-source-group",
-    summary: "change source group",
-    patch: {
-        requestBody: {
-            content: {
-                "application/json": {
-                    schema: changeSourceGroupRequest
-                }
-            }
-        },
-        responses: {
-            200: {
-                description: "success",
-                content: {
-                    "application/json": {
-                        schema: successResponseSchema(changeSourceGroupResponse)
-                    }
-                },
-                headers: apiKeyHeaderSchema
-            },
-            400: {
-                description: "validation failed",
-                content: {
-                    "application/json": {
-                        schema: validationErrorResponseSchema
                     }
                 },
                 headers: apiKeyHeaderSchema

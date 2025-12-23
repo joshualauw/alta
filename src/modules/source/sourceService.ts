@@ -33,7 +33,7 @@ export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSour
             skip: (query.page - 1) * query.size,
             take: query.size,
             where: filters,
-            include: { group: true }
+            select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
         }),
         prisma.source.count()
     ]);
@@ -57,6 +57,7 @@ export async function getSourceDetail(id: number): Promise<GetSourceDetailRespon
 
     return {
         ...pick(source, "id", "name", "content", "fileUrl", "status", "statusReason"),
+        metadata: source.metadata,
         groupId: source.groupId,
         groupName: source.group?.name ?? null,
         fileUrl: source.fileUrl ? `${config.R2_PUBLIC_URL}/${source.fileUrl}` : null,
@@ -78,7 +79,7 @@ export async function getSourcePresignedUrl(): Promise<GetSourcePresignedUrlResp
 }
 
 export async function uploadSource(query: UploadSourceQuery, payload: UploadSourceRequest): Promise<UploadSourceResponse> {
-    const content = await r2Service.getFileContent({ objectKey: payload.objectKey });
+    const content = await r2Service.getFileContent(payload.objectKey);
 
     const preset = await prisma.preset.findFirstOrThrow({
         where: { code: query.preset ? query.preset : "default" }
@@ -90,15 +91,21 @@ export async function uploadSource(query: UploadSourceQuery, payload: UploadSour
         data.metadata = metadata as JsonObject;
     }
 
-    const source = await prisma.$transaction(
-        async (tx) => {
-            const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-            await pineconeService.upsertText({ source, preset });
+    const source = await prisma.source.create({ data: { ...data, status: "PENDING" } });
 
-            return source;
-        },
-        { timeout: 10000 }
-    );
+    try {
+        await pineconeService.upsertText({ source, preset });
+        await prisma.source.update({
+            where: { id: source.id },
+            data: { status: "DONE" }
+        });
+    } catch (err) {
+        await prisma.source.update({
+            where: { id: source.id },
+            data: { status: "FAILED" }
+        });
+        throw err;
+    }
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
@@ -109,7 +116,7 @@ export async function filterSource(query: FilterSourceRequest): Promise<FilterSo
 
     const sources = await prisma.source.findMany({
         where: { id: { in: filteredSources.map((s) => s.id) } },
-        include: { group: true }
+        select: { id: true, name: true, fileUrl: true, status: true, createdAt: true, group: true, groupId: true }
     });
 
     return sources.map((s) => ({
@@ -132,15 +139,21 @@ export async function createSource(payload: CreateSourceRequest, query: CreateSo
         data.metadata = metadata as JsonObject;
     }
 
-    const source = await prisma.$transaction(
-        async (tx) => {
-            const source = await tx.source.create({ data: { ...data, status: "DONE" } });
-            await pineconeService.upsertText({ source, preset });
+    const source = await prisma.source.create({ data: { ...data, status: "PENDING" } });
 
-            return source;
-        },
-        { timeout: 10000 }
-    );
+    try {
+        await pineconeService.upsertText({ source, preset });
+        await prisma.source.update({
+            where: { id: source.id },
+            data: { status: "DONE" }
+        });
+    } catch (err) {
+        await prisma.source.update({
+            where: { id: source.id },
+            data: { status: "FAILED" }
+        });
+        throw err;
+    }
 
     return { ...pick(source, "id", "name"), createdAt: source.createdAt.toISOString() };
 }
@@ -160,24 +173,26 @@ export async function createBulkSource(payload: CreateBulkSourceRequest, query: 
         return data;
     });
 
-    await prisma.$transaction(
-        async (tx) => {
-            await tx.source.createMany({ data: sources });
-            await bullmqService.addSourceJobs(
-                sources.map((s) => ({
-                    name: `job_${s.jobId}`,
-                    jobId: s.jobId!,
-                    preset: preset.code
-                }))
-            );
-        },
-        { timeout: 10000 }
+    await prisma.source.createMany({ data: sources });
+
+    await bullmqService.addSourceJobs(
+        sources.map((s) => ({
+            name: `job_${s.jobId}`,
+            jobId: s.jobId!,
+            preset: preset.code
+        }))
     );
 
     return { createdAt: new Date().toISOString() };
 }
 
 export async function updateSource(id: number, payload: UpdateSourceRequest): Promise<UpdateSourceResponse> {
+    if (payload.groupId) {
+        await prisma.group.findFirstOrThrow({
+            where: { id: payload.groupId }
+        });
+    }
+
     const updatedSource = await prisma.source.update({
         where: { id },
         data: payload
@@ -187,14 +202,15 @@ export async function updateSource(id: number, payload: UpdateSourceRequest): Pr
 }
 
 export async function deleteSource(id: number): Promise<DeleteSourceResponse> {
-    await prisma.$transaction(async (tx) => {
-        await tx.source.delete({
-            where: { id }
-        });
-        await pineconeService.deleteByFilter({
-            source_id: { $eq: id }
-        });
+    const source = await prisma.source.delete({
+        where: { id }
     });
+    await pineconeService.deleteByFilter({
+        source_id: { $eq: id }
+    });
+    if (source.fileUrl) {
+        await r2Service.deleteFile(source.fileUrl);
+    }
 
     return { id };
 }

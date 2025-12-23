@@ -47,6 +47,8 @@ paths:
     $ref: "#/components/pathItems/delete-source"
   /api/user/login:
     $ref: "#/components/pathItems/login"
+  /api/user/me:
+    $ref: "#/components/pathItems/me"
 components:
   pathItems:
     get-all-group:
@@ -1528,6 +1530,7 @@ components:
                         groupName:
                           nullable: true
                           type: string
+                        metadata: {}
                         status:
                           type: string
                           enum:
@@ -1548,6 +1551,7 @@ components:
                         - fileUrl
                         - groupId
                         - groupName
+                        - metadata
                         - status
                         - statusReason
                         - createdAt
@@ -2478,7 +2482,7 @@ components:
                     - message
                     - errors
                   additionalProperties: false
-          "400":
+          "401":
             description: invalid credentials
             content:
               application/json:
@@ -2494,6 +2498,56 @@ components:
                       nullable: true
                       enum:
                         - null
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    me:
+      summary: get current logged in user
+      get:
+        tags:
+          - user
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        email:
+                          type: string
+                          format: email
+                          pattern: ^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$
+                        role:
+                          type: string
+                          enum:
+                            - ADMIN
+                      required:
+                        - id
+                        - email
+                        - role
+                      additionalProperties: false
                     message:
                       type: string
                     errors:

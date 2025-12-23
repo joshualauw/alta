@@ -14,7 +14,8 @@ export async function getAllPreset(query: PagingQuery): Promise<GetAllPresetResp
     const [presets, count] = await prisma.$transaction([
         prisma.preset.findMany({
             skip: (query.page - 1) * query.size,
-            take: query.size
+            take: query.size,
+            select: { id: true, name: true, code: true, createdAt: true }
         }),
         prisma.preset.count()
     ]);

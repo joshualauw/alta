@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import logger from "@/lib/pino";
 import * as pineconeService from "@/lib/pinecone";
 
-const worker = new Worker(
+new Worker(
     SOURCE_QUEUE,
     async (job: Job<CreateSourceJob>) => {
         logger.info({ jobId: job.id }, "processing source started");
@@ -17,29 +17,24 @@ const worker = new Worker(
             where: { code: job.data.preset ? job.data.preset : "default" }
         });
 
-        await pineconeService.upsertText({ source, preset });
+        try {
+            await pineconeService.upsertText({ source, preset });
+
+            await prisma.source.update({
+                where: { jobId: job.data.jobId },
+                data: { status: "DONE" }
+            });
+        } catch (error: unknown) {
+            const err = error as Error;
+            await prisma.source.update({
+                where: { jobId: job.data.jobId },
+                data: { status: "FAILED", statusReason: err.message }
+            });
+
+            throw error;
+        }
     },
     { connection }
 );
-
-worker.on("completed", async (job: Job<CreateSourceJob>) => {
-    logger.info({ jobId: job.id }, "processing source finished");
-
-    await prisma.source.update({
-        where: { jobId: job.data.jobId },
-        data: { status: "DONE" }
-    });
-});
-
-worker.on("failed", async (job: Job<CreateSourceJob> | undefined, error) => {
-    if (job) {
-        logger.error({ jobId: job.id, error }, "processing source failed");
-
-        await prisma.source.update({
-            where: { jobId: job.data.jobId },
-            data: { status: "FAILED", statusReason: error.message }
-        });
-    }
-});
 
 logger.info("source worker is running");

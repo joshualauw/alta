@@ -1,8 +1,7 @@
 import config from "@/config";
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl as getAwsSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { GetPresignedUrlParams } from "./types/GetPresignedUrl";
-import { GetFileContentParams } from "./types/GetFileContent";
 import { InternalServerError } from "@/lib/internal/errors";
 
 const S3 = new S3Client({
@@ -24,7 +23,7 @@ export async function getPresignedUrl({ objectKey, contentType, expiresIn = 1500
     return getAwsSignedUrl(S3, command, { expiresIn });
 }
 
-export async function getFileContent({ objectKey }: GetFileContentParams): Promise<string> {
+export async function getFileContent(objectKey: string): Promise<string> {
     const command = new GetObjectCommand({
         Bucket: config.R2_BUCKET_NAME,
         Key: objectKey
@@ -34,4 +33,13 @@ export async function getFileContent({ objectKey }: GetFileContentParams): Promi
     if (!response.Body) throw new InternalServerError("response body not found");
 
     return response.Body.transformToString();
+}
+
+export async function deleteFile(objectKey: string) {
+    const command = new DeleteObjectCommand({
+        Bucket: config.R2_BUCKET_NAME,
+        Key: objectKey
+    });
+
+    await S3.send(command);
 }

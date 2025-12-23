@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ChangeSourceGroupRequest } from "@/modules/group/dtos/changeSourceGroupDto";
 import { CreateGroupRequest } from "@/modules/group/dtos/createGroupDto";
 import { UpdateGroupRequest } from "@/modules/group/dtos/updateGroupDto";
 import * as groupService from "@/modules/group/groupService";
@@ -30,9 +29,4 @@ export async function updateGroup(req: Request<{ id: string }, {}, UpdateGroupRe
 export async function deleteGroup(req: Request<{ id: string }>, res: Response) {
     const result = await groupService.deleteGroup(Number(req.params.id));
     return apiResponse.success(res, result, "delete group successful");
-}
-
-export async function changeSourceGroup(req: Request<{}, {}, ChangeSourceGroupRequest>, res: Response) {
-    const result = await groupService.changeSourceGroup(req.body);
-    return apiResponse.success(res, result, "change source group successful");
 }

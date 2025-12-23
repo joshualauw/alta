@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { ChangeSourceGroupRequest, ChangeSourceGroupResponse } from "@/modules/group/dtos/changeSourceGroupDto";
 import { CreateGroupRequest, CreateGroupResponse } from "@/modules/group/dtos/createGroupDto";
 import { DeleteGroupResponse } from "@/modules/group/dtos/deleteGroupDto";
 import { GetAllGroupResponse } from "@/modules/group/dtos/getAllGroupDto";
@@ -13,7 +12,8 @@ export async function getAllGroup(query: PagingQuery): Promise<GetAllGroupRespon
     const [groups, count] = await prisma.$transaction([
         prisma.group.findMany({
             skip: (query.page - 1) * query.size,
-            take: query.size
+            take: query.size,
+            select: { id: true, name: true, colorCode: true, createdAt: true }
         }),
         prisma.group.count()
     ]);
@@ -36,7 +36,8 @@ export async function getGroupDetail(id: number): Promise<GetGroupDetailResponse
 
 export async function createGroup(payload: CreateGroupRequest): Promise<CreateGroupResponse> {
     const group = await prisma.group.create({
-        data: payload
+        data: payload,
+        select: { id: true, name: true, colorCode: true, createdAt: true }
     });
 
     return { ...pick(group, "id", "name", "colorCode"), createdAt: group.createdAt.toISOString() };
@@ -57,13 +58,4 @@ export async function deleteGroup(id: number): Promise<DeleteGroupResponse> {
     });
 
     return { id };
-}
-
-export async function changeSourceGroup(payload: ChangeSourceGroupRequest): Promise<ChangeSourceGroupResponse> {
-    await prisma.source.update({
-        where: { id: payload.sourceId },
-        data: { groupId: payload.targetGroupId }
-    });
-
-    return { id: payload.targetGroupId };
 }
