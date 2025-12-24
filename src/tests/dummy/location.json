@@ -20,7 +20,8 @@
         "content": "The City of Mondstadt, known as the 'City of Freedom,' sits on an island in the middle of Cider Lake. It is ruled by the Knights of Favonius and is dedicated to the Anemo Archon, Barbatos, who values the liberty of its people. The city is famous for its wind-swept plains, its iconic towering statues, and the cheerful, relaxed nature of its inhabitants. Its architecture is characterized by stone walls and European-style buildings with red roofs.",
         "metadata": {
             "type": "location",
-            "nation": "mondstadt"
+            "nation": "mondstadt",
+            "element": ["anemo", "hexenzirkel"]
         }
     },
     {
@@ -68,7 +69,8 @@
         "content": "This institute is a primary research facility located high above the Court of Fontaine, dedicated to the study of kinetic energy and mechanical devices. It is managed by scientists and engineers who push the boundaries of technology, often leading to spectacular and sometimes unstable experiments. The floating nature of the main facility and its various annexed research stations represent Fontaine's cutting-edge status in hydro-powered technology. The area is currently a hub of complex environmental and engineering puzzles.",
         "metadata": {
             "type": "location",
-            "nation": "fontaine"
+            "nation": "fontaine",
+            "element": ["hydro", "ousia", "pneuma"]
         }
     },
     {
