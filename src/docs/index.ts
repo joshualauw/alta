@@ -31,6 +31,7 @@ const document = createDocument({
         "/api/source/create": sourcePath.createSourcePath,
         "/api/source/create/bulk": sourcePath.createBulkSourcePath,
         "/api/source/search": sourcePath.searchSourcePath,
+        "/api/source/search/log": sourcePath.getSearchLogPath,
         "/api/source/update/:id": sourcePath.updateSourcePath,
         "/api/source/delete/:id": sourcePath.deleteSourcePath,
 

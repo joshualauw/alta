@@ -39,6 +39,8 @@ paths:
     $ref: "#/components/pathItems/create-bulk-source"
   /api/source/search:
     $ref: "#/components/pathItems/search-source"
+  /api/source/search/log:
+    $ref: "#/components/pathItems/get-search-log"
   /api/source/update/:id:
     $ref: "#/components/pathItems/update-source"
   /api/source/delete/:id:
@@ -2060,6 +2062,91 @@ components:
                       required:
                         - answer
                         - references
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-search-log:
+      summary: get search log
+      get:
+        tags:
+          - source
+        parameters:
+          - in: path
+            name: page
+            schema:
+              default: 1
+              type: number
+              minimum: 1
+          - in: path
+            name: size
+            schema:
+              default: 20
+              type: number
+              minimum: 1
+              maximum: 20
+        responses:
+          "200":
+            description: success
+            headers:
+              x-api-key:
+                required: true
+                schema:
+                  type: string
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: number
+                              question:
+                                type: string
+                              answer:
+                                type: string
+                            required:
+                              - id
+                              - question
+                              - answer
+                            additionalProperties: false
+                        totalItems:
+                          type: number
+                        totalPages:
+                          type: number
+                        hasNextPage:
+                          type: boolean
+                        hasPrevPage:
+                          type: boolean
+                      required:
+                        - items
+                        - totalItems
+                        - totalPages
+                        - hasNextPage
+                        - hasPrevPage
                       additionalProperties: false
                     message:
                       type: string

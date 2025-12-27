@@ -8,6 +8,7 @@ import { updateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceController from "@/modules/source/sourceController";
 import { filterSourceQuery, filterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 import { uploadSourceQuery, uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
+import { getSearchLogQuery } from "@/modules/source/dtos/getSearchLogDto";
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.post("/create/bulk", validate(createBulkSourceQuery, "query"), validate(c
 router.put("/update/:id", validate(updateSourceRequest), sourceController.updateSource);
 router.delete("/delete/:id", sourceController.deleteSource);
 router.post("/search", validate(searchSourceQuery, "query"), validate(searchSourceRequest), sourceController.searchSource);
+router.get("/search/log", validate(getSearchLogQuery, "query"), sourceController.getSearchLog);
 
 export default router;

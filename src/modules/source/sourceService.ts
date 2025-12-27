@@ -7,6 +7,7 @@ import { DeleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
 import { GetAllSourceQuery, GetAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { GetSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { SearchSourceQuery, SearchSourceRequest, SearchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
+import { GetSearchLogQuery, GetSearchLogResponse } from "@/modules/source/dtos/getSearchLogDto";
 import { UpdateSourceRequest, UpdateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { omit, pick } from "@/utils/mapper";
 import { JsonObject } from "@prisma/client/runtime/client";
@@ -248,4 +249,18 @@ export async function searchSource(payload: SearchSourceRequest, query: SearchSo
     });
 
     return { answer, references: chunkIds };
+}
+
+export async function getSearchLog(query: GetSearchLogQuery): Promise<GetSearchLogResponse> {
+    const [searchLogs, count] = await prisma.$transaction([
+        prisma.searchLog.findMany({
+            skip: (query.page - 1) * query.size,
+            take: query.size,
+            select: { id: true, question: true, answer: true },
+            orderBy: { createdAt: "desc" }
+        }),
+        prisma.searchLog.count()
+    ]);
+
+    return pagingResponse(searchLogs, count, query.page, query.size);
 }

@@ -17,6 +17,7 @@ import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/
 import { updateSourceRequest, updateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { getSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
 import { uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
+import { getSearchLogQuery, getSearchLogResponse } from "@/modules/source/dtos/getSearchLogDto";
 
 export const getAllSourcePath: ZodOpenApiPathItemObject = {
     id: "get-all-source",
@@ -333,6 +334,28 @@ export const deleteSourcePath: ZodOpenApiPathItemObject = {
                 content: {
                     "application/json": {
                         schema: errorResponseSchema
+                    }
+                },
+                headers: apiKeyHeaderSchema
+            }
+        },
+        tags: ["source"]
+    }
+};
+
+export const getSearchLogPath: ZodOpenApiPathItemObject = {
+    id: "get-search-log",
+    summary: "get search log",
+    get: {
+        requestParams: {
+            path: getSearchLogQuery
+        },
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(pagingResponseSchema(getSearchLogResponse))
                     }
                 },
                 headers: apiKeyHeaderSchema

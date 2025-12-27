@@ -1,6 +1,6 @@
 import request from "supertest";
 import { afterAll, describe, expect, it } from "vitest";
-import { createSourceFactory } from "@/tests/prisma";
+import { createSearchLogFactory, createSourceFactory } from "@/tests/prisma";
 import { vi } from "vitest";
 import { deleteByFilter, searchAndRerank, upsertText } from "@/lib/pinecone";
 import { addSourceJobs } from "@/lib/bullmq";
@@ -333,6 +333,34 @@ describe("Source API Integration Test", () => {
                 data: {
                     answer: expect.any(String),
                     references: expect.any(Array)
+                }
+            });
+        });
+    });
+
+    describe("GET /api/source/search/log", () => {
+        it("should get search log", async () => {
+            await createSearchLogFactory();
+
+            const res = await request(app).get("/api/source/search/log").set("x-api-key", MOCK_API_KEY);
+
+            expect(res.statusCode).toBe(200);
+            expect(res.body).toEqual({
+                success: true,
+                errors: [],
+                message: "get search log successful",
+                data: {
+                    items: expect.arrayContaining([
+                        expect.objectContaining({
+                            id: expect.any(Number),
+                            question: expect.any(String),
+                            answer: expect.any(String)
+                        })
+                    ]),
+                    totalItems: expect.any(Number),
+                    totalPages: expect.any(Number),
+                    hasNextPage: expect.any(Boolean),
+                    hasPrevPage: expect.any(Boolean)
                 }
             });
         });

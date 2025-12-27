@@ -37,6 +37,19 @@ export async function createSourceFactory() {
     });
 }
 
+export async function createSearchLogFactory() {
+    return await prisma.searchLog.create({
+        data: {
+            question: faker.lorem.sentence(),
+            answer: faker.lorem.paragraph(),
+            rerank: faker.datatype.boolean(),
+            tone: "normal",
+            sourceIds: faker.helpers.arrayElements([1, 2, 3, 4, 5], { min: 1, max: 5 }),
+            chunkIds: faker.helpers.arrayElements(["1", "2", "3", "4", "5"], { min: 1, max: 5 })
+        }
+    });
+}
+
 export async function createPresetFactory() {
     return await prisma.preset.create({
         data: {

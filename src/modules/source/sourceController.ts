@@ -9,6 +9,7 @@ import { apiResponse } from "@/utils/apiResponse";
 import { StatusCodes } from "http-status-codes";
 import { FilterSourceQuery, FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 import { UploadSourceQuery, UploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
+import { GetSearchLogQuery } from "@/modules/source/dtos/getSearchLogDto";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
@@ -58,4 +59,9 @@ export async function deleteSource(req: Request<{ id: string }>, res: Response) 
 export async function searchSource(req: Request<{}, {}, SearchSourceRequest, SearchSourceQuery>, res: Response) {
     const result = await sourceService.searchSource(req.body, req.query);
     return apiResponse.success(res, result, "search source successful");
+}
+
+export async function getSearchLog(req: Request<{}, {}, {}, GetSearchLogQuery>, res: Response) {
+    const result = await sourceService.getSearchLog(req.query);
+    return apiResponse.success(res, result, "get search log successful");
 }
