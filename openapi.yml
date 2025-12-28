@@ -49,6 +49,8 @@ paths:
     $ref: "#/components/pathItems/login"
   /api/user/me:
     $ref: "#/components/pathItems/me"
+  /api/analytics/dashboard:
+    $ref: "#/components/pathItems/get-dashboard-statistics"
 components:
   pathItems:
     get-all-group:
@@ -2128,10 +2130,13 @@ components:
                                 type: string
                               answer:
                                 type: string
+                              createdAt:
+                                type: string
                             required:
                               - id
                               - question
                               - answer
+                              - createdAt
                             additionalProperties: false
                         totalItems:
                           type: number
@@ -2510,6 +2515,89 @@ components:
                         - id
                         - email
                         - role
+                      additionalProperties: false
+                    message:
+                      type: string
+                    errors:
+                      minItems: 0
+                      maxItems: 0
+                      type: array
+                      items:
+                        type: string
+                  required:
+                    - success
+                    - data
+                    - message
+                    - errors
+                  additionalProperties: false
+    get-dashboard-statistics:
+      summary: get required statistics for dashboard
+      get:
+        tags:
+          - analytics
+        responses:
+          "200":
+            description: success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                      enum:
+                        - true
+                    data:
+                      nullable: true
+                      type: object
+                      properties:
+                        statistics:
+                          type: object
+                          properties:
+                            totalSources:
+                              type: number
+                            totalSearches:
+                              type: number
+                            totalGroups:
+                              type: number
+                          required:
+                            - totalSources
+                            - totalSearches
+                            - totalGroups
+                          additionalProperties: false
+                        monthlyTopSources:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: number
+                              name:
+                                type: string
+                              count:
+                                type: number
+                            required:
+                              - id
+                              - name
+                              - count
+                            additionalProperties: false
+                        monthlySearches:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              date:
+                                type: string
+                              count:
+                                type: number
+                            required:
+                              - date
+                              - count
+                            additionalProperties: false
+                      required:
+                        - statistics
+                        - monthlyTopSources
+                        - monthlySearches
                       additionalProperties: false
                     message:
                       type: string

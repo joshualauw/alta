@@ -22,6 +22,7 @@ import * as r2Service from "@/lib/r2";
 import * as bullmqService from "@/lib/bullmq";
 import * as pineconeService from "@/lib/pinecone";
 import * as openaiService from "@/lib/openai";
+import dayjs from "dayjs";
 
 export async function getAllSource(query: GetAllSourceQuery): Promise<GetAllSourceResponse> {
     const [sources, count] = await prisma.$transaction([
@@ -243,8 +244,13 @@ export async function searchSource(payload: SearchSourceRequest, query: SearchSo
             answer,
             rerank,
             tone,
-            sourceIds,
-            chunkIds
+            chunkIds,
+            day: dayjs().toDate(),
+            sources: {
+                create: sourceIds.map((sourceId) => ({
+                    sourceId
+                }))
+            }
         }
     });
 
