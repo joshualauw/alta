@@ -354,7 +354,8 @@ describe("Source API Integration Test", () => {
                         expect.objectContaining({
                             id: expect.any(Number),
                             question: expect.any(String),
-                            answer: expect.any(String)
+                            answer: expect.any(String),
+                            createdAt: expect.any(String)
                         })
                     ]),
                     totalItems: expect.any(Number),

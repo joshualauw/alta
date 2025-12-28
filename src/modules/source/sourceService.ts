@@ -256,11 +256,16 @@ export async function getSearchLog(query: GetSearchLogQuery): Promise<GetSearchL
         prisma.searchLog.findMany({
             skip: (query.page - 1) * query.size,
             take: query.size,
-            select: { id: true, question: true, answer: true },
+            select: { id: true, question: true, answer: true, createdAt: true },
             orderBy: { createdAt: "desc" }
         }),
         prisma.searchLog.count()
     ]);
 
-    return pagingResponse(searchLogs, count, query.page, query.size);
+    const items = searchLogs.map((log) => ({
+        ...pick(log, "id", "question", "answer"),
+        createdAt: log.createdAt.toISOString()
+    }));
+
+    return pagingResponse(items, count, query.page, query.size);
 }
