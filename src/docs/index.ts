@@ -3,6 +3,7 @@ import * as groupPath from "@/docs/paths/groupPath";
 import * as presetPath from "@/docs/paths/presetPath";
 import * as sourcePath from "@/docs/paths/sourcePath";
 import * as userPath from "@/docs/paths/userPath";
+import * as analyticsPath from "@/docs/paths/analyticsPath";
 
 const document = createDocument({
     openapi: "3.0.0",
@@ -31,11 +32,14 @@ const document = createDocument({
         "/api/source/create": sourcePath.createSourcePath,
         "/api/source/create/bulk": sourcePath.createBulkSourcePath,
         "/api/source/search": sourcePath.searchSourcePath,
+        "/api/source/search/log": sourcePath.getSearchLogPath,
         "/api/source/update/:id": sourcePath.updateSourcePath,
         "/api/source/delete/:id": sourcePath.deleteSourcePath,
 
         "/api/user/login": userPath.loginPath,
-        "/api/user/me": userPath.mePath
+        "/api/user/me": userPath.mePath,
+
+        "/api/analytics/dashboard": analyticsPath.getDashboardStatisticsPath
     },
     components: {
         securitySchemes: {

@@ -5,7 +5,7 @@ export function buildMetadataFilter(filters: FilterSourceRequest): { sql: string
     const clauses: string[] = [];
     const params: AllowedSourceMetadata[] = [];
 
-    for (const [field, ops] of Object.entries(filters)) {
+    for (const [field, ops] of Object.entries(filters!)) {
         for (const [op, value] of Object.entries(ops)) {
             if (value === undefined) continue;
 
@@ -38,11 +38,11 @@ export function buildMetadataFilter(filters: FilterSourceRequest): { sql: string
                     break;
                 case "$in":
                     params.push(value);
-                    sqlFragment = `metadata->>'${field}' = ANY($${params.length})`;
+                    sqlFragment = `metadata->'${field}' ?| $${params.length}::text[]`;
                     break;
                 case "$nin":
                     params.push(value);
-                    sqlFragment = `metadata->>'${field}' <> ALL($${params.length})`;
+                    sqlFragment = `NOT metadata->'${field}' ?| $${params.length}::text[]`;
                     break;
                 default:
                     throw new Error(`Unsupported operator: ${op}`);

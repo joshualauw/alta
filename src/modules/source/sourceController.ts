@@ -7,8 +7,9 @@ import { UpdateSourceRequest } from "@/modules/source/dtos/updateSourceDto";
 import * as sourceService from "@/modules/source/sourceService";
 import { apiResponse } from "@/utils/apiResponse";
 import { StatusCodes } from "http-status-codes";
-import { FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
+import { FilterSourceQuery, FilterSourceRequest } from "@/modules/source/dtos/filterSourceDto";
 import { UploadSourceQuery, UploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
+import { GetSearchLogQuery } from "@/modules/source/dtos/getSearchLogDto";
 
 export async function getAllSource(req: Request<{}, {}, {}, GetAllSourceQuery>, res: Response) {
     const result = await sourceService.getAllSource(req.query);
@@ -30,8 +31,8 @@ export async function uploadSource(req: Request<{}, {}, UploadSourceRequest, Upl
     return apiResponse.success(res, result, "upload source successful");
 }
 
-export async function filterSource(req: Request<{}, {}, FilterSourceRequest>, res: Response) {
-    const result = await sourceService.filterSource(req.body);
+export async function filterSource(req: Request<{}, {}, FilterSourceRequest, FilterSourceQuery>, res: Response) {
+    const result = await sourceService.filterSource(req.query, req.body);
     return apiResponse.success(res, result, "filter source successful");
 }
 
@@ -58,4 +59,9 @@ export async function deleteSource(req: Request<{ id: string }>, res: Response) 
 export async function searchSource(req: Request<{}, {}, SearchSourceRequest, SearchSourceQuery>, res: Response) {
     const result = await sourceService.searchSource(req.body, req.query);
     return apiResponse.success(res, result, "search source successful");
+}
+
+export async function getSearchLog(req: Request<{}, {}, {}, GetSearchLogQuery>, res: Response) {
+    const result = await sourceService.getSearchLog(req.query);
+    return apiResponse.success(res, result, "get search log successful");
 }

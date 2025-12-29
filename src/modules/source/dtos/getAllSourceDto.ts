@@ -2,11 +2,7 @@ import { pagingQuery } from "@/types/PagingQuery";
 import { PagingResponse } from "@/types/PagingResponse";
 import z from "zod";
 
-export const getAllSourceQuery = z
-    .object({
-        groupId: z.string().min(1).optional()
-    })
-    .merge(pagingQuery);
+export const getAllSourceQuery = pagingQuery;
 
 export type GetAllSourceQuery = z.infer<typeof getAllSourceQuery>;
 

@@ -2,6 +2,7 @@ import { PrismaClient } from "@/database/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { faker } from "@faker-js/faker";
 import logger from "@/lib/pino";
+import dayjs from "dayjs";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 export const prisma = new PrismaClient({ adapter });
@@ -33,6 +34,24 @@ export async function createSourceFactory() {
             status: "DONE",
             fileUrl: `source_${faker.lorem.word(10)}`,
             metadata: { property: "test" }
+        }
+    });
+}
+
+export async function createSearchLogFactory() {
+    return await prisma.searchLog.create({
+        data: {
+            question: faker.lorem.sentence(),
+            answer: faker.lorem.paragraph(),
+            rerank: faker.datatype.boolean(),
+            tone: "normal",
+            chunkIds: faker.helpers.arrayElements(["1", "2", "3", "4", "5"], { min: 1, max: 5 }),
+            day: dayjs().toDate(),
+            sources: {
+                create: faker.helpers.arrayElements([1, 2, 3, 4, 5], { min: 1, max: 5 }).map((a) => ({
+                    sourceId: a
+                }))
+            }
         }
     });
 }

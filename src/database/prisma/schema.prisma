@@ -55,7 +55,8 @@ model Source {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  group Group? @relation(fields: [groupId], references: [id])
+  group            Group?            @relation(fields: [groupId], references: [id])
+  searchLogSources SearchLogSource[]
 }
 
 model Group {
@@ -70,16 +71,30 @@ model Group {
 }
 
 model SearchLog {
-  id        Int      @id @default(autoincrement())
-  question  String
-  answer    String
-  rerank    Boolean
-  tone      String
-  sourceIds Int[]
-  chunkIds  String[] @default([])
+  id       Int      @id @default(autoincrement())
+  question String
+  answer   String
+  rerank   Boolean
+  tone     String
+  chunkIds String[] @default([])
+  day      DateTime @db.Date
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+
+  sources SearchLogSource[]
+}
+
+model SearchLogSource {
+  id          Int @id @default(autoincrement())
+  searchLogId Int
+  sourceId    Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  searchLog SearchLog @relation(fields: [searchLogId], references: [id], onDelete: Cascade)
+  source    Source    @relation(fields: [sourceId], references: [id], onDelete: Cascade)
 }
 
 model User {

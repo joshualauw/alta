@@ -10,13 +10,14 @@ import { apiKeyHeaderSchema } from "@/docs/schemas/headerSchema";
 import { createBulkSourceQuery, createBulkSourceRequest, createBulkSourceResponse } from "@/modules/source/dtos/createBulkSourceDto";
 import { createSourceQuery, createSourceRequest, createSourceResponse } from "@/modules/source/dtos/createSourceDto";
 import { deleteSourceResponse } from "@/modules/source/dtos/deleteSourceDto";
-import { filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
+import { filterSourceQuery, filterSourceRequest, filterSourceResponse } from "@/modules/source/dtos/filterSourceDto";
 import { getAllSourceQuery, getAllSourceResponse } from "@/modules/source/dtos/getAllSourceDto";
 import { getSourceDetailResponse } from "@/modules/source/dtos/getSourceDetailDto";
 import { searchSourceQuery, searchSourceRequest, searchSourceResponse } from "@/modules/source/dtos/searchSourceDto";
 import { updateSourceRequest, updateSourceResponse } from "@/modules/source/dtos/updateSourceDto";
 import { getSourcePresignedUrlResponse } from "@/modules/source/dtos/getSourcePresignedUrlDto";
 import { uploadSourceRequest } from "@/modules/source/dtos/uploadSourceDto";
+import { getSearchLogQuery, getSearchLogResponse } from "@/modules/source/dtos/getSearchLogDto";
 
 export const getAllSourcePath: ZodOpenApiPathItemObject = {
     id: "get-all-source",
@@ -165,6 +166,9 @@ export const filterSourcePath: ZodOpenApiPathItemObject = {
     id: "filter-source",
     summary: "filter source by metadata",
     post: {
+        requestParams: {
+            query: filterSourceQuery
+        },
         requestBody: {
             content: {
                 "application/json": {
@@ -330,6 +334,28 @@ export const deleteSourcePath: ZodOpenApiPathItemObject = {
                 content: {
                     "application/json": {
                         schema: errorResponseSchema
+                    }
+                },
+                headers: apiKeyHeaderSchema
+            }
+        },
+        tags: ["source"]
+    }
+};
+
+export const getSearchLogPath: ZodOpenApiPathItemObject = {
+    id: "get-search-log",
+    summary: "get search log",
+    get: {
+        requestParams: {
+            path: getSearchLogQuery
+        },
+        responses: {
+            200: {
+                description: "success",
+                content: {
+                    "application/json": {
+                        schema: successResponseSchema(pagingResponseSchema(getSearchLogResponse))
                     }
                 },
                 headers: apiKeyHeaderSchema

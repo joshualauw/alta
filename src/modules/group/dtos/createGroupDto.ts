@@ -10,7 +10,7 @@ export type CreateGroupRequest = z.infer<typeof createGroupRequest>;
 export const createGroupResponse = z.object({
     id: z.number(),
     name: z.string(),
-    colorCode: z.string(),
+    colorCode: z.string().regex(/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/, "invalid hex format"),
     createdAt: z.string()
 });
 
