@@ -2581,7 +2581,7 @@ components:
                               - name
                               - count
                             additionalProperties: false
-                        monthlySearches:
+                        weeklySearches:
                           type: array
                           items:
                             type: object
@@ -2597,7 +2597,7 @@ components:
                       required:
                         - statistics
                         - monthlyTopSources
-                        - monthlySearches
+                        - weeklySearches
                       additionalProperties: false
                     message:
                       type: string

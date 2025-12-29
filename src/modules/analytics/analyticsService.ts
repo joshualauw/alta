@@ -28,7 +28,7 @@ export async function getDashboardStatistics(): Promise<GetDashboardStatisticsRe
                 sourceId: "desc"
             }
         },
-        take: 3
+        take: 5
     });
 
     const monthlyTopSources = await Promise.all(
@@ -45,12 +45,12 @@ export async function getDashboardStatistics(): Promise<GetDashboardStatisticsRe
         throw new NotFoundError("Source not found for top sources");
     }
 
-    const monthlySearches = await prisma.searchLog.groupBy({
+    const weeklySearches = await prisma.searchLog.groupBy({
         by: ["day"],
         where: {
             createdAt: {
-                gte: dayjs().startOf("month").toDate(),
-                lt: dayjs().startOf("month").add(1, "month").toDate()
+                gte: dayjs().startOf("week").toDate(),
+                lt: dayjs().startOf("week").add(1, "week").toDate()
             }
         },
         _count: {
@@ -72,7 +72,7 @@ export async function getDashboardStatistics(): Promise<GetDashboardStatisticsRe
             name: item.source!.name,
             count: item.count
         })),
-        monthlySearches: monthlySearches.map((item) => ({
+        weeklySearches: weeklySearches.map((item) => ({
             date: item.day.toISOString(),
             count: item._count.id
         }))

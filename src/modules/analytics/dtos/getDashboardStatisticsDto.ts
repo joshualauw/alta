@@ -13,7 +13,7 @@ export const getDashboardStatisticsResponse = z.object({
             count: z.number()
         })
     ),
-    monthlySearches: z.array(
+    weeklySearches: z.array(
         z.object({
             date: z.string(),
             count: z.number()

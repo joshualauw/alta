@@ -29,7 +29,7 @@ describe("Analytics API Integration Test", () => {
                             count: expect.any(Number)
                         })
                     ]),
-                    monthlySearches: expect.arrayContaining([
+                    weeklySearches: expect.arrayContaining([
                         expect.objectContaining({
                             date: expect.any(String),
                             count: expect.any(Number)
